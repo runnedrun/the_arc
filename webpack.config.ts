@@ -33,10 +33,6 @@ const config = {
     ],
   },
   plugins: [
-    new webpack.NormalModuleReplacementPlugin(
-      /segmentit|nodejieba/,
-      path.resolve(__dirname, "./functions/src/helpers/stub")
-    ),
     new CopyPlugin({
       patterns: [
         {
@@ -44,24 +40,12 @@ const config = {
           to: path.resolve(__dirname, "./dist/package.json"),
         },
         {
-          from: path.resolve(__dirname, "./patch-package-if-needed.sh"),
-          to: path.resolve(__dirname, "./dist/patch-package-if-needed.sh"),
-        },
-        {
-          from: path.resolve(__dirname, "./.puppeteerrc.cjs"),
-          to: path.resolve(__dirname, "./dist/.puppeteerrc.cjs"),
-        },
-        {
           from: path.resolve(__dirname, "./.env.local"),
           to: path.resolve(__dirname, "./dist/.env.local"),
         },
         {
-          from: path.resolve(__dirname, "./.env.xqchinese-325dd"),
-          to: path.resolve(__dirname, "./dist/.env.xqchinese-325dd"),
-        },
-        {
-          from: path.resolve(__dirname, "./.env.yomuya-prod"),
-          to: path.resolve(__dirname, "./dist/.env.yomuya-prod"),
+          from: path.resolve(__dirname, "./.env.thearc-10416"),
+          to: path.resolve(__dirname, "./dist/.env.thearc-10416"),
         },
       ].filter(Boolean),
     }),
@@ -78,7 +62,6 @@ const config = {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
       "@": path.resolve(__dirname, "."),
-      segmentit: path.resolve(__dirname, "./functions/src/stub"),
     },
   },
   experiments: {
@@ -87,7 +70,6 @@ const config = {
   externals: [
     nodeExternals({
       importType: "module",
-      allowlist: [/segmentit/, /pinyin/, /nodejieba/],
     }),
   ],
   output: {

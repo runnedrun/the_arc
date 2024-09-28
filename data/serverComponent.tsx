@@ -1,4 +1,4 @@
-import { jsonifyTimestamps } from "@/data/fetchHelpers/jsonifyTimestamps"
+import { jsonifyTimestampsFe } from "@/data/fetchHelpers/jsonifyTimestampsFe"
 import {
   distinctUntilChanged,
   firstValueFrom,
@@ -8,7 +8,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { DataWithoutStatics, splitDataAndStatics } from "./DataWithStatics"
-import { ParamsTypeFromDataFn } from "./withData"
+import { ServerDataReceiverComponent } from "../app/example/ServerDataReceiverComponent"
 
 export type PassFromServerToClientProp<
   InitialValuesType extends Record<string, unknown>,
@@ -63,18 +63,6 @@ export const buildKeyGetterFromObs = <
   }
 }
 
-export type ServerDataReceiverComponent<
-  InputDataFnsType extends Record<string, DataFnType>,
-> = ComponentWithInitialValues<
-  {
-    [key in keyof InputDataFnsType]: DataWithoutStatics<
-      ReturnType<InputDataFnsType[key]>
-    >
-  },
-  {},
-  { params: any }
->
-
 export const rootComponent = <
   InputDataFnsType extends Record<string, DataFnType>,
 >(
@@ -89,7 +77,7 @@ export const rootComponent = <
     searchParams: Record<string, any>
   }) => {
     const res = {}
-    const dataPromises = Object.keys(dataFns).map(async (acc, dataFnName) => {
+    const dataPromises = Object.keys(dataFns).map(async (dataFnName) => {
       const dataObj = dataFns[dataFnName]({
         getParam: buildKeyGetterFromObs(of({ params, ...searchParams })),
         getProp: buildKeyGetterFromObs(of({})),
@@ -105,7 +93,7 @@ export const rootComponent = <
     return (
       <ClientComponent
         _initialValues={
-          jsonifyTimestamps(res) as {
+          jsonifyTimestampsFe(res) as {
             [key in keyof InputDataFnsType]: DataWithoutStatics<
               ReturnType<InputDataFnsType[key]>
             >

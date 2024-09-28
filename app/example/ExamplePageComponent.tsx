@@ -1,11 +1,10 @@
 import { useContext } from "react"
-import { ExamplePageDataContext } from "./ExamplePageData"
+import { ExamplePageDataContext } from "./ExamplePageClientEntry"
 
 export const ExamplePageComponent = () => {
   const { allActions, exampleAction, _isLoading } = useContext(
     ExamplePageDataContext
   )
-  console.log(allActions, exampleAction)
   if (_isLoading) {
     return <div>Loading...</div>
   }

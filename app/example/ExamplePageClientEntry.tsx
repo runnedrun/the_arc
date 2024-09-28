@@ -1,19 +1,23 @@
 "use client"
 
-import { ServerDataReceiverComponent } from "@/data/serverComponent"
-import { ExamplePageData, ProvideExamplePageData } from "./ExamplePageData"
+import { buildDataContext } from "@/data/buildDataContext"
 
-export const ExamplePageDataFns = {
-  examplePageData: ExamplePageData
-}
+import { ServerDataReceiverComponent } from "./ServerDataReceiverComponent"
+import { ExamplePageData, ExamplePageDataFns } from "./ExamplePageData"
+import { ExamplePageComponent } from "./ExamplePageComponent"
+
+export const [ExamplePageDataContext, ProvideExamplePageData] =
+  buildDataContext(ExamplePageData)
 
 export const ExamplePage: ServerDataReceiverComponent<
-typeof ExamplePageDataFns
+  typeof ExamplePageDataFns
 > = ({ _initialValues, params }) => {
-  return <ProvideExamplePageData>
-    
-  </ProvideExamplePageData>
+  return (
+    <ProvideExamplePageData
+      _initialValues={_initialValues.examplePageData}
+      params={params}
+    >
+      <ExamplePageComponent />
+    </ProvideExamplePageData>
+  )
 }
-
-
-

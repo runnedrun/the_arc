@@ -1,4 +1,4 @@
-import { forOwn, isPlainObject } from "lodash"
+import { forOwn, isPlainObject } from "lodash-es"
 
 export const DeleteField = "__delete__"
 
