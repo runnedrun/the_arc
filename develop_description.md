@@ -1,4 +1,4 @@
-In this project we use NextJS, firestore, firebase functions, and react and typescript.
+In this project we use NextJS, firestore, firebase functions, and react, typescript and tailwind for styling
 
 # Data
 
@@ -12,5 +12,13 @@ We then add the type to the AllModels type, as well as the collection name to th
 
 # front end
 
+## creating new pages
+
 We use the next app folder.
-The page.ts file in each route is a
+When structuring page that are server side rendered with data from firebase, please follow the example of the "example" page in the app/example folder.
+
+## writing data
+
+To write data on the front end use the functions from the file "data/fb", which are structured as setters.<collectionName>("id", {data}) and creators.collectionName({data}). All setters already exist for all collections listed in CollectionModels.
+
+## style
