@@ -1,0 +1,22 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "migrations_lib": true,
+    "tmp": true,
+    "dist": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "js/ts.implicitProjectConfig.strictFunctionTypes": false,
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "javascript"
+  },
+  // "editor.gotoLocation.multipleDeclarations": "goto",
+  // "editor.gotoLocation.multipleReferences": "goto",
+  "editor.gotoLocation.multipleDefinitions": "goto",
+  "scss.lint.unknownAtRules": "ignore",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}
