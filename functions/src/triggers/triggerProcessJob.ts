@@ -1,21 +1,16 @@
-
 import { FieldValue, Timestamp } from "firebase-admin/firestore"
 import { error } from "firebase-functions/logger"
 import { onDocumentWritten } from "firebase-functions/v2/firestore"
 import { fbSet } from "../helpers/writer"
-
 import { toTimestamp } from "../helpers/toTimestamp"
 import { JobTypes, ProcessingJob } from "@/data/types/ProcessJob"
-
 
 export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
   docId: string
   trigger: number
   oneOffJobData: OneOffJobDataType
 }) => Promise<boolean>
-const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {
-  
-}
+const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {}
 
 const timeoutSeconds = 540
 export const triggerProcessJob = onDocumentWritten(

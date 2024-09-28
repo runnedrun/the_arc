@@ -1,11 +1,10 @@
 "use client"
 
-import { hydrateTimestamps } from "@/data/fetchHelpers/jsonifyTimestamps"
+import { hydrateTimestampsFe } from "@/data/fetchHelpers/jsonifyTimestampsFe"
 import { objHasUndef } from "@/helpers/filterUndef"
 import { objKeys } from "@/helpers/objKeys"
 import { omit } from "lodash-es"
 import { useParams, useSearchParams } from "next/navigation"
-import { useRouter } from "next/navigation"
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { BehaviorSubject, of } from "rxjs"
 import {
@@ -149,7 +148,7 @@ export const withData =
       const { dataObs, statics } = splitDataAndStatics(dataObj)
 
       const [resolvedData, setResolvedData] = useState(
-        hydrateTimestamps(
+        hydrateTimestampsFe(
           props._initialValues || {}
         ) as DataWithoutStatics<DataType>
       )

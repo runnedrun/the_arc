@@ -9,10 +9,7 @@ import {
   WriteBatch,
 } from "@firebase/firestore"
 import { isUndefined } from "lodash-es"
-import {
-  CollectionModels,
-  CollectionNames,
-} from "./CollectionModels"
+import { CollectionModels, CollectionNames } from "./CollectionModels"
 import { init } from "./initFb"
 
 const refFunctions = {} as {
@@ -65,8 +62,6 @@ CollectionNames.forEach(
   <CollectionName extends keyof CollectionModels>(
     collectionName: CollectionName
   ) => {
-    
-
     const refFunction = (docId?: string) => {
       const firestore = init()
 
@@ -76,7 +71,7 @@ CollectionNames.forEach(
         ? doc(collectionRef, docId)
         : doc(collectionRef)
 
-      return newOrExistingDoc 
+      return newOrExistingDoc
     }
 
     const cleanObjectForWrite = (object: object) => {

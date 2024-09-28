@@ -1,4 +1,3 @@
-
 import { isEmptyObj } from "@/helpers/isEmptyObj"
 import { Observable, combineLatest, isObservable, of } from "rxjs"
 
@@ -31,6 +30,7 @@ export const splitDataAndStatics = <DataType extends Record<string, unknown>>(
       statics[key] = value
     }
   })
+
   const oneObs = isEmptyObj(dataWithoutStatics)
     ? of({})
     : combineLatest(dataWithoutStatics)

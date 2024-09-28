@@ -1,14 +1,22 @@
-import { buildDataContext } from "@/data/buildDataContext";
-import { dataFn } from "@/data/dataFn";
-import { docObs, queryObs } from "@/data/readerFe";
+import { dataFn } from "@/data/dataFn"
+import { docObs, queryObs } from "@/data/readerFe"
+import { logObs } from "@/helpers/logObs"
+import { of, startWith } from "rxjs"
 
-export const ExamplePageData = dataFn<{actionIdParam: string}>()(({ getParam}) => {
+export const ExamplePageData = dataFn<{ actionIdParam: string }>()(({
+  getParam,
+}) => {
   return {
-    exampleAction: docObs("actions", getParam("actionIdParam")),
-    allActions: queryObs("actions", ({where}) => [
+    exampleAction: docObs("actions", getParam("actionIdParam")).pipe(
+      startWith({}),
+      logObs("exampleAction")
+    ),
+    allActions: queryObs("actions", ({ where }) => [
       where("archived", "==", false),
     ]),
   }
 })
 
-export const [ExamplePageDataContext, ProvideExamplePageData] = buildDataContext(ExamplePageData)
+export const ExamplePageDataFns = {
+  examplePageData: ExamplePageData,
+}
