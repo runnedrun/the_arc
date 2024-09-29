@@ -36,3 +36,4 @@ yarn-error.log*
 next-env.d.ts
 firestore-debug.log
 private_configs
+firebase-debug.log
