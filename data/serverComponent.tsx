@@ -8,7 +8,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { DataWithoutStatics, splitDataAndStatics } from "./DataWithStatics"
-import { ServerDataReceiverComponent } from "../app/example/ServerDataReceiverComponent"
+import { ServerDataReceiverComponent } from "./ServerDataReceiverComponent"
 
 export type PassFromServerToClientProp<
   InitialValuesType extends Record<string, unknown>,

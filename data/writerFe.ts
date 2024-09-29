@@ -1,53 +1,56 @@
 import { ModelBase } from "@/data/baseTypes/Model"
 import { AllModels, CollectionModels } from "@/data/CollectionModels"
-import { Timestamp as FeTimestamp } from "@firebase/firestore"
+import { CreateOptions } from "@/functions/src/helpers/writer"
 import batchPromises from "batch-promises"
-import { PartialWithFieldValue, Timestamp } from "firebase-admin/firestore"
+import {
+  PartialWithFieldValue,
+  Timestamp,
+  collection,
+  deleteDoc,
+  doc,
+  getFirestore,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore"
 import { chunk } from "lodash-es"
-import { getBeFirestore } from "./getBeFirestore"
 
 export const genExtraData = () => {
   return {
-    createdAt: Timestamp.now() as FeTimestamp,
-    updatedAt: Timestamp.now() as FeTimestamp,
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
     archived: false,
   }
 }
 
-export type CreateOptions = {
-  id?: string
-}
-
-export const backendNow = () => Timestamp.now() as FeTimestamp //Timestamp.now() as FeTimestamp
+export const backendNow = () => Timestamp.now()
 
 export const fbSet = async <CollectionName extends keyof AllModels>(
   collectionName: CollectionName,
   docId: string,
   data: PartialWithFieldValue<AllModels[CollectionName]>
 ) => {
-  const firestore = getBeFirestore()
+  const firestore = getFirestore()
 
-  await firestore
-    .collection(collectionName)
-    .doc(docId)
-    .set(
-      {
-        updatedAt: Timestamp.now(),
-        ...data,
-      },
-      { merge: true }
-    )
+  await setDoc(
+    doc(firestore, collectionName, docId),
+    {
+      updatedAt: Timestamp.now(),
+      ...data,
+    },
+    { merge: true }
+  )
 
-  return firestore.collection(collectionName).doc(docId)
+  return doc(firestore, collectionName, docId)
 }
 
 export const fbDelete = async <CollectionName extends keyof AllModels>(
   collectionName: CollectionName,
   docId: string
 ) => {
-  const firestore = getBeFirestore()
+  const firestore = getFirestore()
 
-  await firestore.collection(collectionName).doc(docId).delete()
+  await deleteDoc(doc(firestore, collectionName, docId))
 }
 
 export const fbUpdate = async <CollectionName extends keyof AllModels>(
@@ -55,17 +58,14 @@ export const fbUpdate = async <CollectionName extends keyof AllModels>(
   docId: string,
   data: Partial<AllModels[CollectionName]>
 ) => {
-  const firestore = getBeFirestore()
+  const firestore = getFirestore()
 
-  await firestore
-    .collection(collectionName)
-    .doc(docId)
-    .update({
-      updatedAt: Timestamp.now(),
-      ...data,
-    })
+  await updateDoc(doc(firestore, collectionName, docId), {
+    updatedAt: Timestamp.now(),
+    ...data,
+  })
 
-  return firestore.collection(collectionName).doc(docId)
+  return doc(firestore, collectionName, docId)
 }
 
 export const fbCreate = async <Key extends keyof CollectionModels>(
@@ -73,11 +73,12 @@ export const fbCreate = async <Key extends keyof CollectionModels>(
   data: Omit<AllModels[Key], keyof ModelBase>,
   opts?: CreateOptions
 ) => {
-  const firestore = getBeFirestore()
+  const firestore = getFirestore()
   const ref = opts?.id
-    ? firestore.collection(collectionName).doc(opts.id)
-    : firestore.collection(collectionName).doc()
-  await ref.set(
+    ? doc(firestore, collectionName, opts.id)
+    : doc(collection(firestore, collectionName))
+  await setDoc(
+    ref,
     {
       ...genExtraData(),
       ...data,
@@ -93,11 +94,9 @@ export const fbBatchSet = async <CollectionName extends keyof AllModels>(
   getDocKey?: (record: AllModels[CollectionName], i: number) => string,
   batchSize: number = 100
 ) => {
-  const firestore = getBeFirestore()
+  const firestore = getFirestore()
   const chunked = chunk(records, batchSize)
   const entries = Array.from(chunked.entries())
-
-  // console.log(`starting ${collectionName} save for ${records.length} documents`)
 
   return batchPromises(
     5,
@@ -106,7 +105,7 @@ export const fbBatchSet = async <CollectionName extends keyof AllModels>(
       number,
       AllModels[CollectionName][],
     ]) => {
-      const writer = firestore.batch()
+      const writer = writeBatch(firestore)
       sentenceBatch.forEach((record, sentenceIndex) => {
         const recordToWrite = {
           ...record,
@@ -114,18 +113,15 @@ export const fbBatchSet = async <CollectionName extends keyof AllModels>(
         } as AllModels[CollectionName]
 
         const recordRef = getDocKey
-          ? firestore
-              .collection(collectionName)
-              .doc(getDocKey(record, sentenceIndex + batchIndex * batchSize))
-          : firestore.collection(collectionName).doc()
+          ? doc(
+              firestore,
+              collectionName,
+              getDocKey(record, sentenceIndex + batchIndex * batchSize)
+            )
+          : doc(collection(firestore, collectionName))
 
         writer.set(recordRef, recordToWrite, { merge: true })
       })
-      // console.log(
-      //   `commiting ${collectionName} batch ${batchIndex} out of ${
-      //     chunked.length - 1
-      //   }`
-      // )
       return writer.commit()
     }
   )
@@ -136,7 +132,7 @@ export const fbBatchDelete = async <CollectionName extends keyof AllModels>(
   recordIds: string[],
   batchSize: number = 100
 ) => {
-  const firestore = getBeFirestore()
+  const firestore = getFirestore()
   const chunked = chunk(recordIds, batchSize)
   const entries = Array.from(chunked.entries())
 
@@ -144,9 +140,9 @@ export const fbBatchDelete = async <CollectionName extends keyof AllModels>(
     5,
     entries,
     async ([, sentenceBatch]: [number, string[]]) => {
-      const writer = firestore.batch()
+      const writer = writeBatch(firestore)
       sentenceBatch.forEach((recordId) => {
-        const recordRef = firestore.collection(collectionName).doc(recordId)
+        const recordRef = doc(firestore, collectionName, recordId)
 
         writer.delete(recordRef)
       })
