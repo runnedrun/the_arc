@@ -1,6 +1,6 @@
 "use client"
 
-import { buildDataContext } from "@/data/buildDataContext"
+import { buildDataContext } from "@/data/context/buildDataContext"
 
 import { ServerDataReceiverComponent } from "./ServerDataReceiverComponent"
 import { ExamplePageData, ExamplePageDataFns } from "./ExamplePageData"

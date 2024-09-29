@@ -1,6 +1,6 @@
 "use client"
 
-import { buildDataContext } from "@/data/buildDataContext"
+import { buildDataContext } from "@/data/context/buildDataContext"
 import { NewGamePageData, NewGamePageDataFns } from "./NewGamePageData"
 import { NewGamePageComponent } from "./NewGamePageComponent"
 import { ServerDataReceiverComponent } from "../example/ServerDataReceiverComponent"
