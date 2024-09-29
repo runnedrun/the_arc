@@ -1,5 +1,5 @@
-import { rootComponent } from "@/data/serverComponent"
-import { NewGamePage } from "./NewGamePageClientEntry"
-import { NewGamePageDataFns } from "./NewGamePageData"
+import { NewGamePageWithUser } from "./NewGamePage"
 
-export default rootComponent(NewGamePageDataFns, NewGamePage)
+export default () => {
+  return <NewGamePageWithUser />
+}

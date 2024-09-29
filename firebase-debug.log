@@ -1,0 +1,615 @@
+[debug] [2024-09-29T12:55:20.070Z] ----------------------------------------------------------------------
+[debug] [2024-09-29T12:55:20.072Z] Command:       /Users/david/.nvm/versions/node/v20.10.0/bin/node /Users/david/.nvm/versions/node/v20.10.0/bin/firebase emulators:start --project default
+[debug] [2024-09-29T12:55:20.072Z] CLI Version:   13.20.1
+[debug] [2024-09-29T12:55:20.073Z] Platform:      darwin
+[debug] [2024-09-29T12:55:20.073Z] Node Version:  v20.10.0
+[debug] [2024-09-29T12:55:20.073Z] Time:          Sun Sep 29 2024 14:55:20 GMT+0200 (Central European Summer Time)
+[debug] [2024-09-29T12:55:20.073Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-09-29T12:55:20.149Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-09-29T12:55:20.149Z] > authorizing via signed-in user (runnedrun@gmail.com)
+[debug] [2024-09-29T12:55:20.196Z] java version "21.0.1" 2023-10-17 LTS
+
+[debug] [2024-09-29T12:55:20.196Z] Java(TM) SE Runtime Environment (build 21.0.1+12-LTS-29)
+Java HotSpot(TM) 64-Bit Server VM (build 21.0.1+12-LTS-29, mixed mode, sharing)
+
+[debug] [2024-09-29T12:55:20.199Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: auth, functions, firestore, database, storage {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, database, storage"}}
+[debug] [2024-09-29T12:55:21.550Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:21.550Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:21.551Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:21.551Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:21.551Z] [database] Database Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:21.551Z] [storage] Storage Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:21.551Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9089}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8071}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9189}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-09-29T12:55:21.555Z] [hub] writing locator at /var/folders/13/hk7v27js22g90_4kdfm30dp00000gn/T/hub-thearc-10416.json
+[debug] [2024-09-29T12:55:22.041Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:22.041Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:22.041Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-09-29T12:55:22.041Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9089}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8071}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"database":[{"address":"127.0.0.1","family":"IPv4","port":9000}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9189}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5011}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: hosting, pubsub, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mhosting, pubsub, dataconnect\u001b[22m"}}
+[debug] [2024-09-29T12:55:22.043Z] defaultcredentials: writing to file /Users/david/.config/firebase/runnedrun_gmail_com_application_default_credentials.json
+[debug] [2024-09-29T12:55:22.048Z] Setting GAC to /Users/david/.config/firebase/runnedrun_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /Users/david/.config/firebase/runnedrun_gmail_com_application_default_credentials.json"}}
+[debug] [2024-09-29T12:55:22.048Z] No OAuth tokens found
+[debug] [2024-09-29T12:55:22.048Z] No OAuth tokens found
+[debug] [2024-09-29T12:55:22.048Z] > refreshing access token with scopes: []
+[debug] [2024-09-29T12:55:22.049Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-09-29T12:55:22.049Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-09-29T12:55:22.182Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-09-29T12:55:22.183Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-09-29T12:55:22.192Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/thearc-10416/adminSdkConfig [none]
+[debug] [2024-09-29T12:55:22.612Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/thearc-10416/adminSdkConfig 200
+[debug] [2024-09-29T12:55:22.613Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/thearc-10416/adminSdkConfig {"projectId":"thearc-10416","storageBucket":"thearc-10416.appspot.com"}
+[debug] [2024-09-29T12:55:22.642Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-09-29T12:55:22.643Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2024-09-29T12:55:22.643Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/Users/david/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8071,"--websocket_port",9150,"--project_id","thearc-10416","--rules","/Users/david/the_arc/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5011"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8071} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/Users/david/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8071,\"--websocket_port\",9150,\"--project_id\",\"thearc-10416\",\"--rules\",\"/Users/david/the_arc/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5011\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8071}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2024-09-29T12:55:23.442Z] Sep 29, 2024 2:55:23 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:23 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2024-09-29T12:55:23.464Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2024-09-29T12:55:23.465Z] 127.0.0.1:8071
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8071
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8071
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8071\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8071\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8071\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2024-09-29T12:55:23.659Z] Checked if tokens are valid: true, expires at: 1727618121183
+[debug] [2024-09-29T12:55:23.659Z] Checked if tokens are valid: true, expires at: 1727618121183
+[debug] [2024-09-29T12:55:23.659Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/thearc-10416 [none]
+[debug] [2024-09-29T12:55:23.876Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/thearc-10416 200
+[debug] [2024-09-29T12:55:23.877Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/thearc-10416 {"projectId":"thearc-10416","projectNumber":"795198573711","displayName":"thearc","name":"projects/thearc-10416","resources":{"hostingSite":"thearc-10416"},"state":"ACTIVE","etag":"1_c5935c7b-6675-4827-b8c9-50438facf42e"}
+[debug] [2024-09-29T12:55:23.877Z] database rules config:  [{"instance":"thearc-10416-default-rtdb","rules":"/Users/david/the_arc/database.rules.json"}]
+[debug] [2024-09-29T12:55:23.882Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2024-09-29T12:55:23.882Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-09-29T12:55:23.883Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2024-09-29T12:55:23.883Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","/Users/david/.cache/firebase/emulators/firebase-database-emulator-v4.11.2.jar","--host","127.0.0.1","--port",9000,"--single_project_mode","Warning","--functions_emulator_host","127.0.0.1","--functions_emulator_port",5011],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host","single_project_mode"],"joinArgs":false,"shell":false,"port":9000} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"/Users/david/.cache/firebase/emulators/firebase-database-emulator-v4.11.2.jar\",\"--host\",\"127.0.0.1\",\"--port\",9000,\"--single_project_mode\",\"Warning\",\"--functions_emulator_host\",\"127.0.0.1\",\"--functions_emulator_port\",5011],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":9000}"}}
+[info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
+[debug] [2024-09-29T12:55:24.621Z] 14:55:24.620 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+ {"metadata":{"emulator":{"name":"database"},"message":"14:55:24.620 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\n"}}
+[debug] [2024-09-29T12:55:24.738Z] 14:55:24.738 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+ {"metadata":{"emulator":{"name":"database"},"message":"14:55:24.738 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000\n"}}
+[debug] [2024-09-29T12:55:28.536Z] 14:55:27.817 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - xqchinese-325dd-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 89ms, init: 0ms
+ {"metadata":{"emulator":{"name":"database"},"message":"14:55:27.817 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - xqchinese-325dd-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 89ms, init: 0ms\n"}}
+[debug] [2024-09-29T12:55:28.540Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-09-29T12:55:29.063Z] Temp file directory for storage emulator: /var/folders/13/hk7v27js22g90_4kdfm30dp00000gn/T/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: /var/folders/13/hk7v27js22g90_4kdfm30dp00000gn/T/firebase/storage/blobs"}}
+[debug] [2024-09-29T12:55:29.067Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-09-29T12:55:29.067Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-09-29T12:55:29.067Z] Starting Emulator UI with command {"binary":"node","args":["/Users/david/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs"],"optionalArgs":[],"joinArgs":false,"shell":false,"port":4000} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/david/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs\"],\"optionalArgs\":[],\"joinArgs\":false,\"shell\":false,\"port\":4000}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2024-09-29T12:55:29.158Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2024-09-29T12:55:29.159Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] i  functions: Watching "/Users/david/the_arc/dist" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/david/the_arc/dist\" for Cloud Functions..."}}
+[debug] [2024-09-29T12:55:29.274Z] Validating nodejs source
+[debug] [2024-09-29T12:55:29.844Z] > [functions] package.json contents: {
+  "name": "the_arc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build-functions": "WEBPACK_MODE='production' node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts",
+    "check-types": "tsc --noEmit",
+    "dev": "next dev",
+    "emulate": "firebase emulators:start --project default",
+    "find:unused": "next-unused",
+    "lint": "next lint",
+    "start": "next start -p 8080",
+    "test": "jest --watch",
+    "use-demo": "source ./env_script/use-demo.sh",
+    "watch-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --watch",
+    "profile-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --profile --json > stats.json"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.25.4",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
+    "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-accordion": "^1.2.0",
+    "@radix-ui/react-alert-dialog": "^1.1.1",
+    "@radix-ui/react-aspect-ratio": "^1.1.0",
+    "@radix-ui/react-avatar": "^1.1.0",
+    "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-collapsible": "^1.1.0",
+    "@radix-ui/react-context-menu": "^2.2.1",
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-hover-card": "^1.1.1",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-menubar": "^1.1.1",
+    "@radix-ui/react-navigation-menu": "^1.2.0",
+    "@radix-ui/react-popover": "^1.1.1",
+    "@radix-ui/react-progress": "^1.1.0",
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-scroll-area": "^1.1.0",
+    "@radix-ui/react-select": "^2.1.1",
+    "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slider": "^1.2.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.1",
+    "@radix-ui/react-toggle": "^1.1.0",
+    "@radix-ui/react-toggle-group": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.2",
+    "babel-loader": "^9.2.1",
+    "batch-promises": "^0.0.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "date-fns": "^3.6.0",
+    "embla-carousel-react": "^8.3.0",
+    "firebase": "^10.13.2",
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^6.0.1",
+    "input-otp": "^1.2.4",
+    "lodash-es": "^4.17.21",
+    "lucide-react": "^0.446.0",
+    "next": "14.2.13",
+    "next-themes": "^0.3.0",
+    "path": "^0.12.7",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "react": "^18",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18",
+    "react-hook-form": "^7.53.0",
+    "react-resizable-panels": "^2.1.4",
+    "recharts": "^2.12.7",
+    "rxjs": "^7.8.1",
+    "sonner": "^1.5.0",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
+    "utility-types": "^3.11.0",
+    "vaul": "^1.0.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.13",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "5.5"
+  },
+  "entrypoints": [
+    "app"
+  ]
+}
+[debug] [2024-09-29T12:55:29.844Z] Building nodejs source
+[debug] [2024-09-29T12:55:29.845Z] Failed to find version of module node: reached end of search path /Users/david/the_arc/dist/node_modules
+[info] ✔  functions: Using node@20 from host. 
+[info] i  functions: Loaded environment variables from .env.thearc-10416, .env.local. 
+[debug] [2024-09-29T12:55:29.847Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-09-29T12:55:29.851Z] Found firebase-functions binary at '/Users/david/the_arc/node_modules/.bin/firebase-functions'
+[info] Serving at port 8346
+
+[debug] [2024-09-29T12:55:29.975Z] Got response from /__/functions.yaml {"endpoints":{},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2024-09-29T12:55:31.788Z] Sep 29, 2024 2:55:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:31.869Z] Sep 29, 2024 2:55:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:31 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:31.920Z] Multiple projectIds are not recommended in single project mode. Requested project ID staging, but the emulator is configured for thearc-10416. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID staging, but the emulator is configured for thearc-10416. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-09-29T12:55:32.282Z] Sep 29, 2024 2:55:32 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:32 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[info] ✔  functions: Loaded functions definitions from source: . {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: ."}}
+[debug] [2024-09-29T12:55:35.017Z] >>> [apiv2][query] PUT http://127.0.0.1:9000/.settings/rules.json ns=thearc-10416-default-rtdb
+[debug] [2024-09-29T12:55:35.017Z] >>> [apiv2][body] PUT http://127.0.0.1:9000/.settings/rules.json "{\n  \"rules\": {\n    \".read\": \"true\",\n    \".write\": \"true\"\n  }\n}\n"
+[debug] [2024-09-29T12:55:35.030Z] 14:55:35.030 [FirebaseWorkerPool-1-2] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace thearc-10416-default-rtdb, but the emulator is configured for xqchinese-325dd-default-rtdb. To 
+opt-out of single project mode add/set the singleProjectMode: false property in 
+the firebase.json emulators config. 
+ {"metadata":{"emulator":{"name":"database"},"message":"14:55:35.030 [FirebaseWorkerPool-1-2] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested \nnamespace thearc-10416-default-rtdb, but the emulator is configured for xqchinese-325dd-default-rtdb. To \nopt-out of single project mode add/set the singleProjectMode: false property in \nthe firebase.json emulators config. \n"}}
+[debug] [2024-09-29T12:55:35.043Z] 14:55:35.043 [NamespaceSystem-akka.actor.default-dispatcher-7] INFO com.firebase.core.namespace.NamespaceActor - thearc-10416-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 8ms, init: 0ms
+ {"metadata":{"emulator":{"name":"database"},"message":"14:55:35.043 [NamespaceSystem-akka.actor.default-dispatcher-7] INFO com.firebase.core.namespace.NamespaceActor - thearc-10416-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 8ms, init: 0ms\n"}}
+[debug] [2024-09-29T12:55:35.073Z] 14:55:35.073 [NamespaceSystem-blocking-namespace-operation-dispatcher-9] INFO com.firebase.core.namespace.StateManager - Namespace thearc-10416-default-rtdb status Active to Active
+ {"metadata":{"emulator":{"name":"database"},"message":"14:55:35.073 [NamespaceSystem-blocking-namespace-operation-dispatcher-9] INFO com.firebase.core.namespace.StateManager - Namespace thearc-10416-default-rtdb status Active to Active\n"}}
+[debug] [2024-09-29T12:55:35.078Z] <<< [apiv2][status] PUT http://127.0.0.1:9000/.settings/rules.json 200
+[debug] [2024-09-29T12:55:35.078Z] <<< [apiv2][body] PUT http://127.0.0.1:9000/.settings/rules.json {"status":"ok"}
+[debug] [2024-09-29T12:55:35.082Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: 
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9089 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5011 │ http://127.0.0.1:4000/functions │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8071 │ http://127.0.0.1:4000/firestore │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Database       │ 127.0.0.1:9000 │ http://127.0.0.1:4000/database  │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Storage        │ 127.0.0.1:9189 │ http://127.0.0.1:4000/storage   │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2024-09-29T12:55:41.622Z] Sep 29, 2024 2:55:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:41.700Z] Sep 29, 2024 2:55:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:41 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:41.737Z] Multiple projectIds are not recommended in single project mode. Requested project ID staging, but the emulator is configured for thearc-10416. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID staging, but the emulator is configured for thearc-10416. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-09-29T12:55:45.309Z] >>> [apiv2][query] POST http://127.0.0.1:5011/functions/projects/thearc-10416/trigger_multicast [none]
+[debug] [2024-09-29T12:55:45.310Z] >>> [apiv2][body] POST http://127.0.0.1:5011/functions/projects/thearc-10416/trigger_multicast {"eventId":"d97802e3-6e8d-4093-93f9-1f2f4918e6a5","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/thearc-10416","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2024-09-29T12:55:45.309Z","data":{"uid":"GvY5FuEmgGMpLuMekwVw2itZl5dW","metadata":{"creationTime":"2024-09-29T12:55:45.308Z","lastSignInTime":"2024-09-29T12:55:45.308Z"},"customClaims":{}}}
+[debug] [2024-09-29T12:55:45.318Z] Sep 29, 2024 2:55:45 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:45 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:45.324Z] <<< [apiv2][status] POST http://127.0.0.1:5011/functions/projects/thearc-10416/trigger_multicast 200
+[debug] [2024-09-29T12:55:45.324Z] <<< [apiv2][body] POST http://127.0.0.1:5011/functions/projects/thearc-10416/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2024-09-29T12:55:45.346Z] Sep 29, 2024 2:55:45 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:45 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:45.577Z] Sep 29, 2024 2:55:45 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:45 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:51.548Z] Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:51.575Z] Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:51.584Z] Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:51.687Z] Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:51.762Z] Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:51.806Z] Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:52.396Z] Sep 29, 2024 2:55:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:55:52 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:55:52.419Z] Multiple projectIds are not recommended in single project mode. Requested project ID staging, but the emulator is configured for thearc-10416. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID staging, but the emulator is configured for thearc-10416. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-09-29T12:56:09.155Z] Sep 29, 2024 2:56:09 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:09 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}
+[debug] [2024-09-29T12:56:09.160Z] Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:09.233Z] Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:09.256Z] Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:09.343Z] Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:09 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:19.239Z] Sep 29, 2024 2:56:19 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:19 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:24.987Z] Sep 29, 2024 2:56:24 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:24 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:25.044Z] Sep 29, 2024 2:56:25 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:25 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:25.082Z] Sep 29, 2024 2:56:25 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:25 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:26.107Z] Sep 29, 2024 2:56:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Sep 29, 2024 2:56:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\nSep 29, 2024 2:56:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:29.297Z] Sep 29, 2024 2:56:29 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:29 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:36.081Z] Sep 29, 2024 2:56:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:36 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:39.338Z] Sep 29, 2024 2:56:39 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:39 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:46.123Z] Sep 29, 2024 2:56:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:46 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:48.913Z] File /Users/david/the_arc/dist/package.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/david/the_arc/dist/package.json changed, reloading triggers"}}
+[debug] [2024-09-29T12:56:49.368Z] Sep 29, 2024 2:56:49 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:49 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:49.918Z] Validating nodejs source
+[debug] [2024-09-29T12:56:50.550Z] > [functions] package.json contents: {
+  "name": "the_arc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build-functions": "WEBPACK_MODE='production' node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts",
+    "check-types": "tsc --noEmit",
+    "dev": "next dev",
+    "emulate": "firebase emulators:start --project default",
+    "find:unused": "next-unused",
+    "lint": "next lint",
+    "start": "next start -p 8080",
+    "test": "jest --watch",
+    "use-demo": "source ./env_script/use-demo.sh",
+    "watch-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --watch",
+    "profile-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --profile --json > stats.json"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.25.4",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
+    "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-accordion": "^1.2.0",
+    "@radix-ui/react-alert-dialog": "^1.1.1",
+    "@radix-ui/react-aspect-ratio": "^1.1.0",
+    "@radix-ui/react-avatar": "^1.1.0",
+    "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-collapsible": "^1.1.0",
+    "@radix-ui/react-context-menu": "^2.2.1",
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-hover-card": "^1.1.1",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-menubar": "^1.1.1",
+    "@radix-ui/react-navigation-menu": "^1.2.0",
+    "@radix-ui/react-popover": "^1.1.1",
+    "@radix-ui/react-progress": "^1.1.0",
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-scroll-area": "^1.1.0",
+    "@radix-ui/react-select": "^2.1.1",
+    "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slider": "^1.2.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.1",
+    "@radix-ui/react-toggle": "^1.1.0",
+    "@radix-ui/react-toggle-group": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.2",
+    "babel-loader": "^9.2.1",
+    "batch-promises": "^0.0.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "date-fns": "^3.6.0",
+    "embla-carousel-react": "^8.3.0",
+    "firebase": "^10.13.2",
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^6.0.1",
+    "input-otp": "^1.2.4",
+    "lodash-es": "^4.17.21",
+    "lucide-react": "^0.446.0",
+    "next": "14.2.13",
+    "next-themes": "^0.3.0",
+    "path": "^0.12.7",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "react": "^18",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18",
+    "react-hook-form": "^7.53.0",
+    "react-resizable-panels": "^2.1.4",
+    "recharts": "^2.12.7",
+    "rxjs": "^7.8.1",
+    "sonner": "^1.5.0",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
+    "utility-types": "^3.11.0",
+    "vaul": "^1.0.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.13",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "5.5"
+  },
+  "entrypoints": [
+    "app"
+  ]
+}
+[debug] [2024-09-29T12:56:50.551Z] Building nodejs source
+[debug] [2024-09-29T12:56:50.551Z] Failed to find version of module node: reached end of search path /Users/david/the_arc/dist/node_modules
+[info] ✔  functions: Using node@20 from host. 
+[info] i  functions: Loaded environment variables from .env.thearc-10416, .env.local. 
+[debug] [2024-09-29T12:56:50.552Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-09-29T12:56:50.553Z] Found firebase-functions binary at '/Users/david/the_arc/node_modules/.bin/firebase-functions'
+[debug] [2024-09-29T12:56:50.555Z] File /Users/david/the_arc/dist/package.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File /Users/david/the_arc/dist/package.json changed, reloading triggers"}}
+[info] Serving at port 8330
+
+[debug] [2024-09-29T12:56:50.737Z] Got response from /__/functions.yaml {"endpoints":{},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2024-09-29T12:56:51.562Z] Validating nodejs source
+[debug] [2024-09-29T12:56:52.151Z] > [functions] package.json contents: {
+  "name": "the_arc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build-functions": "WEBPACK_MODE='production' node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts",
+    "check-types": "tsc --noEmit",
+    "dev": "next dev",
+    "emulate": "firebase emulators:start --project default",
+    "find:unused": "next-unused",
+    "lint": "next lint",
+    "start": "next start -p 8080",
+    "test": "jest --watch",
+    "use-demo": "source ./env_script/use-demo.sh",
+    "watch-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --watch",
+    "profile-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --profile --json > stats.json"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.25.4",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
+    "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-accordion": "^1.2.0",
+    "@radix-ui/react-alert-dialog": "^1.1.1",
+    "@radix-ui/react-aspect-ratio": "^1.1.0",
+    "@radix-ui/react-avatar": "^1.1.0",
+    "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-collapsible": "^1.1.0",
+    "@radix-ui/react-context-menu": "^2.2.1",
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-hover-card": "^1.1.1",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-menubar": "^1.1.1",
+    "@radix-ui/react-navigation-menu": "^1.2.0",
+    "@radix-ui/react-popover": "^1.1.1",
+    "@radix-ui/react-progress": "^1.1.0",
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-scroll-area": "^1.1.0",
+    "@radix-ui/react-select": "^2.1.1",
+    "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slider": "^1.2.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.1",
+    "@radix-ui/react-toggle": "^1.1.0",
+    "@radix-ui/react-toggle-group": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.2",
+    "babel-loader": "^9.2.1",
+    "batch-promises": "^0.0.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "date-fns": "^3.6.0",
+    "embla-carousel-react": "^8.3.0",
+    "firebase": "^10.13.2",
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^6.0.1",
+    "input-otp": "^1.2.4",
+    "lodash-es": "^4.17.21",
+    "lucide-react": "^0.446.0",
+    "next": "14.2.13",
+    "next-themes": "^0.3.0",
+    "path": "^0.12.7",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "react": "^18",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18",
+    "react-hook-form": "^7.53.0",
+    "react-resizable-panels": "^2.1.4",
+    "recharts": "^2.12.7",
+    "rxjs": "^7.8.1",
+    "sonner": "^1.5.0",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
+    "utility-types": "^3.11.0",
+    "vaul": "^1.0.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.13",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "5.5"
+  },
+  "entrypoints": [
+    "app"
+  ]
+}
+[debug] [2024-09-29T12:56:52.151Z] Building nodejs source
+[debug] [2024-09-29T12:56:52.151Z] Failed to find version of module node: reached end of search path /Users/david/the_arc/dist/node_modules
+[info] ✔  functions: Using node@20 from host. 
+[info] i  functions: Loaded environment variables from .env.thearc-10416, .env.local. 
+[debug] [2024-09-29T12:56:52.152Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-09-29T12:56:52.153Z] Found firebase-functions binary at '/Users/david/the_arc/node_modules/.bin/firebase-functions'
+[debug] [2024-09-29T12:56:52.156Z] Sep 29, 2024 2:56:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Sep 29, 2024 2:56:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Sep 29, 2024 2:56:51 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose
+INFO: channel closed
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\nSep 29, 2024 2:56:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\nSep 29, 2024 2:56:51 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreWriteHandler onClose\nINFO: channel closed\n"}}
+[info] Serving at port 8231
+
+[debug] [2024-09-29T12:56:52.262Z] Got response from /__/functions.yaml {"endpoints":{},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: . {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: ."}}
+[debug] [2024-09-29T12:56:56.128Z] Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:56.302Z] Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\nSep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:56.307Z] Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[info] ✔  functions: Loaded functions definitions from source: . {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: ."}}
+[debug] [2024-09-29T12:56:57.763Z] Sep 29, 2024 2:56:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-09-29T12:56:57.781Z] Sep 29, 2024 2:56:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 29, 2024 2:56:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}

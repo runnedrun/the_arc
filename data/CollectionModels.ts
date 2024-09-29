@@ -1,11 +1,12 @@
+import { Game } from "./types/Game"
+import { GameResult } from "./types/GameResult"
+import { Message } from "./types/Message"
+import { NPC } from "./types/NPC"
+import { Player } from "./types/Player"
 import { ProcessingJob } from "./types/ProcessJob"
-import { Game } from './types/Game';
-import { Player } from './types/Player';
-import { ValleyTile } from './types/ValleyTile';
-import { NPC } from './types/NPC';
-import { Action } from './types/Action';
-import { ElderCouncilProposal } from './types/ElderCouncilProposal';
-import { GameResult } from './types/GameResult';
+import { Round } from "./types/Round"
+import { User } from "./types/User"
+import { ValleyTile } from "./types/ValleyTile"
 
 export const CollectionNames: (keyof AllModels)[] = [
   "processingJob",
@@ -13,20 +14,22 @@ export const CollectionNames: (keyof AllModels)[] = [
   "players",
   "valleyTiles",
   "npcs",
-  "actions",
-  "elderCouncilProposals",
   "gameResults",
-] as const;
+  "rounds",
+  "messages",
+  "users",
+] as const
 
-export type AllModels = { 
-  processingJob: ProcessingJob,
-  games: Game;
-  players: Player;
-  valleyTiles: ValleyTile;
-  npcs: NPC;
-  actions: Action;
-  elderCouncilProposals: ElderCouncilProposal;
-  gameResults: GameResult;
+export type AllModels = {
+  processingJob: ProcessingJob
+  games: Game
+  players: Player
+  valleyTiles: ValleyTile
+  npcs: NPC
+  gameResults: GameResult
+  rounds: Round
+  messages: Message
+  users: User
 }
 
 export type CollectionModels = Omit<AllModels, "user">

@@ -7,7 +7,7 @@ export type Game = Model<{
   currentRound: number
   startTime: Timestamp
   endTime: Timestamp | null
-  valleyGrid: string[][] // valley tile ids
+  valleyGrid: string[] // valley tile ids
   elderCouncilLetters: number
   name: string
 }>

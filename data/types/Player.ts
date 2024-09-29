@@ -7,4 +7,5 @@ export type Player = Model<{
   letterCount: number
   position: { x: number; y: number }
   latestConnectionPing: number
+  userId: string
 }>
