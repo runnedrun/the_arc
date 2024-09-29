@@ -2,7 +2,14 @@ import { useContext } from "react"
 import { ExamplePageDataContext } from "./ExamplePageClientEntry"
 import { creators, setters } from "@/data/fb"
 import { Timestamp } from "firebase/firestore"
-import { UserContext } from "./UserContext"
+import { UserContext } from "../../data/context/UserContext"
+import { useObs } from "@/data/useObs"
+import { docObs } from "@/data/readerFe"
+
+const ExampleChildComponent = ({ id }: { id: string }) => {
+  const data = useObs(docObs("games", id), [id])
+  return <div>{JSON.stringify(data)}</div>
+}
 
 export const ExamplePageComponent = () => {
   const { allActions, exampleAction, _isLoading } = useContext(
@@ -32,5 +39,12 @@ export const ExamplePageComponent = () => {
     return <div>Loading...</div>
   }
 
-  return <div>Example Page Component (User ID: {user?.uid})</div>
+  return (
+    <div>
+      Example Page Component (User ID: {user?.uid})
+      <div>
+        <ExampleChildComponent id="123"></ExampleChildComponent>
+      </div>
+    </div>
+  )
 }
