@@ -1,10 +1,10 @@
 "use client"
 
 import { createContext } from "react"
-import { DataWithStatics } from "./DataWithStatics"
-import { DataFnType } from "./serverComponent"
-import { useSearchParamSetter } from "./useSearchParamSetter"
-import { ParamsTypeFromDataFn, withData } from "./withData"
+import { DataWithStatics } from "../DataWithStatics"
+import { DataFnType } from "../serverComponent"
+import { useSearchParamSetter } from "../useSearchParamSetter"
+import { ParamsTypeFromDataFn, withData } from "../withData"
 
 export const buildDataContext = <DataFn extends DataFnType>(dataFn: DataFn) => {
   type DataObjType = DataWithStatics<ReturnType<DataFn>>

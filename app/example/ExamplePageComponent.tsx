@@ -1,12 +1,14 @@
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import { ExamplePageDataContext } from "./ExamplePageClientEntry"
 import { creators, setters } from "@/data/fb"
 import { Timestamp } from "firebase/firestore"
+import { UserContext } from "./UserContext"
 
 export const ExamplePageComponent = () => {
   const { allActions, exampleAction, _isLoading } = useContext(
     ExamplePageDataContext
   )
+  const { user, loading: userLoading } = useContext(UserContext)
 
   const createNewGame = async () => {
     const newGame = await creators.games({
@@ -26,8 +28,9 @@ export const ExamplePageComponent = () => {
     })
   }
 
-  if (_isLoading) {
+  if (_isLoading || userLoading) {
     return <div>Loading...</div>
   }
-  return <div>Example Page Component</div>
+
+  return <div>Example Page Component (User ID: {user?.uid})</div>
 }

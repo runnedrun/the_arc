@@ -3,6 +3,10 @@ import { NewGamePageDataContext } from "./NewGamePageClientEntry"
 import { creators, setters } from "@/data/fb"
 import { Timestamp } from "firebase/firestore"
 import { Game } from "@/data/types/Game"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 // Function to create a new game with valley tiles
 export const createNewGameWithTiles = async (): Promise<Game> => {
@@ -66,7 +70,7 @@ export const NewGamePageComponent = () => {
   if (_isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
+        <Skeleton className="h-16 w-16 rounded-full" />
       </div>
     )
   }
@@ -78,33 +82,32 @@ export const NewGamePageComponent = () => {
           Create New Game
         </h1>
         <div className="mb-8 text-center">
-          <button
-            onClick={handleCreateNewGame}
-            className="transform rounded-lg bg-blue-500 px-4 py-2 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-600"
-          >
+          <Button onClick={handleCreateNewGame} size="lg">
             Create New Game
-          </button>
+          </Button>
         </div>
-        <div className="overflow-hidden rounded-lg bg-white shadow-md">
-          <h2 className="border-b border-gray-200 bg-gray-50 px-6 py-4 text-xl font-semibold">
-            Existing Games
-          </h2>
-          <ul className="divide-y divide-gray-200">
-            {allGames.map((game) => (
-              <li
-                key={game.uid}
-                className="px-6 py-4 transition duration-150 ease-in-out hover:bg-gray-50"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-800">{game.name}</span>
-                  <button className="font-medium text-blue-500 hover:text-blue-600">
-                    Join
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card>
+          <CardHeader>
+            <h2 className="text-xl font-semibold">Existing Games</h2>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px]">
+              <ul className="divide-y divide-gray-200">
+                {allGames.map((game) => (
+                  <li
+                    key={game.uid}
+                    className="px-6 py-4 transition duration-150 ease-in-out hover:bg-gray-50"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-800">{game.name}</span>
+                      <Button variant="outline">Join</Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </ScrollArea>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
