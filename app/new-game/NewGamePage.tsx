@@ -9,6 +9,8 @@ import { ExistingGamesForUser } from "./ExistingGamesForUser"
 import { useContext } from "react"
 import { docObs, readDoc } from "@/data/readerFe"
 import { useObs } from "@/data/useObs"
+import { Skeleton } from "@/components/ui/skeleton"
+import { UserLoading } from "@/components/UserLoading"
 
 // Function to create a new game with valley tiles
 export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
@@ -73,17 +75,23 @@ export const NewGamePage = () => {
     <div className="min-h-screen bg-gray-100 px-4 py-12 sm:px-6 lg:px-8">
       <div className="relative mx-auto max-w-3xl">
         <div className="absolute right-0 top-0">
-          <LoggedInUserDisplay />
+          <UserLoading>
+            <LoggedInUserDisplay />
+          </UserLoading>
         </div>
         <h1 className="mb-8 text-center text-3xl font-bold text-gray-900">
           Create New Game
         </h1>
         <div className="mb-8 text-center">
-          <Button onClick={handleCreateNewGame} size="lg">
-            Create New Game
-          </Button>
+          <UserLoading>
+            <Button onClick={handleCreateNewGame} size="lg">
+              Create New Game
+            </Button>
+          </UserLoading>
         </div>
-        <ExistingGamesForUser></ExistingGamesForUser>
+        <UserLoading>
+          <ExistingGamesForUser></ExistingGamesForUser>
+        </UserLoading>
       </div>
     </div>
   )

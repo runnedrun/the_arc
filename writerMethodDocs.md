@@ -1,6 +1,6 @@
 # Writer Methods Documentation
 
-This document provides an overview of the methods available for writing to firestore from the client.
+This document provides an overview of the methods available for writing to firestore from the client
 
 ## `fbSet<CollectionName>(collectionName, docId, data)`
 
