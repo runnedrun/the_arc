@@ -15,15 +15,22 @@ import { ExistingGamesForUser } from "./ExistingGamesForUser"
 export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
   // Create a new game
   const newGame = {
-    players: [userId], // Start with the user who created the game
     currentRound: 1,
-    startTime: Timestamp.now(),
+    startTime: null,
     endTime: null,
     valleyGrid: [],
     elderCouncilLetters: 0,
     name: "New Game",
+    createdBy: userId,
   } as Game
+
   const newGameRef = await fbCreate("games", newGame)
+
+  await fbCreate("players", {
+    gameId: newGameRef.id,
+    userId,
+    name: "Player 1",
+  })
 
   // Create valley tiles in parallel and assign them to the game
   const gridSize = 4 // Assuming a 5x5 grid, adjust as needed

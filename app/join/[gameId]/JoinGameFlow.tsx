@@ -13,6 +13,7 @@ import { UserContext } from "@/data/context/UserContext"
 import { isUndefined } from "lodash"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
+import { firstValueFrom } from "rxjs"
 
 export function JoinGameFlow({ gameId }: { gameId: string }) {
   const { uid: userId } = useContext(UserContext)?.user || {}
@@ -71,12 +72,53 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
 
     try {
       setIsJoining(true)
+
+      // Get current players to determine the new player's index
+      const existingPlayers = await firstValueFrom(
+        queryObs("players", ({ where }) => [where("gameId", "==", gameId)])
+      )
+
+      // Get map size from game data
+      const mapWidth = Math.floor(game.valleyGrid.length)
+
+      // Define corner positions based on map size
+      const cornerPositions = [
+        0, // Top-left
+        mapWidth - 1, // Top-right
+        mapWidth * (mapWidth - 1), // Bottom-left
+        mapWidth * mapWidth - 1, // Bottom-right
+      ]
+
+      // Assign corner based on player count
+      const positionIndex = existingPlayers.length % 4
+      const startingPosition = cornerPositions[positionIndex]
+
+      // Define an array of distinct colors
+      const playerColors = [
+        "#FF6B6B", // Red
+        "#4ECDC4", // Teal
+        "#45B7D1", // Blue
+        "#96CEB4", // Sage
+        "#FFEEAD", // Yellow
+        "#D4A5A5", // Pink
+        "#9B59B6", // Purple
+        "#3498DB", // Light Blue
+        "#E67E22", // Orange
+        "#2ECC71", // Green
+      ]
+
+      // Get the next color based on the number of existing players
+      const colorIndex = existingPlayers.length % playerColors.length
+      const playerColor = playerColors[colorIndex]
+
       await fbCreate("players", {
         gameId,
         userId,
         name: playerName || "New Player",
         letters: 500,
         secretVision: secretVision.trim(),
+        color: playerColor,
+        currentTileLocation: startingPosition,
       })
       toast({
         title: "Welcome to the game!",

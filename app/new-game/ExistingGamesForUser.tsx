@@ -1,24 +1,24 @@
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { UserContext } from "@/data/context/UserContext"
 import { queryObs } from "@/data/readerFe"
 import { useObs } from "@/data/useObs"
 import { useContext } from "react"
-import { EditableGameName } from "./EditableGameName"
-import Link from "next/link"
+import { GameListItem } from "./GameListItem"
 
 export const ExistingGamesForUser: React.FC<{}> = () => {
   const user = useContext(UserContext)
   const userId = user.user?.uid
-  const allGames =
+  const allPlayersForPlayer =
     useObs(
-      queryObs("games", ({ where }) => [
-        where("players", "array-contains", userId || null),
+      queryObs("players", ({ where }) => [
         where("archived", "==", false),
+        where("userId", "==", userId),
       ]),
       [userId]
     ) || []
+
+  const allGameIdsForPlayer = allPlayersForPlayer.map((player) => player.gameId)
   return (
     <Card>
       <CardHeader>
@@ -27,18 +27,8 @@ export const ExistingGamesForUser: React.FC<{}> = () => {
       <CardContent>
         <ScrollArea className="h-[300px]">
           <ul className="divide-y divide-gray-200">
-            {allGames.map((game) => (
-              <li
-                key={game.uid}
-                className="px-6 py-4 transition duration-150 ease-in-out hover:bg-gray-50"
-              >
-                <div className="flex items-center justify-between">
-                  <EditableGameName gameId={game.uid} initialName={game.name} />
-                  <Link href={`/join/${game.uid}`}>
-                    <Button variant="outline">Join</Button>
-                  </Link>
-                </div>
-              </li>
+            {allGameIdsForPlayer.map((gameId) => (
+              <GameListItem key={gameId} gameId={gameId} />
             ))}
           </ul>
         </ScrollArea>
