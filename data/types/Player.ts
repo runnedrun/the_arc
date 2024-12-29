@@ -1,11 +1,8 @@
-import { Model } from "../baseTypes/Model"
+import { ModelBase } from "../baseTypes/Model"
 
-export type Player = Model<{
+export interface Player extends ModelBase {
   gameId: string
-  name: string
-  secretVision: string
-  letterCount: number
-  position: { x: number; y: number }
-  latestConnectionPing: number
   userId: string
-}>
+  name: string
+  letters: number
+}

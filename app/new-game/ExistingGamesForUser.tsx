@@ -5,6 +5,8 @@ import { UserContext } from "@/data/context/UserContext"
 import { queryObs } from "@/data/readerFe"
 import { useObs } from "@/data/useObs"
 import { useContext } from "react"
+import { EditableGameName } from "./EditableGameName"
+import Link from "next/link"
 
 export const ExistingGamesForUser: React.FC<{}> = () => {
   const user = useContext(UserContext)
@@ -31,8 +33,10 @@ export const ExistingGamesForUser: React.FC<{}> = () => {
                 className="px-6 py-4 transition duration-150 ease-in-out hover:bg-gray-50"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-800">{game.name}</span>
-                  <Button variant="outline">Join</Button>
+                  <EditableGameName gameId={game.uid} initialName={game.name} />
+                  <Link href={`/join/${game.uid}`}>
+                    <Button variant="outline">Join</Button>
+                  </Link>
                 </div>
               </li>
             ))}

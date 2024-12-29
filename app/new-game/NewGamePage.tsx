@@ -1,16 +1,15 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { UserLoading } from "@/components/UserLoading"
 import { UserContext, UserProvider } from "@/data/context/UserContext"
+import { docObs } from "@/data/readerFe"
 import { Game } from "@/data/types/Game"
+import { useObs } from "@/data/useObs"
 import { fbCreate, fbSet } from "@/data/writerFe"
 import { Timestamp } from "firebase/firestore"
-import { ExistingGamesForUser } from "./ExistingGamesForUser"
 import { useContext } from "react"
-import { docObs, readDoc } from "@/data/readerFe"
-import { useObs } from "@/data/useObs"
-import { Skeleton } from "@/components/ui/skeleton"
-import { UserLoading } from "@/components/UserLoading"
+import { ExistingGamesForUser } from "./ExistingGamesForUser"
 
 // Function to create a new game with valley tiles
 export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
@@ -59,7 +58,6 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
 const LoggedInUserDisplay = () => {
   const user = useContext(UserContext)
   const userData = useObs(docObs("users", user.user?.uid), [user.user?.uid])
-  if (user.loading) return <div></div>
   return <div>{user.user.isAnonymous ? "Not logged in" : userData?.name}</div>
 }
 

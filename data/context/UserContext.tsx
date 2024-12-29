@@ -5,6 +5,7 @@ import {
   signInAnonymously,
 } from "firebase/auth"
 import { createContext, ReactNode, useState, useEffect } from "react"
+import { init } from "../initFb"
 
 // Create a separate type for the user context
 export type UserContextType = {
@@ -24,6 +25,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    init()
     const auth = getAuth()
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
