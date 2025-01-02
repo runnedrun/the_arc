@@ -1,5 +1,6 @@
 import { Model } from "../baseTypes/Model"
 import { Timestamp } from "firebase/firestore"
+import { MapPosition } from "./MapTile"
 
 export type Message = Model<{
   gameId: string
@@ -7,6 +8,8 @@ export type Message = Model<{
   senderId: string
   receiverId: string
   content: string
-  tileId?: string
+  tileLocation: MapPosition
+  roundIndex: number
+  type: "npc" | "elderCouncil" | "tile"
   processedAt: Timestamp | null
 }>

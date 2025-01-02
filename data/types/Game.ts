@@ -1,13 +1,33 @@
 import { Timestamp } from "firebase/firestore"
-import { ValleyTile } from "./ValleyTile"
 import { Model } from "../baseTypes/Model"
 
+export const getDefaultGameData = () => {
+  return {
+    environmentDescription: null,
+    environmentName: null,
+    defaultEnvironmentId: null,
+    currentRoundNumber: null,
+    currentRoundId: null,
+    startTime: null,
+    endTime: null,
+    elderCouncilLetters: null,
+    createdBy: null,
+    mapSize: null,
+    name: "New Game",
+  } as Game
+}
+
 export type Game = Model<{
-  currentRound: number
+  environmentDescription?: string
+  environmentName?: string
+  defaultEnvironmentId?: string
+  currentRoundNumber: number
+  currentRoundId: string
   startTime: Timestamp
+  gameSetupCompletedAt?: Timestamp
   endTime: Timestamp | null
-  valleyGrid: string[] // valley tile ids
   elderCouncilLetters: number
   createdBy: string // player id
+  mapSize: number
   name: string
 }>

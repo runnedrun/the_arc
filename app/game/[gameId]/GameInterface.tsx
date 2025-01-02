@@ -1,52 +1,82 @@
-import React, { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Player } from "@/data/types/Player"
-import { Game } from "@/data/types/Game"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { queryObs } from "@/data/readerFe"
+import { MapPosition } from "@/data/types/MapTile"
+import { useObs } from "@/data/useObs"
+import { fbUpdate } from "@/data/writerFe"
+import { Timestamp } from "firebase/firestore"
+import { isEqual } from "lodash"
+import { useContext, useState } from "react"
+import { ProvideTokenCountContext } from "./TokenCountContext"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { NPCsForSelectedTile } from "./NPCsForSelectedTile"
 
-interface GameInterfaceProps {
-  game: Game
-  players: Player[]
-  currentUserId: string
-}
-
-export default function GameInterface({
-  game,
-  players,
-  currentUserId,
-}: GameInterfaceProps) {
-  const [selectedTile, setSelectedTile] = useState<number | null>(null)
+export default function GameInterface() {
+  const [selectedTile, setSelectedTile] = useState<
+    MapPosition & { index: number }
+  >(null)
   const [elderCouncilMessage, setElderCouncilMessage] = useState("")
   const [npcMessage, setNpcMessage] = useState("")
+  const {
+    players,
+    game,
+    currentUserId,
+    mapTiles,
+    currentRound: round,
+  } = useContext(GameInterfaceContext)
 
   const currentPlayer = players.find(
     (player) => player.userId === currentUserId
   )
-  const maxLetters = Math.max(0, 300 - game.currentRound * 10)
+  const maxLetters = Math.max(0, 300 - game.currentRoundNumber * 10)
 
-  const handleTileClick = (tileNumber: number) => {
-    setSelectedTile(tileNumber)
+  const hasPlayerEndedRound = round?.playersCompletedAt?.[currentUserId] != null
+  const isRoundProcessing = round?.processingStartedAt != null
+
+  const handleEndRound = async () => {
+    await fbUpdate("rounds", game.currentRoundId, {
+      playersCompletedAt: {
+        [currentUserId]: Timestamp.now(),
+      },
+    })
   }
 
-  const handleEndRound = () => {
-    console.log("Round ended")
+  const getEndRoundButtonProps = () => {
+    if (isRoundProcessing) {
+      return {
+        disabled: true,
+        children: "Updating stories...",
+      }
+    }
+    if (hasPlayerEndedRound) {
+      return {
+        disabled: true,
+        children: "Waiting on other players",
+      }
+    }
+    return {
+      disabled: false,
+      children: "End Round",
+      onClick: handleEndRound,
+    }
   }
 
   const renderGrid = () => {
     return (
       <div className="grid h-64 w-64 grid-cols-4 gap-1">
-        {game.valleyGrid.map((tileId, index) => {
-          const playersOnTile = players.filter(
-            (player) => player.currentTileLocation === index
+        {mapTiles.map((tile, index) => {
+          const coordinates = tile.position
+          const playersOnTile = players.filter((player) =>
+            isEqual(player.currentTileLocation, coordinates)
           )
 
           return (
             <div
-              key={tileId}
+              key={tile.uid}
               className="relative flex cursor-pointer items-center justify-center border border-black bg-green-500"
-              onClick={() => handleTileClick(index + 1)}
+              onClick={() => setSelectedTile({ ...tile.position, index })}
             >
               <span className="font-bold text-white">{index + 1}</span>
               {playersOnTile.map((player, playerIndex) => (
@@ -67,8 +97,6 @@ export default function GameInterface({
     )
   }
 
-  console.log(currentPlayer)
-
   return (
     <div className="flex h-screen items-start justify-center p-4">
       <Card className="mr-4 w-1/4">
@@ -78,24 +106,15 @@ export default function GameInterface({
         <CardContent>
           <p>Name: {currentPlayer?.name}</p>
           <p>Letters: {currentPlayer?.letters}</p>
-          <p>Round: {game.currentRound}</p>
+          <p>Round: {game.currentRoundNumber}</p>
           <p>Max Letters: {maxLetters}</p>
-          <Button onClick={handleEndRound} className="mt-4">
-            End Round
+          <Button {...getEndRoundButtonProps()} className="mt-4">
+            {getEndRoundButtonProps().children}
           </Button>
           {selectedTile && (
             <div className="mt-4">
-              <h3 className="font-bold">Tile {selectedTile} Info</h3>
-              <ScrollArea className="mt-2 h-40">
-                <p>NPC messages will appear here</p>
-              </ScrollArea>
-              <Input
-                value={npcMessage}
-                onChange={(e) => setNpcMessage(e.target.value)}
-                placeholder="Message NPC..."
-                className="mt-2"
-              />
-              <Button className="mt-2">Send to NPC</Button>
+              <h3 className="font-bold">Tile {selectedTile.index} Info</h3>
+              <NPCsForSelectedTile position={selectedTile} />
             </div>
           )}
         </CardContent>

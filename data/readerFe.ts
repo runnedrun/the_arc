@@ -2,6 +2,7 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
+  from,
   isObservable,
   map,
   Observable,
@@ -12,18 +13,21 @@ import {
 import { AllModels } from "@/data/CollectionModels"
 import { init } from "@/data/initFb"
 import {
+  and,
   collection,
   CollectionReference,
   doc,
   DocumentReference,
   DocumentSnapshot,
+  getCountFromServer,
   getDoc,
+  limit,
   onSnapshot,
+  or,
   orderBy,
   OrderByDirection,
   Query,
   query,
-  QueryConstraint,
   QueryFieldFilterConstraint,
   QueryOrderByConstraint,
   QuerySnapshot,
@@ -32,9 +36,15 @@ import {
   where,
   WhereFilterOp,
 } from "@firebase/firestore"
-import { isArray, isEqual, isNil, isNull } from "lodash-es"
+import {
+  DocumentData,
+  QueryCompositeFilterConstraint,
+  QueryEndAtConstraint,
+  QueryLimitConstraint,
+  QueryStartAtConstraint,
+} from "firebase/firestore"
+import { isArray, isEqual, isNil, isNull, isUndefined, partition } from "lodash"
 import { ValuesType } from "utility-types"
-import { isUndefined } from "lodash-es"
 
 const DEFAULT_OPTIONS = { includeMetadataChanges: true }
 
@@ -86,7 +96,7 @@ export const docObs = <CollectionName extends keyof AllModels>(
     return of(null)
   }
   const db = init()
-  let idObs = isObservable(id) ? id : of(id)
+  const idObs = isObservable(id) ? id : of(id)
 
   const docSnapshotObs = idObs.pipe(
     switchMap((id) =>
@@ -119,20 +129,50 @@ export const docObs = <CollectionName extends keyof AllModels>(
   )
 }
 
-type WhereValues = string | number | boolean | Timestamp | string[] | number[]
+export type OrObservable<T> = Observable<T> | T
 
-type FieldPathPathString = `${string}.${string}`
+export type WhereValues =
+  | string
+  | number
+  | boolean
+  | Timestamp
+  | string[]
+  | number[]
 
-type TypedWhere<T extends ValuesType<AllModels>> = (
-  fieldPath: keyof T,
+export type FieldPathPathString<T> = {
+  [K in keyof T]: T[K] extends object
+    ? `${string & K}.${keyof T[K] & string}`
+    : never
+}[keyof T]
+
+export type TypedWhere<T extends ValuesType<AllModels>> = (
+  fieldPath: keyof T | FieldPathPathString<T>,
   opStr: WhereFilterOp,
-  value: WhereValues | Observable<WhereValues>
-) => QueryFieldFilterConstraint | Observable<QueryFieldFilterConstraint>
+  value: WhereValues | Observable<WhereValues | typeof SKIP>
+) => OrObservable<QueryFieldFilterConstraint>
 
-type TypedOrderBy<T extends ValuesType<AllModels>> = (
-  fieldPath: keyof T | FieldPathPathString,
+export type TypedOrderBy<T extends ValuesType<AllModels>> = (
+  fieldPath: keyof T | FieldPathPathString<T>,
   directionStr?: Observable<OrderByDirection> | OrderByDirection
-) => QueryOrderByConstraint | Observable<QueryOrderByConstraint>
+) => OrObservable<QueryOrderByConstraint>
+
+export type TypedOr = (
+  ...whereClauses: OrObservable<QueryFieldFilterConstraint>[]
+) => OrObservable<QueryCompositeFilterConstraint>
+
+export type TypedAnd = (
+  ...whereClauses: OrObservable<QueryFieldFilterConstraint>[]
+) => OrObservable<QueryCompositeFilterConstraint>
+
+const orWithObservable: TypedOr = (...whereClauses) => {
+  const allObservables = whereClauses.map((_) => (isObservable(_) ? _ : of(_)))
+  return combineLatest(allObservables).pipe(map((clauses) => or(...clauses)))
+}
+
+const andWithObservable: TypedAnd = (...whereClauses) => {
+  const allObservables = whereClauses.map((_) => (isObservable(_) ? _ : of(_)))
+  return combineLatest(allObservables).pipe(map((clauses) => and(...clauses)))
+}
 
 const mapQuerySnapshotToModel =
   <ModelType extends ValuesType<AllModels>>() =>
@@ -153,16 +193,37 @@ const handleWhereValue = (value: WhereValues, fieldPath: string) => {
   }
 }
 
+export const SKIP = { skip: "__SKIP__" } as const
+
+const isSkip = (
+  value: WhereValues | typeof SKIP | Observable<WhereValues | typeof SKIP>
+): value is typeof SKIP => {
+  return value === SKIP
+}
+
 const whereWithObservable = (
   fieldPath: string,
   opsStr: WhereFilterOp,
-  value: WhereValues | Observable<WhereValues>
+  value: WhereValues | Observable<WhereValues | typeof SKIP>
 ) => {
+  isUndefined(value) && console.warn("Warning: undefined value for", fieldPath)
+
   return isObservable(value)
     ? value.pipe(
-        map((_) => where(fieldPath, opsStr, handleWhereValue(_, fieldPath)))
+        switchMap((_) => {
+          isUndefined(_) &&
+            console.warn("Warning: undefined value for", fieldPath)
+          if (isSkip(_)) {
+            return of(null)
+          }
+          return isUndefined(_)
+            ? of()
+            : of(where(fieldPath, opsStr, handleWhereValue(_, fieldPath)))
+        })
       )
-    : where(fieldPath, opsStr, handleWhereValue(value, fieldPath))
+    : isUndefined(value)
+      ? of()
+      : of(where(fieldPath, opsStr, handleWhereValue(value, fieldPath)))
 }
 
 const orderByWithObservable = (
@@ -176,18 +237,54 @@ const orderByWithObservable = (
       : orderBy(fieldPath, directionStr)
 }
 
-export const queryObs = <CollectionName extends keyof AllModels>(
+const limitWithObservable = (
+  limitNum: number | Observable<number>
+): Observable<QueryLimitConstraint> | QueryLimitConstraint => {
+  return isObservable(limitNum)
+    ? limitNum.pipe(map((_) => (isNil(_) ? null : limit(_))))
+    : isNil(limitNum)
+      ? null
+      : limit(limitNum)
+}
+
+export type TypedLimit = (
+  limit: number | Observable<number>
+) => QueryLimitConstraint | Observable<QueryLimitConstraint>
+
+type PossibleQueryConstraint =
+  | QueryFieldFilterConstraint
+  | QueryCompositeFilterConstraint
+  | QueryLimitConstraint
+  | QueryOrderByConstraint
+  | QueryStartAtConstraint
+  | QueryEndAtConstraint
+
+type BuilderReturnType = OrObservable<PossibleQueryConstraint>[]
+
+export type BuilderFilters<CollectionName extends keyof AllModels> = {
+  where: TypedWhere<AllModels[CollectionName]>
+  orderBy: TypedOrderBy<AllModels[CollectionName]>
+  limit: TypedLimit
+  or: TypedOr
+  and: TypedAnd
+}
+
+export type TypedQueryBuilder<CollectionName extends keyof AllModels> = (
+  filters: BuilderFilters<CollectionName>
+) => BuilderReturnType
+
+const buildQueryObs = <CollectionName extends keyof AllModels>(
   collectionName: CollectionName,
-  buildQuery: (queryFns: {
-    where: TypedWhere<AllModels[CollectionName]>
-    orderBy: TypedOrderBy<AllModels[CollectionName]>
-  }) => (QueryConstraint | Observable<QueryConstraint>)[]
-): Observable<AllModels[CollectionName][]> => {
+  buildQuery: TypedQueryBuilder<CollectionName>
+): Observable<Query<DocumentData>> => {
   const db = init()
   const ref = collection(db, collectionName)
   const queryConstraintsOrObs = buildQuery({
     where: whereWithObservable as TypedWhere<AllModels[CollectionName]>,
     orderBy: orderByWithObservable as TypedOrderBy<AllModels[CollectionName]>,
+    limit: limitWithObservable,
+    or: orWithObservable,
+    and: andWithObservable,
   }).filter(Boolean)
   const queryConstraintsObs = queryConstraintsOrObs.map((_) =>
     isObservable(_) ? _ : of(_)
@@ -195,14 +292,30 @@ export const queryObs = <CollectionName extends keyof AllModels>(
 
   const orEmpty = queryConstraintsObs.length
     ? queryConstraintsObs
-    : ([] as Observable<QueryConstraint>[])
+    : ([] as Observable<PossibleQueryConstraint>[])
 
-  const resultsObs = combineLatest(orEmpty).pipe(
-    switchMap((resolvedQueryContstraints) => {
-      const finalQuery = query(
-        ref,
-        ...resolvedQueryContstraints.filter(Boolean)
+  return combineLatest(orEmpty).pipe(
+    map((resolvedQueryContstraints: any) => {
+      const [whereQueryConstraints, otherQueryConstraints] = partition(
+        resolvedQueryContstraints.filter(Boolean),
+        (_) => _.type === "where" || _.type === "and" || _.type === "or"
       )
+      const wrappedInAnd = and(...whereQueryConstraints)
+      if (whereQueryConstraints.length) {
+        return query(ref, wrappedInAnd, ...otherQueryConstraints)
+      } else {
+        return query(ref, ...otherQueryConstraints)
+      }
+    })
+  )
+}
+
+export const queryObs = <CollectionName extends keyof AllModels>(
+  collectionName: CollectionName,
+  buildQuery: TypedQueryBuilder<CollectionName>
+): Observable<AllModels[CollectionName][]> => {
+  return buildQueryObs(collectionName, buildQuery).pipe(
+    switchMap((finalQuery) => {
       const obs = queryObsFromFbRef(finalQuery)
 
       let hasSeenDataFromServer = false
@@ -224,5 +337,19 @@ export const queryObs = <CollectionName extends keyof AllModels>(
       )
     })
   )
-  return resultsObs
+}
+
+export const countObs = <CollectionName extends keyof AllModels>(
+  collectionName: CollectionName,
+  buildQuery: TypedQueryBuilder<CollectionName>,
+  refreshObs: Observable<unknown>
+): Observable<number> => {
+  return combineLatest([
+    buildQueryObs(collectionName, buildQuery),
+    refreshObs,
+  ]).pipe(
+    switchMap(([queryObs]) => {
+      return from(getCountFromServer(queryObs)).pipe(map((_) => _.data().count))
+    })
+  )
 }

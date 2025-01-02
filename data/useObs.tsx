@@ -10,7 +10,7 @@ import { Observable } from "rxjs"
  */
 export const useObs = <DataType extends unknown>(
   observable: Observable<DataType>,
-  deps?: unknown[]
+  deps: unknown[]
 ) => {
   // Store the latest emitted value, initially null
   const [value, setValue] = useState<DataType | null>(null)

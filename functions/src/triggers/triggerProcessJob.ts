@@ -10,7 +10,9 @@ export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
   trigger: number
   oneOffJobData: OneOffJobDataType
 }) => Promise<boolean>
-const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {}
+const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {
+  games: () => {},
+}
 
 const timeoutSeconds = 540
 export const triggerProcessJob = onDocumentWritten(

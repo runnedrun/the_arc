@@ -14,6 +14,7 @@ import { isUndefined } from "lodash"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { firstValueFrom } from "rxjs"
+import { MapPosition } from "@/data/types/MapTile"
 
 export function JoinGameFlow({ gameId }: { gameId: string }) {
   const { uid: userId } = useContext(UserContext)?.user || {}
@@ -24,7 +25,7 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
   const router = useRouter()
 
   // Get game data
-  const game = useObs(docObs("games", gameId))
+  const game = useObs(docObs("games", gameId), [gameId])
 
   if (isUndefined(game)) {
     return <Skeleton className="h-48 w-full" />
@@ -35,7 +36,8 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
     queryObs("players", ({ where }) => [
       where("gameId", "==", gameId),
       where("userId", "==", userId),
-    ])
+    ]),
+    [gameId, userId]
   )
 
   const isAlreadyPlayer = existingPlayer && existingPlayer.length > 0
@@ -78,15 +80,14 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
         queryObs("players", ({ where }) => [where("gameId", "==", gameId)])
       )
 
-      // Get map size from game data
-      const mapWidth = Math.floor(game.valleyGrid.length)
+      const mapSize = game.mapSize // Get map size from game data
 
       // Define corner positions based on map size
-      const cornerPositions = [
-        0, // Top-left
-        mapWidth - 1, // Top-right
-        mapWidth * (mapWidth - 1), // Bottom-left
-        mapWidth * mapWidth - 1, // Bottom-right
+      const cornerPositions: MapPosition[] = [
+        { y: 0, x: 0 }, // Top-left
+        { y: 0, x: mapSize - 1 }, // top-right
+        { y: mapSize - 1, x: 0 }, // Bottom-left
+        { y: mapSize - 1, x: mapSize - 1 }, // Bottom-right
       ]
 
       // Assign corner based on player count

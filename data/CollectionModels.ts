@@ -6,13 +6,13 @@ import { Player } from "./types/Player"
 import { ProcessingJob } from "./types/ProcessJob"
 import { Round } from "./types/Round"
 import { User } from "./types/User"
-import { ValleyTile } from "./types/ValleyTile"
+import { MapTile } from "./types/ValleyTile"
 
 export const CollectionNames: (keyof AllModels)[] = [
   "processingJob",
   "games",
   "players",
-  "valleyTiles",
+  "mapTiles",
   "npcs",
   "gameResults",
   "rounds",
@@ -24,7 +24,7 @@ export type AllModels = {
   processingJob: ProcessingJob
   games: Game
   players: Player
-  valleyTiles: ValleyTile
+  mapTiles: MapTile
   npcs: NPC
   gameResults: GameResult
   rounds: Round

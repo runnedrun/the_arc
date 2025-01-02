@@ -1,10 +1,21 @@
+import { Timestamp } from "firebase/firestore"
 import { Model } from "../baseTypes/Model"
 
-type PlayerState = "active" | "ended"
+export const getDefaultRoundData = () => {
+  return {
+    gameId: null,
+    index: null,
+    playersCompletedAt: {},
+    processingStartedAt: null,
+    processed: false,
+  } as Round
+}
 
 export type Round = Model<{
+  startedAt?: Timestamp
   gameId: string
   index: number
-  playerStates: Record<string, PlayerState>
+  playersCompletedAt: Record<string, Timestamp>
+  processingStartedAt: Timestamp | null
   processed: boolean
 }>

@@ -9,23 +9,20 @@ import { UserContext } from "@/data/context/UserContext"
 import { Button } from "@/components/ui/button"
 import { fbUpdate } from "@/data/writerFe"
 import { Timestamp } from "firebase/firestore"
+import { getDefaultRoundData } from "@/data/types/Round"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { ProvideTokenCountContext } from "./TokenCountContext"
 
-export function GameDisplay({ gameId }: { gameId: string }) {
-  // Load game data
-  const gameObs = docObs("games", gameId)
-  const game = useObs(gameObs)
-
-  // Load players in this game
-  const playersObs = queryObs("players", ({ where }) => [
-    where("gameId", "==", gameId),
-  ])
-  const players = useObs(playersObs)
-
-  const currentUserId = useContext(UserContext)?.user?.uid
-
+export function GameDisplay() {
+  const { game, players, currentUserId } = useContext(GameInterfaceContext)
   const handleStartGame = async () => {
-    await fbUpdate("games", gameId, {
+    const roundRef = await fbUpdate("rounds", game.currentRoundId, {
+      ...getDefaultRoundData(),
+      startedAt: null,
+    })
+    await fbUpdate("games", game.uid, {
       startTime: Timestamp.now(),
+      currentRoundId: roundRef.id,
     })
   }
 
@@ -35,11 +32,9 @@ export function GameDisplay({ gameId }: { gameId: string }) {
         <LoadingState />
       ) : (
         <>
-          <GameInterface
-            game={game}
-            players={players}
-            currentUserId={currentUserId}
-          />
+          <ProvideTokenCountContext>
+            <GameInterface />
+          </ProvideTokenCountContext>
 
           {!game.startTime && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50">

@@ -3,6 +3,7 @@
 import { UserProvider } from "@/data/context/UserContext"
 import { GameDisplay } from "./GameDisplay"
 import { use } from "react"
+import { ProvideGameInterfaceContext } from "./GameInterfaceContext"
 
 export default function GamePage({
   params,
@@ -13,7 +14,9 @@ export default function GamePage({
 
   return (
     <UserProvider>
-      <GameDisplay gameId={gameId} />
+      <ProvideGameInterfaceContext gameId={gameId}>
+        <GameDisplay />
+      </ProvideGameInterfaceContext>
     </UserProvider>
   )
 }

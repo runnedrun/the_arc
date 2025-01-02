@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { UserLoading } from "@/components/UserLoading"
 import { UserContext, UserProvider } from "@/data/context/UserContext"
 import { docObs } from "@/data/readerFe"
-import { Game } from "@/data/types/Game"
+import { Game, getDefaultGameData } from "@/data/types/Game"
 import { useObs } from "@/data/useObs"
 import { fbCreate, fbSet } from "@/data/writerFe"
 import { Timestamp } from "firebase/firestore"
@@ -13,15 +13,18 @@ import { ExistingGamesForUser } from "./ExistingGamesForUser"
 
 // Function to create a new game with valley tiles
 export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
+  const defaultMapSize = 4
   // Create a new game
   const newGame = {
-    currentRound: 1,
+    ...getDefaultGameData(),
+    currentRoundNumber: 1,
     startTime: null,
     endTime: null,
-    valleyGrid: [],
+    mapGrid: [],
     elderCouncilLetters: 0,
     name: "New Game",
     createdBy: userId,
+    mapSize: defaultMapSize,
   } as Game
 
   const newGameRef = await fbCreate("games", newGame)
@@ -33,20 +36,21 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
   })
 
   // Create valley tiles in parallel and assign them to the game
-  const gridSize = 4 // Assuming a 5x5 grid, adjust as needed
 
-  const valleyGrid = await Promise.all(
-    Array(gridSize)
+  await Promise.all(
+    Array(newGame.mapSize)
       .fill(null)
       .map((_, y) =>
         Promise.all(
-          Array(gridSize)
+          Array(newGame.mapSize)
             .fill(null)
             .map((_, x) =>
-              fbCreate("valleyTiles", {
+              fbCreate("mapTiles", {
                 gameId: newGameRef.id,
-                x,
-                y,
+                position: {
+                  x,
+                  y,
+                },
                 history: [],
               }).then((tile) => tile.id)
             )
@@ -56,10 +60,10 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
 
   // Update the game with the valley grid
   await fbSet("games", newGameRef.id, {
-    valleyGrid: valleyGrid.flat(),
+    ...getDefaultGameData(),
   })
 
-  return { ...newGame, valleyGrid: valleyGrid.flat() }
+  return { ...newGame }
 }
 
 const LoggedInUserDisplay = () => {

@@ -1,0 +1,64 @@
+import { UserContext } from "@/data/context/UserContext"
+import { docObs, queryObs } from "@/data/readerFe"
+import { Game } from "@/data/types/Game"
+import { MapTile } from "@/data/types/MapTile"
+import { Player } from "@/data/types/Player"
+import { Round } from "@/data/types/Round"
+import { useObs } from "@/data/useObs"
+import { createContext, useContext } from "react"
+
+interface GameInterfaceContext {
+  game: Game
+  players: Player[]
+  currentUserId: string
+  currentRound: Round
+  mapTiles: MapTile[]
+  currentPlayer: Player
+}
+
+export const GameInterfaceContext = createContext(null as GameInterfaceContext)
+
+export const ProvideGameInterfaceContext = ({
+  children,
+  gameId,
+}: React.PropsWithChildren<{ gameId: string }>) => {
+  const game = useObs(docObs("games", gameId), [gameId])
+
+  const players = useObs(
+    queryObs("players", ({ where }) => [
+      where("gameId", "==", gameId),
+      where("archived", "==", false),
+    ]),
+    [gameId]
+  )
+
+  const mapTiles = useObs(
+    queryObs("mapTiles", ({ where }) => [
+      where("gameId", "==", gameId),
+      where("archived", "==", false),
+    ]),
+    [gameId]
+  )
+
+  const round = useObs(docObs("rounds", game.currentRoundId), [
+    game.currentRoundId,
+  ])
+
+  const currentUserId = useContext(UserContext)?.user?.uid
+  const currentPlayer = players.find((_) => _.uid === currentUserId)
+
+  return (
+    <GameInterfaceContext.Provider
+      value={{
+        currentPlayer,
+        currentUserId,
+        game,
+        mapTiles,
+        players,
+        currentRound: round,
+      }}
+    >
+      {children}
+    </GameInterfaceContext.Provider>
+  )
+}

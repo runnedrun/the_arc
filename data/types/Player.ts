@@ -1,4 +1,5 @@
 import { ModelBase } from "../baseTypes/Model"
+import { MapPosition } from "./MapTile"
 
 export interface Player extends ModelBase {
   gameId: string
@@ -7,5 +8,5 @@ export interface Player extends ModelBase {
   letters?: number
   secretVision?: string
   color?: string // hex color code
-  currentTileLocation?: number | null // 0-15
+  currentTileLocation?: MapPosition
 }
