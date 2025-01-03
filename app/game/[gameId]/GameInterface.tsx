@@ -1,15 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { MapTile } from "@/data/types/MapTile"
 import { useState } from "react"
 import { GameGrid } from "./components/GameGrid"
-import { NPCSelector } from "./NPCSelector"
-import { PlayerInfoDisplay } from "./PlayerInfoDisplay"
-import { TileInfoDisplay } from "./TileInfoDisplay"
-import { PlayerNPCsDisplay } from "./PlayerNPCsDisplay"
 import { ElderCouncilDisplay } from "./ElderCouncilDisplay"
+import { PlayerInfoDisplay } from "./PlayerInfoDisplay"
+import { PlayerNPCsDisplay } from "./PlayerNPCsDisplay"
 
 export type TileWithIndex = MapTile & { index: number }
 

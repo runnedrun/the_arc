@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore"
 import { fbSet } from "../../helpers/writer"
-import { GameProcessingArgs } from "./gameProcessingTriggered"
+import { GameProcessingArgs } from "./getGameData"
 import { setupGameTilesAtStart } from "./setupGameTilesAtStart"
 import { addNewNPCForEachPlayer } from "./setupNPCsForEachPlayer"
 import { startNewRound } from "./startNewRound"

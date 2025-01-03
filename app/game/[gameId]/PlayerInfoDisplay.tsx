@@ -6,6 +6,7 @@ import { useContext } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { TokenCountContext } from "./TokenCountContext"
 import { PlayerMarker } from "./components/PlayerMarker"
+import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
 
 export const PlayerInfoDisplay = () => {
   const {
@@ -26,11 +27,13 @@ export const PlayerInfoDisplay = () => {
   const isRoundProcessing = round?.processingStartedAt != null
 
   const handleEndRound = async () => {
-    await fbUpdate("rounds", round.uid, {
-      playersCompletedAt: {
-        [currentUserId]: Timestamp.now(),
-      },
-    })
+    await triggerProcessOnWrite(
+      fbUpdate("rounds", round.uid, {
+        playersCompletedAt: {
+          [currentUserId]: Timestamp.now(),
+        },
+      })
+    )
   }
 
   const getEndRoundButtonProps = () => {

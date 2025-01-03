@@ -2,6 +2,7 @@ import { UserContext } from "@/data/context/UserContext"
 import { docObs, queryObs } from "@/data/readerFe"
 import { Game } from "@/data/types/Game"
 import { MapTile } from "@/data/types/MapTile"
+import { NPC } from "@/data/types/NPC"
 import { Player } from "@/data/types/Player"
 import { Round } from "@/data/types/Round"
 import { useObs } from "@/data/useObs"
@@ -15,6 +16,8 @@ interface GameInterfaceContext {
   currentRound: Round
   mapTiles: MapTile[]
   currentPlayer: Player
+  npcs: NPC[]
+  playerHasEndedRound: boolean
 }
 
 export const GameInterfaceContext = createContext(null as GameInterfaceContext)
@@ -28,6 +31,15 @@ export const ProvideGameInterfaceContext = ({
   const players =
     useObs(
       queryObs("players", ({ where }) => [
+        where("gameId", "==", gameId),
+        where("archived", "==", false),
+      ]),
+      [gameId]
+    ) || []
+
+  const npcs =
+    useObs(
+      queryObs("npcs", ({ where }) => [
         where("gameId", "==", gameId),
         where("archived", "==", false),
       ]),
@@ -59,6 +71,9 @@ export const ProvideGameInterfaceContext = ({
 
   const currentPlayer = players.find((_) => _.userId === currentUserId)
 
+  const playerHasEndedRound =
+    !!currentRound?.playersCompletedAt?.[currentPlayer.uid]
+
   return (
     <GameInterfaceContext.Provider
       value={{
@@ -68,6 +83,8 @@ export const ProvideGameInterfaceContext = ({
         mapTiles,
         players,
         currentRound,
+        npcs,
+        playerHasEndedRound,
       }}
     >
       {children}

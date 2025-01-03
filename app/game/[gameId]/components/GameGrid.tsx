@@ -1,8 +1,8 @@
 import { MapPosition, MapTile } from "@/data/types/MapTile"
-import { isEqual, sortBy } from "lodash-es"
+import { groupBy, isEqual, sortBy } from "lodash-es"
 import { useContext } from "react"
 import { GameInterfaceContext } from "../GameInterfaceContext"
-import { PlayerMarker } from "./PlayerMarker"
+import { NPCsMarker, PlayerMarker } from "./PlayerMarker"
 import { TileInfoDisplay } from "../TileInfoDisplay"
 import { TileWithIndex } from "../GameInterface"
 import { Popover, PopoverTrigger } from "@/components/ui/popover"
@@ -15,16 +15,25 @@ interface GameGridProps {
 }
 
 export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
-  const { mapTiles, players } = useContext(GameInterfaceContext)
+  const { mapTiles, players, npcs } = useContext(GameInterfaceContext)
   const mapTilesSorted = sortBy(mapTiles, (tile) => {
     return `${tile.position.y},${tile.position.x}`
   })
+
   return (
     <div className="grid h-64 w-64 grid-cols-4 gap-1">
       {mapTilesSorted.map((tile, index) => {
         const coordinates = tile.position
         const playersOnTile = players.filter((player) =>
           isEqual(player.currentTileLocation, coordinates)
+        )
+        const npcsOnTile = npcs.filter((npc) =>
+          isEqual(npc.currentTileLocation, coordinates)
+        )
+
+        const npcsGroupedByPlayer = groupBy(
+          npcsOnTile,
+          (npc) => npc.playerTribeId
         )
 
         const thisTileIsSelected = selectedTile && index === selectedTile?.index
@@ -37,7 +46,13 @@ export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
               { "z-50": thisTileIsSelected }
             )}
           >
-            <Popover>
+            <Popover
+              onOpenChange={(open) => {
+                if (!open) {
+                  onTileSelect(null)
+                }
+              }}
+            >
               <PopoverTrigger asChild>
                 <div
                   onClick={() => onTileSelect({ ...tile, index })}
@@ -72,6 +87,26 @@ export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
                 <PlayerMarker player={player}></PlayerMarker>
               </div>
             ))}
+
+            {Object.entries(npcsGroupedByPlayer).map(([playerId, npcs]) => {
+              const player = players.find((player) => player.uid === playerId)
+
+              const playerIndex = players.findIndex(
+                (player) => player.uid === playerId
+              )
+              return (
+                <div
+                  key={playerId}
+                  className="absolute"
+                  style={{
+                    left: "4px",
+                    bottom: `${1 + playerIndex * 4}px`,
+                  }}
+                >
+                  <NPCsMarker npcs={npcs} playerForNPC={player}></NPCsMarker>
+                </div>
+              )
+            })}
           </div>
         )
       })}

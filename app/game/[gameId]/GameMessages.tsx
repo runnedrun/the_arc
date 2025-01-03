@@ -3,6 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { useContext } from "react"
 import { TokenCountContext } from "./TokenCountContext"
+import { GameInterfaceContext } from "./GameInterfaceContext"
 
 interface GameMessagesProps {
   messages: Message[]
@@ -16,6 +17,7 @@ export function GameMessages({
   updateComposingMessage,
 }: GameMessagesProps) {
   const { charactersRemaining } = useContext(TokenCountContext)
+  const { playerHasEndedRound } = useContext(GameInterfaceContext)
 
   return (
     <div className="flex flex-col gap-2">
@@ -36,7 +38,7 @@ export function GameMessages({
         )}
       </ScrollArea>
       <Textarea
-        disabled={charactersRemaining <= 0}
+        disabled={charactersRemaining <= 0 || playerHasEndedRound}
         value={composingMessage?.content || ""}
         onChange={(e) => updateComposingMessage(e.target.value)}
         placeholder="Type your message..."

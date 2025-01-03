@@ -43,6 +43,8 @@ export const useNPCsHavePendingMessages = (npcs: NPC[]) => {
   const combinedObs = combineLatest(obs)
   const messagesForNpcs =
     useObs(combinedObs, [currentRound?.uid, currentPlayer?.uid]) || []
+
+  console.log("message", messagesForNpcs)
   return npcs.map((npc, i) => {
     const messages = messagesForNpcs[i] || []
     const messagesWithContent = messages.filter((_) => !!_.content)
@@ -78,6 +80,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
             <CommandEmpty>No NPCs available.</CommandEmpty>
             <CommandGroup>
               {npcsWithPendingMessages?.map((npc) => {
+                console.log("nps", npc, npc.hasPendingMessages)
                 return (
                   <CommandItem
                     className="flex items-center gap-1"
@@ -88,14 +91,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
                     }}
                   >
                     {npc.hasPendingMessages && (
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedNpc?.uid === npc.uid
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
-                      />
+                      <Check className={cn("mr-2 h-4 w-4")} />
                     )}
                     {npc.name}
                   </CommandItem>

@@ -1,6 +1,6 @@
 import { getDefaultRoundData, Round } from "@/data/types/Round"
 import { fbCreate, fbSet } from "../../helpers/writer"
-import { GameProcessingArgs } from "./gameProcessingTriggered"
+import { GameProcessingArgs } from "./getGameData"
 import { isNil } from "lodash-es"
 
 export const startNewRound = async ({

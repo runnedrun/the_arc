@@ -39,8 +39,6 @@ export const ProvideTokenCountContext = ({
 
   const letterCount = currentPlayer?.letters || 0
 
-  console.log("cur", currentPlayer, currentPlayer?.letters)
-
   const charactersRemaining = letterCount - charactersUsedThisRound
   return (
     <TokenCountContext.Provider

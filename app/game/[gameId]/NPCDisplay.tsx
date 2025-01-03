@@ -58,8 +58,6 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
     ]
   )
 
-  console.log("curne", currentlyComposingMessage)
-
   return (
     <GameMessages
       messages={messagesFromPrevRounds || []}

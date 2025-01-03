@@ -5,6 +5,7 @@ import { fbSet } from "../helpers/writer"
 import { toTimestamp } from "../helpers/toTimestamp"
 import { JobTypes, ProcessingJob } from "@/data/types/ProcessJob"
 import { gameProcessingTriggered } from "./processGame/gameProcessingTriggered"
+import { roundProcessingTriggered } from "./processRound/roundProcessingTriggered"
 
 export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
   docId: string
@@ -13,6 +14,7 @@ export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
 }) => Promise<boolean>
 const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {
   games: gameProcessingTriggered,
+  rounds: roundProcessingTriggered,
 }
 
 const timeoutSeconds = 540

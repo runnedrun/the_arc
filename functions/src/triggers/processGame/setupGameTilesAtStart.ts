@@ -8,9 +8,8 @@ import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
 import { sampleTileSVGs } from "../../mocks/sampleTileSVGs"
 import { isDemoMode } from "../../helpers/isDemoMode"
 import { fbSet } from "../../helpers/writer"
-import { GameProcessingArgs } from "./gameProcessingTriggered"
-
-const openAiApiKey = defineString("OPENAI_API_KEY")
+import { GameProcessingArgs } from "./getGameData"
+import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 
 const TileDescriptions = z.object({
   tiles: z.array(
@@ -66,15 +65,13 @@ Requirements for each SVG:
 }
 
 export const setupGameTilesAtStart = async ({ game }: GameProcessingArgs) => {
-  const openAiClient = new OpenAI({
-    apiKey: openAiApiKey.value(),
-  })
+  const openAiClient = getOpenAIClient()
 
   let tileDescriptions = sampleTileDescriptions.tiles
 
   if (!isDemoMode()) {
     const completion = await openAiClient.beta.chat.completions.parse({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
@@ -99,7 +96,7 @@ export const setupGameTilesAtStart = async ({ game }: GameProcessingArgs) => {
 
   if (!isDemoMode()) {
     const svgCompletion = await openAiClient.beta.chat.completions.parse({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",

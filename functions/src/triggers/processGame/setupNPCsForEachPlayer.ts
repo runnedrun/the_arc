@@ -1,6 +1,6 @@
 import { getNPCDataForPlayer } from "@/data/types/NPC"
 import { fbCreate } from "../../helpers/writer"
-import { GameProcessingArgs } from "./gameProcessingTriggered"
+import { GameProcessingArgs } from "./getGameData"
 
 export const addNewNPCForEachPlayer = async ({
   players,
