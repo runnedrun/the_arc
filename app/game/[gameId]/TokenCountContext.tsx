@@ -1,11 +1,11 @@
-import { queryObs } from "@/data/readerFe"
+import { queryObs, SKIP } from "@/data/readerFe"
 import { Player } from "@/data/types/Player"
 import { Round } from "@/data/types/Round"
 import { useObs } from "@/data/useObs"
 import { createContext, useContext } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 
-const TokenCountContext = createContext(
+export const TokenCountContext = createContext(
   null as {
     charactersUsedThisRound: number
     charactersRemaining: number
@@ -16,12 +16,19 @@ const TokenCountContext = createContext(
 export const ProvideTokenCountContext = ({
   children,
 }: React.PropsWithChildren<object>) => {
-  const { currentRound: round, currentPlayer } =
-    useContext(GameInterfaceContext)
+  const {
+    currentRound: round,
+    currentPlayer,
+    game,
+  } = useContext(GameInterfaceContext)
   const messagesForCurrentRound =
     useObs(
-      queryObs("messages", ({ where }) => [where("roundId", "==", round.uid)]),
-      [round.uid]
+      queryObs("messages", ({ where }) => [
+        where("roundId", "==", round?.uid || null),
+        where("senderId", "==", currentPlayer?.uid || "__never__"),
+        where("archived", "==", false),
+      ]),
+      [round?.uid]
     ) || []
   const charactersUsedThisRound = messagesForCurrentRound.reduce(
     (acc, message) => {
@@ -29,13 +36,18 @@ export const ProvideTokenCountContext = ({
     },
     0
   )
-  const charactersRemaining = currentPlayer.letters - charactersUsedThisRound
+
+  const letterCount = currentPlayer?.letters || 0
+
+  console.log("cur", currentPlayer, currentPlayer?.letters)
+
+  const charactersRemaining = letterCount - charactersUsedThisRound
   return (
     <TokenCountContext.Provider
       value={{
         charactersUsedThisRound,
         charactersRemaining,
-        charactersAvailable: currentPlayer.letters,
+        charactersAvailable: letterCount,
       }}
     >
       {children}

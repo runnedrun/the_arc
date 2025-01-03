@@ -21,6 +21,7 @@
     "profile-webpack": "node --loader ts-node/esm node_modules/webpack-cli/bin/cli.js --config webpack.config.ts --profile --json > stats.json"
   },
   "dependencies": {
+    "@babel/core": "^7.26.0",
     "@babel/plugin-transform-runtime": "^7.25.4",
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",

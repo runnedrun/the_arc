@@ -4,9 +4,11 @@ import OpenAI from "openai"
 import { defineString } from "firebase-functions/params"
 import { zodResponseFormat } from "openai/helpers/zod"
 import { z } from "zod"
-import { fbSet } from "@/data/writerFe"
-import sampleTileDescriptions from "../../mocks/sampleTileDescriptions.json"
-import sampleTileSVGs from "../../mocks/sampleTileSVGs.json"
+import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
+import { sampleTileSVGs } from "../../mocks/sampleTileSVGs"
+import { isDemoMode } from "../../helpers/isDemoMode"
+import { fbSet } from "../../helpers/writer"
+import { GameProcessingArgs } from "./gameProcessingTriggered"
 
 const openAiApiKey = defineString("OPENAI_API_KEY")
 
@@ -19,8 +21,6 @@ const TileDescriptions = z.object({
     })
   ),
 })
-
-type TileDescriptionsType = z.infer<typeof TileDescriptions>
 
 const SVGResponses = z.object({
   tileSVGs: z.array(
@@ -65,47 +65,59 @@ Requirements for each SVG:
 - Use similar style and scale across all tiles`
 }
 
-export const setupGameTilesAtStart = async (game: Game) => {
+export const setupGameTilesAtStart = async ({ game }: GameProcessingArgs) => {
   const openAiClient = new OpenAI({
     apiKey: openAiApiKey.value(),
   })
 
-  // Generate tile descriptions
-  const completion = await openAiClient.beta.chat.completions.parse({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: "You are a skilled cartographer and environmental designer.",
-      },
-      {
-        role: "user",
-        content: getPrompt(game.mapSize),
-      },
-    ],
-    response_format: zodResponseFormat(TileDescriptions, "tiles"),
-    temperature: 0.7,
-  })
+  let tileDescriptions = sampleTileDescriptions.tiles
 
-  const tileData = completion.choices[0].message.parsed
+  if (!isDemoMode()) {
+    const completion = await openAiClient.beta.chat.completions.parse({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are a skilled cartographer and environmental designer.",
+        },
+        {
+          role: "user",
+          content: getPrompt(game.mapSize),
+        },
+      ],
+      response_format: zodResponseFormat(TileDescriptions, "tiles"),
+      temperature: 0.7,
+    })
+
+    tileDescriptions = completion.choices[0].message.parsed
+      .tiles as typeof tileDescriptions
+  }
 
   // Generate all SVGs in a single call
-  const svgCompletion = await openAiClient.beta.chat.completions.parse({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a skilled SVG artist specializing in creating cohesive map tile sets.",
-      },
-      {
-        role: "user",
-        content: getSVGsPrompt(tileData.tiles),
-      },
-    ],
-    response_format: zodResponseFormat(SVGResponses, "tileSVGs"),
-    temperature: 0.7,
-  })
+
+  let svgResults = sampleTileSVGs.tileSVGs
+
+  if (!isDemoMode()) {
+    const svgCompletion = await openAiClient.beta.chat.completions.parse({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a skilled SVG artist specializing in creating cohesive map tile sets.",
+        },
+        {
+          role: "user",
+          content: getSVGsPrompt(tileDescriptions),
+        },
+      ],
+      response_format: zodResponseFormat(SVGResponses, "tileSVGs"),
+      temperature: 0.7,
+    })
+
+    svgResults = svgCompletion.choices[0].message.parsed
+      .tileSVGs as typeof svgResults
+  }
 
   const currentTiles = await queryDocs("mapTiles", (ref) => {
     return ref.where("gameId", "==", game.uid).where("archived", "==", false)
@@ -113,11 +125,7 @@ export const setupGameTilesAtStart = async (game: Game) => {
 
   // Combine the descriptions and SVGs
   return await Promise.all(
-    tileData.tiles.map(async (tile) => {
-      const svgData = svgCompletion.choices[0].message.parsed.tileSVGs.find(
-        (svg) => svg.posX === tile.posX && svg.posY === tile.posY
-      )
-
+    tileDescriptions.map(async (tile) => {
       const existingTile = currentTiles.find(
         (t) => t.position.x === tile.posX && t.position.y === tile.posY
       )
@@ -125,7 +133,10 @@ export const setupGameTilesAtStart = async (game: Game) => {
       if (existingTile) {
         const newTile = {
           ...existingTile,
-          svg: svgData?.svg || "",
+          svg:
+            svgResults?.find(
+              (svg) => svg.posX === tile.posX && svg.posY === tile.posY
+            )?.svg || null,
           history: [{ entryText: tile.description }],
         }
         await fbSet("mapTiles", existingTile.uid, newTile)

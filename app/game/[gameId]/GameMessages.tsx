@@ -16,16 +16,20 @@ export function GameMessages({
   return (
     <div className="flex flex-col gap-2">
       <ScrollArea className="h-40">
-        {messages.map((message) => (
-          <div
-            key={message.uid}
-            className={`mb-2 rounded-lg p-2 ${
-              message.processedAt ? "bg-gray-100" : "bg-yellow-50"
-            }`}
-          >
-            {message.content}
-          </div>
-        ))}
+        {messages.length ? (
+          messages.map((message) => (
+            <div
+              key={message.uid}
+              className={`mb-2 rounded-lg p-2 ${
+                message.processedAt ? "bg-gray-100" : "bg-yellow-50"
+              }`}
+            >
+              {message.content}
+            </div>
+          ))
+        ) : (
+          <div>No messages yet</div>
+        )}
       </ScrollArea>
       <Textarea
         value={composingMessage?.content || ""}

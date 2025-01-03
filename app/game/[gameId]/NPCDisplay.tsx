@@ -4,25 +4,29 @@ import { queryObs } from "@/data/readerFe"
 import { Message } from "@/data/types/Message"
 import { useObs } from "@/data/useObs"
 import { GameMessages } from "./GameMessages"
-import { fbUpdate, genExtraData } from "@/data/writerFe"
-import { uniqueId } from "lodash"
+import { fbSet, genExtraData } from "@/data/writerFe"
+import { uniqueId } from "lodash-es"
 import { NPC } from "@/data/types/NPC"
 
 export function NPCDisplay({ npc }: { npc: NPC }) {
-  const { currentUserId, game, currentRound } = useContext(GameInterfaceContext)
+  const { game, currentRound, currentPlayer } = useContext(GameInterfaceContext)
 
-  const messages = useObs(
-    queryObs("messages", ({ where }) => [
-      where("gameId", "==", game.uid),
-      where("senderId", "==", currentUserId),
-      where("receiverId", "==", npc.uid),
-      where("archived", "==", false),
-    ]),
-    [game.uid, currentUserId, npc.uid]
-  )
+  const allMessages =
+    useObs(
+      queryObs("messages", ({ where }) => [
+        where("gameId", "==", game.uid),
+        where("senderId", "==", currentPlayer.uid),
+        where("receiverId", "==", npc.uid),
+        where("archived", "==", false),
+      ]),
+      [game?.uid, currentPlayer?.uid, npc.uid]
+    ) || []
 
-  const currentlyComposingMessage = messages?.find(
+  const currentlyComposingMessage = allMessages?.find(
     (message) => message.roundId === currentRound.uid
+  )
+  const messagesFromPrevRounds = allMessages.filter(
+    (_) => _.roundIndex < currentRound.index
   )
 
   const currentlyComposingMessageId =
@@ -35,7 +39,7 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
       const message = {
         ...baseMessage,
         roundId: currentRound.uid,
-        senderId: currentUserId,
+        senderId: currentPlayer.uid,
         receiverId: npc.uid,
         type: "npc",
         content: messageContent,
@@ -44,14 +48,21 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
         gameId: npc.gameId,
       } as Message
 
-      fbUpdate("messages", currentlyComposingMessageId, message)
+      fbSet("messages", currentlyComposingMessageId, message)
     },
-    [currentlyComposingMessageId]
+    [
+      currentlyComposingMessageId,
+      currentRound?.uid,
+      currentPlayer?.uid,
+      npc.uid,
+    ]
   )
+
+  console.log("curne", currentlyComposingMessage)
 
   return (
     <GameMessages
-      messages={messages || []}
+      messages={messagesFromPrevRounds || []}
       composingMessage={currentlyComposingMessage}
       updateComposingMessage={setCurrentlyComposingMessage}
     />

@@ -14,6 +14,7 @@ import {
   writeBatch,
 } from "firebase/firestore"
 import { chunk } from "lodash-es"
+import { init } from "./initFb"
 
 export const genExtraData = () => {
   return {
@@ -30,6 +31,7 @@ export const fbSet = async <CollectionName extends keyof AllModels>(
   docId: string,
   data: PartialWithFieldValue<AllModels[CollectionName]>
 ) => {
+  init()
   const firestore = getFirestore()
 
   await setDoc(

@@ -1,29 +1,23 @@
-import { UserLoading } from "@/components/UserLoading"
-import { docObs, queryObs } from "@/data/readerFe"
-import { useObs } from "@/data/useObs"
-import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import GameInterface from "./GameInterface"
-import { useContext } from "react"
-import { UserContext } from "@/data/context/UserContext"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { Skeleton } from "@/components/ui/skeleton"
 import { fbUpdate } from "@/data/writerFe"
 import { Timestamp } from "firebase/firestore"
-import { getDefaultRoundData } from "@/data/types/Round"
+import { useContext } from "react"
+import GameInterface from "./GameInterface"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { ProvideTokenCountContext } from "./TokenCountContext"
+import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
 
 export function GameDisplay() {
   const { game, players, currentUserId } = useContext(GameInterfaceContext)
   const handleStartGame = async () => {
-    const roundRef = await fbUpdate("rounds", game.currentRoundId, {
-      ...getDefaultRoundData(),
-      startedAt: null,
-    })
-    await fbUpdate("games", game.uid, {
-      startTime: Timestamp.now(),
-      currentRoundId: roundRef.id,
-    })
+    await triggerProcessOnWrite(
+      fbUpdate("games", game.uid, {
+        startTime: Timestamp.now(),
+      })
+    )
   }
 
   return (
@@ -36,12 +30,17 @@ export function GameDisplay() {
             <GameInterface />
           </ProvideTokenCountContext>
 
-          {!game.startTime && (
+          {!game.gameSetupCompletedAt && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50">
               <div className="rounded-lg bg-white p-6 text-center">
                 <h2 className="mb-4 text-xl">Game has not started yet</h2>
                 {game.createdBy === currentUserId && (
-                  <Button onClick={handleStartGame}>Start Game</Button>
+                  <div className="flex items-center gap-2">
+                    <Button onClick={handleStartGame}>Start Game</Button>
+                    {!game.gameSetupCompletedAt && game.startTime && (
+                      <LoadingSpinner className="h-8 w-8"></LoadingSpinner>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

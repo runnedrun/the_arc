@@ -1,5 +1,4 @@
 import { Skeleton } from "./ui/skeleton"
-import { isUndefined } from "lodash"
 
 export const LoadingComponent = ({
   children,

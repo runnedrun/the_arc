@@ -17,10 +17,9 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
   // Create a new game
   const newGame = {
     ...getDefaultGameData(),
-    currentRoundNumber: 1,
+    currentRoundNumber: null,
     startTime: null,
     endTime: null,
-    mapGrid: [],
     elderCouncilLetters: 0,
     name: "New Game",
     createdBy: userId,
@@ -32,6 +31,10 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
   await fbCreate("players", {
     gameId: newGameRef.id,
     userId,
+    currentTileLocation: {
+      x: 0,
+      y: 0,
+    },
     name: "Player 1",
   })
 
@@ -46,6 +49,7 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
             .fill(null)
             .map((_, x) =>
               fbCreate("mapTiles", {
+                svg: null,
                 gameId: newGameRef.id,
                 position: {
                   x,
@@ -60,7 +64,7 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
 
   // Update the game with the valley grid
   await fbSet("games", newGameRef.id, {
-    ...getDefaultGameData(),
+    ...newGame,
   })
 
   return { ...newGame }

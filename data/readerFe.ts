@@ -43,7 +43,14 @@ import {
   QueryLimitConstraint,
   QueryStartAtConstraint,
 } from "firebase/firestore"
-import { isArray, isEqual, isNil, isNull, isUndefined, partition } from "lodash"
+import {
+  isArray,
+  isEqual,
+  isNil,
+  isNull,
+  isUndefined,
+  partition,
+} from "lodash-es"
 import { ValuesType } from "utility-types"
 
 const DEFAULT_OPTIONS = { includeMetadataChanges: true }
@@ -193,7 +200,7 @@ const handleWhereValue = (value: WhereValues, fieldPath: string) => {
   }
 }
 
-export const SKIP = { skip: "__SKIP__" } as const
+export const SKIP = "__SKIP__" as const
 
 const isSkip = (
   value: WhereValues | typeof SKIP | Observable<WhereValues | typeof SKIP>
@@ -208,12 +215,17 @@ const whereWithObservable = (
 ) => {
   isUndefined(value) && console.warn("Warning: undefined value for", fieldPath)
 
+  if (isSkip(value)) {
+    return of(null)
+  }
+
   return isObservable(value)
     ? value.pipe(
         switchMap((_) => {
           isUndefined(_) &&
             console.warn("Warning: undefined value for", fieldPath)
           if (isSkip(_)) {
+            console.log("ADKL SKIP")
             return of(null)
           }
           return isUndefined(_)

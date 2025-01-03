@@ -8,7 +8,7 @@ export const getNPCDataForPlayer = (
 ) => {
   return {
     gameId: player.gameId,
-    name: player.name,
+    name: `NPC - ${player.name}`,
     currentTileLocation: player.currentTileLocation,
     letters: player.letters,
     createdRound: currentRoundNumber,

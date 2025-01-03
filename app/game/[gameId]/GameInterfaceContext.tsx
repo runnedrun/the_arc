@@ -5,6 +5,7 @@ import { MapTile } from "@/data/types/MapTile"
 import { Player } from "@/data/types/Player"
 import { Round } from "@/data/types/Round"
 import { useObs } from "@/data/useObs"
+import { limit } from "firebase/firestore"
 import { createContext, useContext } from "react"
 
 interface GameInterfaceContext {
@@ -24,13 +25,14 @@ export const ProvideGameInterfaceContext = ({
 }: React.PropsWithChildren<{ gameId: string }>) => {
   const game = useObs(docObs("games", gameId), [gameId])
 
-  const players = useObs(
-    queryObs("players", ({ where }) => [
-      where("gameId", "==", gameId),
-      where("archived", "==", false),
-    ]),
-    [gameId]
-  )
+  const players =
+    useObs(
+      queryObs("players", ({ where }) => [
+        where("gameId", "==", gameId),
+        where("archived", "==", false),
+      ]),
+      [gameId]
+    ) || []
 
   const mapTiles = useObs(
     queryObs("mapTiles", ({ where }) => [
@@ -40,12 +42,22 @@ export const ProvideGameInterfaceContext = ({
     [gameId]
   )
 
-  const round = useObs(docObs("rounds", game.currentRoundId), [
-    game.currentRoundId,
-  ])
+  const currentRoundArray =
+    useObs(
+      queryObs("rounds", ({ where, orderBy }) => [
+        where("gameId", "==", game?.uid || "__never__"),
+        where("archived", "==", false),
+        orderBy("index", "desc"),
+        limit(1),
+      ]),
+      [game?.uid]
+    ) || []
+
+  const currentRound = currentRoundArray[0]
 
   const currentUserId = useContext(UserContext)?.user?.uid
-  const currentPlayer = players.find((_) => _.uid === currentUserId)
+
+  const currentPlayer = players.find((_) => _.userId === currentUserId)
 
   return (
     <GameInterfaceContext.Provider
@@ -55,7 +67,7 @@ export const ProvideGameInterfaceContext = ({
         game,
         mapTiles,
         players,
-        currentRound: round,
+        currentRound,
       }}
     >
       {children}
