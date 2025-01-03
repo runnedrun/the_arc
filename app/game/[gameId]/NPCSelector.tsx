@@ -21,6 +21,7 @@ import { GameInterfaceContext } from "./GameInterfaceContext"
 import { combineLatest } from "rxjs"
 import { useObs } from "@/data/useObs"
 import { limit } from "firebase/firestore"
+import { CommandItem } from "cmdk"
 
 type NPCsWithPendingMessageBool = NPC & {
   hasPendingMessages: boolean
@@ -78,10 +79,10 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
             <CommandGroup>
               {npcsWithPendingMessages?.map((npc) => {
                 return (
-                  <div
+                  <CommandItem
                     className="flex items-center gap-1"
                     key={npc.uid}
-                    onClick={() => {
+                    onSelect={() => {
                       setSelectedNpc(npc)
                       setOpen(false)
                     }}
@@ -97,7 +98,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
                       />
                     )}
                     {npc.name}
-                  </div>
+                  </CommandItem>
                 )
               })}
             </CommandGroup>
