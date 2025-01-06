@@ -30,9 +30,10 @@ export const ProvideTokenCountContext = ({
       ]),
       [round?.uid]
     ) || []
+
   const charactersUsedThisRound = messagesForCurrentRound.reduce(
     (acc, message) => {
-      return message.content.length
+      return acc + message.content.length
     },
     0
   )
@@ -40,6 +41,7 @@ export const ProvideTokenCountContext = ({
   const letterCount = currentPlayer?.letters || 0
 
   const charactersRemaining = letterCount - charactersUsedThisRound
+
   return (
     <TokenCountContext.Provider
       value={{

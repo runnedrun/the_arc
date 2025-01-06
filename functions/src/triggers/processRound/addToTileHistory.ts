@@ -7,17 +7,26 @@ import { Message } from "@/data/types/Message"
 
 const openAi = getOpenAIClient()
 
+export const getTileHistoryMessageStrings = (messages: Message[]) => {
+  return messages.map((message) => {
+    const prefix =
+      message.type === "tileHistory"
+        ? "Results of previous actions:"
+        : "Action from user:"
+    return `${prefix}: ${message.content}`
+  })
+}
+
 const generateHistoricalEntry = async ({
   messages,
-  tileHistory,
 }: {
   messages: Message[]
-  tileHistory: Message[]
 }) => {
+  const messageStrings = getTileHistoryMessageStrings(messages)
   const gptMessages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are an AI Historian documenting the events in this valley tile. Your role is to:
+      content: `You are an AI Historian documenting the events in this valley tile, for a game similar to "Civilization". Your role is to:
 - Create a 1-2 sentence historical entry based on the actions that occurred
 - Give more weight to Elder Council actions over player/NPC actions
 - Ensure actions respect physical laws and the tile's environment
@@ -27,7 +36,7 @@ const generateHistoricalEntry = async ({
     {
       role: "user",
       content: `
-Tile's previous history: ${tileHistory.map((h) => h.entryText).join("\n")}
+Tile's previous history: ${messageStrings.join("\n")}
 
 Recent actions (Elder Council actions are authoritative):
 ${messages.map((m) => `${m.senderId === "elderCouncil" ? "[ELDER COUNCIL]" : "[Actor]"}: ${m.content}`).join("\n")}
@@ -51,7 +60,7 @@ export const addToTileHistory = async ({
   mapTiles,
   game,
 }: GameProcessingArgs) => {
-  const messagesGroupedByTile = await getMessagesForTiles(currentRound.uid)
+  const messagesGroupedByTile = await getMessagesForTiles(null)
 
   await Promise.all(
     Object.entries(messagesGroupedByTile).map(
@@ -65,17 +74,19 @@ export const addToTileHistory = async ({
 
         const historyEntry = await generateHistoricalEntry({
           messages,
-          tileHistory: tile.history,
         })
 
         if (historyEntry) {
-          await fbCreate("tileHistory", {
-            tileId: tile.uid,
+          await fbCreate("messages", {
+            tileLocation: tile.position,
             gameId: game.uid,
             roundId: currentRound.uid,
             roundIndex: currentRound.index,
-            entryText: historyEntry,
-            createdAt: new Date(),
+            content: historyEntry,
+            type: "tileHistory",
+            senderId: "elderCouncil",
+            receiverId: "player",
+            processedAt: null,
           })
         }
       }

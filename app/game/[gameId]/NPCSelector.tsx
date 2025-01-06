@@ -44,7 +44,6 @@ export const useNPCsHavePendingMessages = (npcs: NPC[]) => {
   const messagesForNpcs =
     useObs(combinedObs, [currentRound?.uid, currentPlayer?.uid]) || []
 
-  console.log("message", messagesForNpcs)
   return npcs.map((npc, i) => {
     const messages = messagesForNpcs[i] || []
     const messagesWithContent = messages.filter((_) => !!_.content)
@@ -80,7 +79,6 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
             <CommandEmpty>No NPCs available.</CommandEmpty>
             <CommandGroup>
               {npcsWithPendingMessages?.map((npc) => {
-                console.log("nps", npc, npc.hasPendingMessages)
                 return (
                   <CommandItem
                     className="flex items-center gap-1"

@@ -9,12 +9,14 @@ interface GameMessagesProps {
   messages: Message[]
   composingMessage: Message
   updateComposingMessage: (messageContent: string) => void
+  allowComposing?: Boolean
 }
 
 export function GameMessages({
   messages,
   composingMessage,
   updateComposingMessage,
+  allowComposing = true,
 }: GameMessagesProps) {
   const { charactersRemaining } = useContext(TokenCountContext)
   const { playerHasEndedRound } = useContext(GameInterfaceContext)
@@ -23,27 +25,33 @@ export function GameMessages({
     <div className="flex flex-col gap-2">
       <ScrollArea className="h-40">
         {messages.length ? (
-          messages.map((message) => (
-            <div
-              key={message.uid}
-              className={`mb-2 rounded-lg p-2 ${
-                message.processedAt ? "bg-gray-100" : "bg-yellow-50"
-              }`}
-            >
-              {message.content}
-            </div>
-          ))
+          messages.map((message) => {
+            const isHistoryType = message.type === "tileHistory"
+
+            return (
+              <div
+                key={message.uid}
+                className={`mb-2 rounded p-2 ${
+                  isHistoryType ? "bg-gray-100 italic" : "bg-white"
+                }`}
+              >
+                {message.content}
+              </div>
+            )
+          })
         ) : (
           <div>No messages yet</div>
         )}
       </ScrollArea>
-      <Textarea
-        disabled={charactersRemaining <= 0 || playerHasEndedRound}
-        value={composingMessage?.content || ""}
-        onChange={(e) => updateComposingMessage(e.target.value)}
-        placeholder="Type your message..."
-        className="min-h-[100px]"
-      />
+      {allowComposing && (
+        <Textarea
+          disabled={charactersRemaining <= 0 || playerHasEndedRound}
+          value={composingMessage?.content || ""}
+          onChange={(e) => updateComposingMessage(e.target.value)}
+          placeholder="Type your message..."
+          className="min-h-[100px]"
+        />
+      )}
     </div>
   )
 }

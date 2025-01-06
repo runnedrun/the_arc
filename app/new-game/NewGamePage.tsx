@@ -55,7 +55,6 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
                   x,
                   y,
                 },
-                history: [],
               }).then((tile) => tile.id)
             )
         )

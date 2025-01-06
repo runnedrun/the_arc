@@ -7,9 +7,12 @@ import { z } from "zod"
 import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
 import { sampleTileSVGs } from "../../mocks/sampleTileSVGs"
 import { isDemoMode } from "../../helpers/isDemoMode"
-import { fbSet } from "../../helpers/writer"
+import { backendNow, fbCreate, fbSet } from "../../helpers/writer"
 import { GameProcessingArgs } from "./getGameData"
 import { getOpenAIClient } from "../../helpers/getOpenAIClient"
+import { MapTile } from "@/data/types/MapTile"
+import { Message } from "@/data/types/Message"
+import { Timestamp } from "firebase-admin/firestore"
 
 const TileDescriptions = z.object({
   tiles: z.array(
@@ -128,14 +131,26 @@ export const setupGameTilesAtStart = async ({ game }: GameProcessingArgs) => {
       )
 
       if (existingTile) {
-        const newTile = {
+        const newTile: MapTile = {
           ...existingTile,
           svg:
             svgResults?.find(
               (svg) => svg.posX === tile.posX && svg.posY === tile.posY
             )?.svg || null,
-          history: [{ entryText: tile.description }],
         }
+        const newMessageForTileHistory: Message = {
+          content: tile.description,
+          type: "tileHistory",
+          tileLocation: { x: tile.posX, y: tile.posY },
+          gameId: game.uid,
+          roundId: null,
+          roundIndex: -1,
+          senderId: "tileHistory",
+          receiverId: null,
+          processedAt: backendNow(),
+        }
+
+        await fbCreate("messages", newMessageForTileHistory)
         await fbSet("mapTiles", existingTile.uid, newTile)
         return newTile
       }

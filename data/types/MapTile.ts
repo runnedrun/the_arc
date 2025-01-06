@@ -8,6 +8,6 @@ export type MapPosition = {
 export type MapTile = Model<{
   gameId: string
   position: MapPosition
-  history: { roundId?: string; entryText: string }[]
+  // history: { roundId?: string; entryText: string }[]
   svg: string
 }>

@@ -6,8 +6,7 @@ export const addNewNPCForEachPlayer = async ({
   players,
   currentRound,
 }: GameProcessingArgs) => {
-  const roundIndex = currentRound.index
-  console.log("round index", roundIndex)
+  const roundIndex = currentRound?.index || 0
   await Promise.all(
     players.map((player) => {
       const npc = getNPCDataForPlayer(player, roundIndex)

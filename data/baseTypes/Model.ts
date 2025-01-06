@@ -10,7 +10,7 @@ export const BaseFields: ModelBaseFields[] = [
 ]
 
 export type ModelBase = {
-  uid: string
+  uid?: string
   archived?: boolean
   archivedOn?: Timestamp
   createdAt?: Timestamp
@@ -25,5 +25,3 @@ export type AnyGenericModel = Model<{}>
 
 export type ModelTypeFromModel<FullModel extends AnyGenericModel> =
   FullModel extends Model<infer ModelType> ? ModelType : never
-
-

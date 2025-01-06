@@ -9,6 +9,7 @@
 
 import { getBeApp } from "./helpers/getBeFirestore"
 import { triggerProcessJob } from "./triggers/triggerProcessJob"
+import "source-map-support/register.js"
 
 getBeApp()
 

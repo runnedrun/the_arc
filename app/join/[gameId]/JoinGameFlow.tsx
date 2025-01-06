@@ -15,6 +15,7 @@ import { isUndefined, omit, uniqueId } from "lodash-es"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { firstValueFrom } from "rxjs"
+import { v4 as uuidv4 } from "uuid"
 
 export function JoinGameFlow({ gameId }: { gameId: string }) {
   const { uid: userId } = useContext(UserContext)?.user || {}
@@ -121,7 +122,7 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
     const colorIndex = existingPlayers.length % playerColors.length
     const playerColor = playerColors[colorIndex]
 
-    const uuid = existingPlayer?.uid || uniqueId()
+    const uuid = existingPlayer?.uid || uuidv4()
 
     const baseData = existingPlayer
       ? omit(existingPlayer, "uid")

@@ -3,6 +3,7 @@ import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { ChatCompletionMessageParam } from "openai/resources"
 import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
+import { getMessagesForTiles } from "./getMessagesForTiles"
 
 const DecreesSchema = z.object({
   newDecrees: z.array(z.string()),
@@ -17,9 +18,10 @@ export const generateElderCouncilMessages = async ({
   const openai = getOpenAIClient()
 
   // Get new history entries from this round
-  const newHistoryEntriesFromThisRound = mapTiles.flatMap((tile) => {
-    return tile.history.filter((entry) => entry.roundId === currentRound.uid)
-  })
+  const newHistoryEntriesFromThisRound = await getMessagesForTiles(
+    currentRound.uid
+  )
+  const allNewEntries = Object.values(newHistoryEntriesFromThisRound).flat()
 
   // Generate round recap
   const recapMessages: ChatCompletionMessageParam[] = [
@@ -34,7 +36,7 @@ export const generateElderCouncilMessages = async ({
 Previous decrees: ${elderCouncilDecrees.map((d) => d.content).join("\n")}
 
 New events this round:
-${newHistoryEntriesFromThisRound.map((entry) => entry.entryText).join("\n")}
+${allNewEntries.map((entry) => entry.content).join("\n")}
 
 Provide a single sentence recap focusing on notable events and their relationship to our decrees.`,
     },
@@ -73,7 +75,7 @@ Provide a single sentence recap focusing on notable events and their relationshi
 Current decrees: ${elderCouncilDecrees.map((d) => d.content).join("\n")}
 
 Recent events:
-${newHistoryEntriesFromThisRound.map((entry) => entry.entryText).join("\n")}
+${allNewEntries.map((entry) => entry.content).join("\n")}
 
 Return a JSON object with any new decrees needed to address these events. Format: { "newDecrees": ["decree 1", "decree 2"] }`,
     },

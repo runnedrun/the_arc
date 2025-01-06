@@ -2,10 +2,17 @@ import { groupBy } from "lodash-es"
 import { queryDocs } from "../../helpers/reader"
 
 export const getMessagesForTiles = async (roundId: string) => {
-  const messagesForCurrentRound = await queryDocs("messages", (ref) =>
-    ref.where("roundId", "==", roundId)
+  const tileMessagesForCurrentRound = await queryDocs("messages", (ref) =>
+    ref
+      .where("roundId", "==", roundId)
+      .where("archived", "==", false)
+      .orderBy("tileLocation")
+      .orderBy("createdAt", "desc")
+      .limit(100)
   )
 
   // Group messages by tile location
-  return groupBy(messagesForCurrentRound, (m) => JSON.stringify(m.tileLocation))
+  return groupBy(tileMessagesForCurrentRound, (m) =>
+    JSON.stringify(m.tileLocation)
+  )
 }

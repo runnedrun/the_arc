@@ -3,19 +3,21 @@ import { ChatCompletionMessageParam } from "openai/resources"
 import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
+import { Message } from "@/data/types/Message"
+import { getTileHistoryMessageStrings } from "./addToTileHistory"
 
 const MAX_MESSAGE_LENGTH = 150
 
 export const generateElderCouncilResponse = async ({
   tileMessages,
   elderCouncilDecrees,
-  tileHistory,
 }: {
-  tileMessages: any[]
-  elderCouncilDecrees: any[]
-  tileHistory: any[]
+  tileMessages: Message[]
+  elderCouncilDecrees: Message[]
 }) => {
   const openai = getOpenAIClient()
+
+  const tileHistory = await getTileHistoryMessageStrings(tileMessages)
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -25,8 +27,7 @@ export const generateElderCouncilResponse = async ({
     {
       role: "user",
       content: `
-Recent actions on this tile: ${tileMessages.map((m) => m.content).join("\n")}
-Tile history: ${tileHistory.map((h) => h.entryText).join("\n")}
+Recent actions and results this tile: ${tileHistory.join("\n")}
 Your previous decrees: ${elderCouncilDecrees.map((d) => d.content).join("\n")}
 
 Based on these actions and your previous decrees, determine if intervention is needed. Respond with an action (max ${MAX_MESSAGE_LENGTH} characters) or "NO ACTION".`,
@@ -68,7 +69,6 @@ export const generateElderCouncilTileActions = async ({
         const councilResponse = await generateElderCouncilResponse({
           tileMessages: messages,
           elderCouncilDecrees,
-          tileHistory: tile.history,
         })
 
         if (!councilResponse) return null

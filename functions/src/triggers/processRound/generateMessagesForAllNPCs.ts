@@ -6,6 +6,8 @@ import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { NPC } from "@/data/types/NPC"
 import { Message } from "@/data/types/Message"
 import { MapTile } from "@/data/types/MapTile"
+import { getMessagesForTiles } from "./getMessagesForTiles"
+import { getTileHistoryMessageStrings } from "./addToTileHistory"
 
 const MAX_MESSAGE_LENGTH = 150
 const MAX_HISTORY_MESSAGES = 40
@@ -25,6 +27,17 @@ const generateNPCMessage = async ({
 }) => {
   const openai = getOpenAIClient()
 
+  const currentTileMessages = await queryDocs("messages", (ref) =>
+    ref
+      .where("tileLocation.x", "==", currentTile.position.x)
+      .where("tileLocation.y", "==", currentTile.position.y)
+      .where("archived", "==", false)
+      .orderBy("createdAt", "desc")
+      .limit(MAX_HISTORY_MESSAGES)
+  )
+
+  const tileHistory = await getTileHistoryMessageStrings(currentTileMessages)
+
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -35,7 +48,7 @@ const generateNPCMessage = async ({
       role: "user",
       content: `
 Recent messages to you by your tribe leader: ${npcMessages.map((m) => m.content).join("\n")}
-Recent tile history: ${currentTile.history.map((m) => m.entryText).join("\n")}
+Recent tile history: ${tileHistory.join("\n")}
 Recent Elder Council decrees and announcements: ${elderCouncilDecrees.map((m) => m.content).join("\n")}
 Recent actions you took: ${previousActions.map((m) => m.content).join("\n")}
 Generate a single action that you would take, written in third person, max ${MAX_MESSAGE_LENGTH} characters.`,

@@ -1,15 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapTile } from "@/data/types/MapTile"
 import { TileWithIndex } from "./GameInterface"
-import { ScrollArea } from "@radix-ui/react-scroll-area"
+import { GameMessages } from "./GameMessages"
+import { useMessageComposition } from "./hooks/useMessageComposition"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { useContext } from "react"
+import { isEqual } from "lodash-es"
 
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
+  const { currentPlayer } = useContext(GameInterfaceContext)
+  const { previousMessages, composingMessage, setComposingMessage } =
+    useMessageComposition({
+      type: "tileHistory",
+      tileLocation: tile.position,
+    })
+
+  console.log("previousMessages", previousMessages)
+
+  const currentPlayerIsOnThisTile = isEqual(
+    currentPlayer?.currentTileLocation,
+    tile.position
+  )
+
   return (
-    <ScrollArea className="h-48">
-      {tile.history.map((entry, i) => {
-        return <div key={i}>{entry.entryText}</div>
-      })}
-    </ScrollArea>
+    <GameMessages
+      messages={previousMessages}
+      composingMessage={composingMessage}
+      updateComposingMessage={setComposingMessage}
+      allowComposing={currentPlayerIsOnThisTile}
+    />
   )
 }
 
