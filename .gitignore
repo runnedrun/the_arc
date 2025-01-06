@@ -40,5 +40,7 @@ next-env.d.ts
 firestore-debug.log
 private_configs
 firebase-debug.log
+dist/
+ui-debug.log
 
 /private_configs
