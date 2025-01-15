@@ -4,12 +4,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { useContext } from "react"
 import { TokenCountContext } from "./TokenCountContext"
 import { GameInterfaceContext } from "./GameInterfaceContext"
+import { messageRenderers } from "./messageRenderers"
 
 interface GameMessagesProps {
   messages: Message[]
   composingMessage: Message
   updateComposingMessage: (messageContent: string) => void
   allowComposing?: Boolean
+  scrollAreaClassName?: string
 }
 
 export function GameMessages({
@@ -17,24 +19,24 @@ export function GameMessages({
   composingMessage,
   updateComposingMessage,
   allowComposing = true,
+  scrollAreaClassName = "h-40",
 }: GameMessagesProps) {
   const { charactersRemaining } = useContext(TokenCountContext)
-  const { playerHasEndedRound } = useContext(GameInterfaceContext)
+  const { playerHasEndedRound, currentPlayer } =
+    useContext(GameInterfaceContext)
 
   return (
     <div className="flex flex-col gap-2">
-      <ScrollArea className="h-40">
+      <ScrollArea className={scrollAreaClassName}>
         {messages.length ? (
           messages.map((message) => {
-            const isHistoryType = message.type === "tileHistory"
-
-            return (
-              <div
-                key={message.uid}
-                className={`mb-2 rounded p-2 ${
-                  isHistoryType ? "bg-gray-100 italic" : "bg-white"
-                }`}
-              >
+            const renderer = messageRenderers.find((r) =>
+              r.matches(message, currentPlayer?.uid)
+            )
+            return renderer ? (
+              <div key={message.uid}>{renderer.render(message)}</div>
+            ) : (
+              <div key={message.uid} className="mb-2 rounded bg-white p-2">
                 {message.content}
               </div>
             )

@@ -13,6 +13,7 @@ export const getDefaultGameData = () => {
     mapSize: null,
     name: "New Game",
     startingCharacterCount: 300,
+    isTestGame: false,
   } as Game
 }
 
@@ -28,4 +29,5 @@ export type Game = Model<{
   mapSize: number
   name: string
   startingCharacterCount: number
+  isTestGame?: boolean
 }>

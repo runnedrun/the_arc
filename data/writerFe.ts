@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore"
 import { chunk } from "lodash-es"
 import { init } from "./initFb"
+import { getUuid } from "@/helpers/getUuid"
 
 export const genExtraData = () => {
   return {
@@ -76,9 +77,8 @@ export const fbCreate = async <Key extends keyof CollectionModels>(
   opts?: CreateOptions
 ) => {
   const firestore = getFirestore()
-  const ref = opts?.id
-    ? doc(firestore, collectionName, opts.id)
-    : doc(collection(firestore, collectionName))
+  const id = opts?.id ?? getUuid()
+  const ref = doc(firestore, collectionName, id)
   await setDoc(
     ref,
     {

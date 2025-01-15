@@ -5,7 +5,7 @@ import { useMessageComposition } from "./hooks/useMessageComposition"
 export const ElderCouncilDisplay = () => {
   const { previousMessages, composingMessage, setComposingMessage } =
     useMessageComposition({
-      type: "elderCouncil",
+      type: ["elderCouncil"],
     })
 
   return (

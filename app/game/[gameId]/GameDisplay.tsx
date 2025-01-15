@@ -11,7 +11,8 @@ import { ProvideTokenCountContext } from "./TokenCountContext"
 import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
 
 export function GameDisplay() {
-  const { game, players, currentUserId } = useContext(GameInterfaceContext)
+  const { game, players, currentUserId, currentPlayer } =
+    useContext(GameInterfaceContext)
   const handleStartGame = async () => {
     await triggerProcessOnWrite(
       fbUpdate("games", game.uid, {
@@ -22,7 +23,7 @@ export function GameDisplay() {
 
   return (
     <div className="container relative mx-auto p-4">
-      {!game || !players ? (
+      {!game || !players || !currentPlayer ? (
         <LoadingState />
       ) : (
         <>

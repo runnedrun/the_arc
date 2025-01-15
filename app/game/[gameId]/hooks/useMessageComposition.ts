@@ -3,12 +3,16 @@ import { fbSet, genExtraData } from "@/data/writerFe"
 import { Message } from "@/data/types/Message"
 import { v4 as uuidv4 } from "uuid"
 import { useObs } from "@/data/useObs"
-import { queryObs } from "@/data/readerFe"
+import {
+  OrObservable,
+  PossibleQueryConstraint,
+  queryObs,
+} from "@/data/readerFe"
 import { GameInterfaceContext } from "../GameInterfaceContext"
 import { MapPosition } from "@/data/types/MapTile"
 
 interface MessageCompositionOptions {
-  type: "npc" | "elderCouncil" | "tileHistory"
+  type: ("npc" | "elderCouncil" | "tileHistory" | "tileAction")[]
   receiverId?: string
   tileLocation?: MapPosition
   senderId?: string
@@ -24,12 +28,13 @@ export function useMessageComposition({
 
   const allMessages =
     useObs(
-      queryObs("messages", ({ where }) => {
+      queryObs("messages", ({ where, orderBy }) => {
         const conditions = [
           where("gameId", "==", game?.uid),
-          where("type", "==", type),
           where("archived", "==", false),
-        ]
+        ] as OrObservable<PossibleQueryConstraint>[]
+
+        conditions.push(where("type", "in", type))
 
         if (receiverId) {
           conditions.push(where("receiverId", "==", receiverId))
@@ -39,6 +44,8 @@ export function useMessageComposition({
           conditions.push(where("tileLocation.x", "==", tileLocation.x))
           conditions.push(where("tileLocation.y", "==", tileLocation.y))
         }
+
+        conditions.push(orderBy("createdAt", "desc"))
 
         return conditions
       }),
@@ -64,7 +71,7 @@ export function useMessageComposition({
         ...baseMessage,
         roundId: currentRound.uid,
         senderId: senderId || null,
-        type,
+        type: Array.isArray(type) ? type[0] : type,
         content: messageContent,
         roundIndex: currentRound.index,
         gameId: game.uid,

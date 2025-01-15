@@ -1,14 +1,13 @@
-import { readDoc } from "@/data/readerFe"
 import { getGameData } from "../processGame/getGameData"
 import { ProcessJobFn } from "../triggerProcessJob"
 import { generateMessagesForAllNPCs } from "./generateMessagesForAllNPCs"
 import { generateElderCouncilTileActions } from "./generateElderCouncilTileActions"
 import { addToTileHistory } from "./addToTileHistory"
 import { generateElderCouncilMessages } from "./generateElderCouncilMessages"
-import { fbSet } from "@/data/writerFe"
-import { Timestamp } from "firebase/firestore"
-import { queryDocs } from "../../helpers/reader"
+import { queryDocs, readDoc } from "../../helpers/reader"
 import { startNewRound } from "../processGame/startNewRound"
+import { fbSet } from "../../helpers/writer"
+import { Timestamp } from "firebase-admin/firestore"
 
 export const roundProcessingTriggered: ProcessJobFn = async ({ docId }) => {
   const round = await readDoc("rounds", docId)
@@ -17,6 +16,13 @@ export const roundProcessingTriggered: ProcessJobFn = async ({ docId }) => {
 
   const allPlayersHaveCompletedTheRound = args.players.every(
     (player) => !!args.currentRound.playersCompletedAt?.[player.uid]
+  )
+
+  console.log(
+    "allPlayersHaveCompletedTheRound",
+    allPlayersHaveCompletedTheRound,
+    args.players,
+    args.currentRound
   )
 
   if (!allPlayersHaveCompletedTheRound) {

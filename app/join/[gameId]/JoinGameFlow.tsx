@@ -17,6 +17,76 @@ import { useContext, useEffect, useState } from "react"
 import { firstValueFrom } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 
+export async function joinGame({
+  gameId,
+  userId,
+  playerName,
+  secretVision,
+  existingPlayer = null,
+}: {
+  gameId: string
+  userId: string
+  playerName: string
+  secretVision: string
+  existingPlayer?: any | null
+}) {
+  console.log("existingPlayer", existingPlayer, gameId, userId)
+  // Get current players to determine the new player's index
+  const existingPlayers = await firstValueFrom(
+    queryObs("players", ({ where }) => [where("gameId", "==", gameId)])
+  )
+
+  // Get game data
+  const game = await firstValueFrom(docObs("games", gameId))
+  const mapSize = game.mapSize
+
+  // Assign corner based on player count
+  let mapPosition = existingPlayer?.currentTileLocation
+
+  if (!mapPosition) {
+    const cornerPositions: MapPosition[] = [
+      { y: 0, x: 0 }, // Top-left
+      { y: 0, x: mapSize - 1 }, // top-right
+      { y: mapSize - 1, x: 0 }, // Bottom-left
+      { y: mapSize - 1, x: mapSize - 1 }, // Bottom-right
+    ]
+    const positionIndex = existingPlayers.length
+    mapPosition = cornerPositions[positionIndex]
+  }
+
+  const playerColors = [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#45B7D1",
+    "#96CEB4",
+    "#FFEEAD",
+    "#D4A5A5",
+    "#9B59B6",
+    "#3498DB",
+    "#E67E22",
+    "#2ECC71",
+  ]
+
+  const colorIndex = existingPlayers.length % playerColors.length
+  const playerColor = playerColors[colorIndex]
+
+  const uuid = existingPlayer?.uid || uuidv4()
+  const baseData = existingPlayer ? omit(existingPlayer, "uid") : genExtraData()
+
+  await fbSet("players", uuid, {
+    ...baseData,
+    gameId,
+    userId,
+    name: playerName || "New Player",
+    letters: 500,
+    secretVision: secretVision.trim(),
+    color: playerColor,
+    currentTileLocation: mapPosition,
+  })
+
+  return uuid
+}
+
 export function JoinGameFlow({ gameId }: { gameId: string }) {
   const { uid: userId } = useContext(UserContext)?.user || {}
   const [playerName, setPlayerName] = useState("")
@@ -80,74 +150,30 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
 
     setIsJoining(true)
 
-    // Get current players to determine the new player's index
-    const existingPlayers = await firstValueFrom(
-      queryObs("players", ({ where }) => [where("gameId", "==", gameId)])
-    )
+    try {
+      await joinGame({
+        gameId,
+        userId,
+        playerName,
+        secretVision,
+        existingPlayer,
+      })
 
-    const mapSize = game.mapSize // Get map size from game data
+      toast({
+        title: "Welcome to the game!",
+        description: "You've successfully joined the game.",
+      })
 
-    console.log("mapsize")
-
-    // Assign corner based on player count
-    let mapPosition = existingPlayer?.currentTileLocation
-
-    if (!mapPosition) {
-      const cornerPositions: MapPosition[] = [
-        { y: 0, x: 0 }, // Top-left
-        { y: 0, x: mapSize - 1 }, // top-right
-        { y: mapSize - 1, x: 0 }, // Bottom-left
-        { y: mapSize - 1, x: mapSize - 1 }, // Bottom-right
-      ]
-      const positionIndex = existingPlayers.length
-
-      mapPosition = cornerPositions[positionIndex]
+      router.push(`/game/${gameId}`)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to join game. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsJoining(false)
     }
-
-    // Define an array of distinct colors
-    const playerColors = [
-      "#FF6B6B", // Red
-      "#4ECDC4", // Teal
-      "#45B7D1", // Blue
-      "#96CEB4", // Sage
-      "#FFEEAD", // Yellow
-      "#D4A5A5", // Pink
-      "#9B59B6", // Purple
-      "#3498DB", // Light Blue
-      "#E67E22", // Orange
-      "#2ECC71", // Green
-    ]
-
-    // Get the next color based on the number of existing players
-    const colorIndex = existingPlayers.length % playerColors.length
-    const playerColor = playerColors[colorIndex]
-
-    const uuid = existingPlayer?.uid || uuidv4()
-
-    const baseData = existingPlayer
-      ? omit(existingPlayer, "uid")
-      : genExtraData()
-
-    console.log("start", mapPosition, mapSize)
-
-    await fbSet("players", uuid, {
-      ...baseData,
-      gameId,
-      userId,
-      name: playerName || "New Player",
-      letters: 500,
-      secretVision: secretVision.trim(),
-      color: playerColor,
-      currentTileLocation: mapPosition,
-    })
-
-    toast({
-      title: "Welcome to the game!",
-      description: "You've successfully joined the game.",
-    })
-
-    router.push(`/game/${gameId}`)
-    setIsJoining(false)
   }
 
   const handleUpdateName = async () => {

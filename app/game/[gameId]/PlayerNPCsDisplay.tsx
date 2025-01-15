@@ -29,7 +29,7 @@ export const PlayerNPCsDisplay = ({
           "==",
           isNil(selectedPosition?.y) ? SKIP : selectedPosition.y
         ),
-        where("playerTribeId", "==", currentPlayer.uid || "__never__"),
+        where("playerTribeId", "==", currentPlayer?.uid || "__never__"),
         where("archived", "==", false),
       ]),
       [selectedPosition?.x, selectedPosition?.y]

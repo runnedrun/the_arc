@@ -11,7 +11,7 @@ export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
   const { previousMessages, composingMessage, setComposingMessage } =
     useMessageComposition({
-      type: "tileHistory",
+      type: ["tileHistory", "tileAction"],
       tileLocation: tile.position,
     })
 

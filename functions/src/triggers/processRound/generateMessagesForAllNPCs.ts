@@ -112,7 +112,7 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
         roundId: currentRound.uid,
         roundIndex: currentRound.index,
         gameId: game.uid,
-        type: "tile",
+        type: "tileAction",
         processedAt: null,
       })
 

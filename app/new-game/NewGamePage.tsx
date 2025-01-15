@@ -10,9 +10,13 @@ import { fbCreate, fbSet } from "@/data/writerFe"
 import { Timestamp } from "firebase/firestore"
 import { useContext } from "react"
 import { ExistingGamesForUser } from "./ExistingGamesForUser"
+import { Player } from "@/data/types/Player"
 
 // Function to create a new game with valley tiles
-export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
+export const createNewGameWithTiles = async (
+  userId: string,
+  propOverrides?: Partial<Game>
+): Promise<{ game: Game; player: Player }> => {
   const defaultMapSize = 4
   // Create a new game
   const newGame = {
@@ -24,11 +28,12 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
     name: "New Game",
     createdBy: userId,
     mapSize: defaultMapSize,
+    ...propOverrides,
   } as Game
 
   const newGameRef = await fbCreate("games", newGame)
 
-  await fbCreate("players", {
+  const newPlayer = {
     gameId: newGameRef.id,
     userId,
     currentTileLocation: {
@@ -36,7 +41,8 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
       y: 0,
     },
     name: "Player 1",
-  })
+  }
+  const playerRef = await fbCreate("players", newPlayer)
 
   // Create valley tiles in parallel and assign them to the game
 
@@ -61,12 +67,10 @@ export const createNewGameWithTiles = async (userId: string): Promise<Game> => {
       )
   )
 
-  // Update the game with the valley grid
-  await fbSet("games", newGameRef.id, {
-    ...newGame,
-  })
-
-  return { ...newGame }
+  return {
+    game: { ...newGame, uid: newGameRef.id },
+    player: { ...newPlayer, uid: playerRef.id },
+  }
 }
 
 const LoggedInUserDisplay = () => {

@@ -68,7 +68,7 @@ export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
                   )}
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-56">
+              <PopoverContent className="w-96">
                 <TileInfoDisplay
                   selectedTile={{ ...tile, index }}
                 ></TileInfoDisplay>

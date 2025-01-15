@@ -10,17 +10,18 @@ Game Overview
 • Objective: Achieve your secret vision for the valley’s future by influencing its development through strategic actions and interactions.
 
 Components
-• Valley Grid: A 4x4 grid representing the valley.
-• Letters: The game’s primary resource, used to perform actions.
+• Valley Grid: A 4x4 grid representing the valley. Tiles remain hidden until explored by players or NPCs.
+• Letters: The game's primary resource, used to perform actions.
 • AI Historians: AI models that record and update the history of each tile.
-• NPC Tribe Members: AI-controlled characters influenced by players.
+• NPC Tribe Members: Randomly generated characters with unique personalities that appear throughout the valley.
 • Elder Council: A powerful AI entity that can affect the entire valley.
-• AI Judge: An AI that determines the winner based on the valley’s history.
+• AI Judge: An AI that determines the winner based on the valley's history.
 
 Setup 1. Secret Objectives:
 • Each player writes a secret vision for the valley’s future (max 200 characters).
 • This vision is kept hidden from other players. 2. Starting Positions:
-• Players choose a starting tile on the valley grid. 3. Initial Resources:
+• Players begin on the center four tiles of the valley grid.
+• All other tiles start unexplored and hidden. 3. Initial Resources:
 • Each player starts with a stockpile of letters (e.g., 500 letters).
 
 Game Play
@@ -62,11 +63,30 @@ Aging
 • Reaches zero in the last 10 rounds.
 
 NPC Tribe Members
-• Behavior: Autonomous but can be influenced by players.
+• Generation: A new NPC appears on a random tile every 4 rounds
+• Initial State:
+• Spawns with a randomly generated personality and motivations
+• Acts independently based on their personality until influenced by players
+• Behavior:
+• Can explore hidden tiles
+• Autonomous but can be influenced by players
+• May naturally align or conflict with player objectives based on their personality
 • Capabilities:
-• Move, send messages to AI Historians.
-• Possess their own letter stockpiles.
-• Generation: A new NPC appears on each player’s tile every 5 rounds.
+• Move, send messages to AI Historians
+• Possess their own letter stockpiles
+• Can reveal new tiles through exploration
+
+Exploration
+• Hidden Tiles:
+• Tiles start unexplored except for the central four tiles
+• Content and characteristics of tiles are revealed upon first visit
+• Both players and NPCs can reveal new tiles
+• Discovery Bonuses:
+• First to explore a tile receives bonus letters (100)
+• Discovering unique tile features may grant special advantages
+• Tile Variety:
+• Each tile has unique characteristics that may benefit certain strategies
+• Special locations may provide additional resources or capabilities
 
 Elder Council
 • Role: A powerful AI that can influence any tile or NPC.

@@ -5,8 +5,6 @@ import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { Message } from "@/data/types/Message"
 
-const openAi = getOpenAIClient()
-
 export const getTileHistoryMessageStrings = (messages: Message[]) => {
   return messages.map((message) => {
     const prefix =
@@ -44,6 +42,7 @@ ${messages.map((m) => `${m.senderId === "elderCouncil" ? "[ELDER COUNCIL]" : "[A
 Write a 1-2 sentence historical entry for this year's events:`,
     },
   ]
+  const openAi = getOpenAIClient()
 
   const completion = await openAi.chat.completions.create({
     model: "gpt-4",

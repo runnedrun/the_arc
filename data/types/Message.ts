@@ -10,6 +10,6 @@ export type Message = Model<{
   content: string
   tileLocation: MapPosition
   roundIndex: number
-  type: "npc" | "elderCouncil" | "tile" | "tileHistory"
+  type: "npc" | "elderCouncil" | "tileAction" | "tileHistory"
   processedAt: Timestamp | null
 }>

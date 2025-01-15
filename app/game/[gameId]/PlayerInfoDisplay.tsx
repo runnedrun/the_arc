@@ -7,6 +7,7 @@ import { GameInterfaceContext } from "./GameInterfaceContext"
 import { TokenCountContext } from "./TokenCountContext"
 import { PlayerMarker } from "./components/PlayerMarker"
 import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
+import { LoadingComponent } from "@/components/LoadingComponent"
 
 export const PlayerInfoDisplay = () => {
   const {
@@ -23,14 +24,15 @@ export const PlayerInfoDisplay = () => {
     (player) => player.userId === currentUserId
   )
 
-  const hasPlayerEndedRound = round?.playersCompletedAt?.[currentUserId] != null
+  const hasPlayerEndedRound =
+    round?.playersCompletedAt?.[currentPlayer.uid] != null
   const isRoundProcessing = round?.processingStartedAt != null
 
   const handleEndRound = async () => {
     await triggerProcessOnWrite(
       fbUpdate("rounds", round.uid, {
         playersCompletedAt: {
-          [currentUserId]: Timestamp.now(),
+          [currentPlayer.uid]: Timestamp.now(),
         },
       })
     )
@@ -45,7 +47,8 @@ export const PlayerInfoDisplay = () => {
     }
     if (hasPlayerEndedRound) {
       return {
-        disabled: true,
+        // disabled: true,
+        onClick: handleEndRound,
         children: "Waiting on other players",
       }
     }
@@ -59,10 +62,12 @@ export const PlayerInfoDisplay = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <CardTitle>{currentPlayer?.name}</CardTitle>
-          <PlayerMarker player={currentPlayer}></PlayerMarker>
-        </div>
+        <LoadingComponent isLoading={!currentPlayer}>
+          <div className="flex items-center gap-2">
+            <CardTitle>{currentPlayer?.name}</CardTitle>
+            <PlayerMarker player={currentPlayer}></PlayerMarker>
+          </div>
+        </LoadingComponent>
       </CardHeader>
       <CardContent>
         <p>Round: {round?.index}</p>

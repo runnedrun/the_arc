@@ -5,6 +5,7 @@ import batchPromises from "batch-promises"
 import { PartialWithFieldValue, Timestamp } from "firebase-admin/firestore"
 import { chunk } from "lodash-es"
 import { getBeFirestore } from "./getBeFirestore"
+import { getUuid } from "@/helpers/getUuid"
 
 export const genExtraData = () => {
   return {
@@ -74,9 +75,8 @@ export const fbCreate = async <Key extends keyof CollectionModels>(
   opts?: CreateOptions
 ) => {
   const firestore = getBeFirestore()
-  const ref = opts?.id
-    ? firestore.collection(collectionName).doc(opts.id)
-    : firestore.collection(collectionName).doc()
+  const id = opts?.id ?? getUuid()
+  const ref = firestore.collection(collectionName).doc(id)
   await ref.set(
     {
       ...genExtraData(),
