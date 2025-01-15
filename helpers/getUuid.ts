@@ -19,3 +19,17 @@ export const setTestMode = (mode: boolean) => {
   seededRandom = rand.create("1234")
   testMode = mode
 }
+
+export const safeSetTestMode = async (
+  mode: boolean,
+  callback: () => Promise<any>
+) => {
+  try {
+    setTestMode(mode)
+    await callback()
+  } finally {
+    testMode = false
+  }
+}
+
+export const isTestMode = () => testMode

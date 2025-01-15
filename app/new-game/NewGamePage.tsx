@@ -11,6 +11,7 @@ import { Timestamp } from "firebase/firestore"
 import { useContext } from "react"
 import { ExistingGamesForUser } from "./ExistingGamesForUser"
 import { Player } from "@/data/types/Player"
+import { getDefaultMapTile } from "@/data/types/MapTile"
 
 // Function to create a new game with valley tiles
 export const createNewGameWithTiles = async (
@@ -43,29 +44,6 @@ export const createNewGameWithTiles = async (
     name: "Player 1",
   }
   const playerRef = await fbCreate("players", newPlayer)
-
-  // Create valley tiles in parallel and assign them to the game
-
-  await Promise.all(
-    Array(newGame.mapSize)
-      .fill(null)
-      .map((_, y) =>
-        Promise.all(
-          Array(newGame.mapSize)
-            .fill(null)
-            .map((_, x) =>
-              fbCreate("mapTiles", {
-                svg: null,
-                gameId: newGameRef.id,
-                position: {
-                  x,
-                  y,
-                },
-              }).then((tile) => tile.id)
-            )
-        )
-      )
-  )
 
   return {
     game: { ...newGame, uid: newGameRef.id },

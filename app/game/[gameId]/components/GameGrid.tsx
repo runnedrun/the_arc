@@ -8,20 +8,26 @@ import { TileWithIndex } from "../GameInterface"
 import { Popover, PopoverTrigger } from "@/components/ui/popover"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 interface GameGridProps {
   onTileSelect: (position: MapTile & { index: number }) => void
   selectedTile: TileWithIndex
+  onTileClosed: (tile: TileWithIndex) => void
 }
 
-export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
+export function GameGrid({
+  onTileSelect,
+  selectedTile,
+  onTileClosed,
+}: GameGridProps) {
   const { mapTiles, players, npcs } = useContext(GameInterfaceContext)
   const mapTilesSorted = sortBy(mapTiles, (tile) => {
     return `${tile.position.y},${tile.position.x}`
   })
 
   return (
-    <div className="grid h-64 w-64 grid-cols-4 gap-1">
+    <div className="grid grid-cols-4 gap-1">
       {mapTilesSorted.map((tile, index) => {
         const coordinates = tile.position
         const playersOnTile = players.filter((player) =>
@@ -42,29 +48,48 @@ export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
           <div
             key={tile.uid}
             className={cn(
-              "relative flex cursor-pointer items-center justify-center border border-black bg-green-500",
-              { "z-50": thisTileIsSelected }
+              "relative flex cursor-pointer items-center justify-center border border-black",
+              {
+                "z-50": thisTileIsSelected,
+                "bg-green-500": tile.explored,
+                "bg-gray-700": !tile.explored,
+                "cursor-pointer": tile.explored,
+              }
             )}
           >
             <Popover
+              open={thisTileIsSelected}
               onOpenChange={(open) => {
                 if (!open) {
-                  onTileSelect(null)
+                  onTileClosed({ ...tile, index })
                 }
               }}
             >
               <PopoverTrigger asChild>
                 <div
-                  onClick={() => onTileSelect({ ...tile, index })}
-                  className="flex h-full w-full items-center justify-center"
+                  onClick={() => {
+                    console.log("tile", tile.uid, tile.explored)
+                    tile.explored && onTileSelect({ ...tile, index })
+                  }}
+                  className="flex h-[100px] w-[100px] items-center justify-center"
                 >
-                  {tile.svg ? (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: tile.svg }}
-                      className="w-44"
+                  {tile.explored && tile.imageUrl ? (
+                    <Image
+                      src={tile.imageUrl}
+                      alt={`Tile ${index + 1}`}
+                      className="h-full w-full object-cover"
+                      width={100}
+                      height={100}
                     />
                   ) : (
-                    <span className="font-bold text-white">{index + 1}</span>
+                    <span
+                      className={cn(
+                        "font-bold",
+                        tile.explored ? "text-white" : "text-gray-500"
+                      )}
+                    >
+                      {index + 1}
+                    </span>
                   )}
                 </div>
               </PopoverTrigger>
@@ -88,25 +113,26 @@ export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
               </div>
             ))}
 
-            {Object.entries(npcsGroupedByPlayer).map(([playerId, npcs]) => {
-              const player = players.find((player) => player.uid === playerId)
+            {tile.explored &&
+              Object.entries(npcsGroupedByPlayer).map(([playerId, npcs]) => {
+                const player = players.find((player) => player.uid === playerId)
 
-              const playerIndex = players.findIndex(
-                (player) => player.uid === playerId
-              )
-              return (
-                <div
-                  key={playerId}
-                  className="absolute"
-                  style={{
-                    left: "4px",
-                    bottom: `${1 + playerIndex * 4}px`,
-                  }}
-                >
-                  <NPCsMarker npcs={npcs} playerForNPC={player}></NPCsMarker>
-                </div>
-              )
-            })}
+                const playerIndex = players.findIndex(
+                  (player) => player.uid === playerId
+                )
+                return (
+                  <div
+                    key={playerId}
+                    className="absolute"
+                    style={{
+                      left: "4px",
+                      bottom: `${1 + playerIndex * 4}px`,
+                    }}
+                  >
+                    <NPCsMarker npcs={npcs} playerForNPC={player}></NPCsMarker>
+                  </div>
+                )
+              })}
           </div>
         )
       })}

@@ -5,7 +5,7 @@ import { useMessageComposition } from "./hooks/useMessageComposition"
 export function NPCDisplay({ npc }: { npc: NPC }) {
   const { previousMessages, composingMessage, setComposingMessage } =
     useMessageComposition({
-      type: ["npc"],
+      types: ["npc"],
       receiverId: npc.uid,
     })
 

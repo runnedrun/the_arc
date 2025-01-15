@@ -6,16 +6,14 @@ import { useMessageComposition } from "./hooks/useMessageComposition"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { useContext } from "react"
 import { isEqual } from "lodash-es"
-
+import Image from "next/image"
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
   const { previousMessages, composingMessage, setComposingMessage } =
     useMessageComposition({
-      type: ["tileHistory", "tileAction"],
+      types: ["tileHistory", "tileAction"],
       tileLocation: tile.position,
     })
-
-  console.log("previousMessages", previousMessages)
 
   const currentPlayerIsOnThisTile = isEqual(
     currentPlayer?.currentTileLocation,
@@ -45,6 +43,14 @@ export const TileInfoDisplay = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
+        <div className="flex w-full justify-center">
+          <Image
+            src={selectedTile.imageUrl}
+            alt="Tile Image"
+            width={400}
+            height={400}
+          />
+        </div>
         <div>History:</div>
         <TileHistoryDisplay tile={selectedTile}></TileHistoryDisplay>
       </CardContent>

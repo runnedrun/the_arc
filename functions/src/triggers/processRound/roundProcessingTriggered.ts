@@ -1,4 +1,4 @@
-import { getGameData } from "../processGame/getGameData"
+import { GameProcessingArgs, getGameData } from "../processGame/getGameData"
 import { ProcessJobFn } from "../triggerProcessJob"
 import { generateMessagesForAllNPCs } from "./generateMessagesForAllNPCs"
 import { generateElderCouncilTileActions } from "./generateElderCouncilTileActions"
@@ -8,12 +8,9 @@ import { queryDocs, readDoc } from "../../helpers/reader"
 import { startNewRound } from "../processGame/startNewRound"
 import { fbSet } from "../../helpers/writer"
 import { Timestamp } from "firebase-admin/firestore"
+import { safeSetTestMode } from "@/helpers/getUuid"
 
-export const roundProcessingTriggered: ProcessJobFn = async ({ docId }) => {
-  const round = await readDoc("rounds", docId)
-  const gameId = round.gameId
-  const args = await getGameData(gameId)
-
+const runRoundProcessing = async (args: GameProcessingArgs) => {
   const allPlayersHaveCompletedTheRound = args.players.every(
     (player) => !!args.currentRound.playersCompletedAt?.[player.uid]
   )
@@ -29,7 +26,6 @@ export const roundProcessingTriggered: ProcessJobFn = async ({ docId }) => {
     return false
   }
 
-  console.log("Setting round processing started at")
   await fbSet("rounds", args.currentRound.uid, {
     processingStartedAt: Timestamp.now(),
   })
@@ -67,5 +63,15 @@ export const roundProcessingTriggered: ProcessJobFn = async ({ docId }) => {
 
   await startNewRound(args)
 
+  return false
+}
+
+export const roundProcessingTriggered: ProcessJobFn = async ({ docId }) => {
+  const round = await readDoc("rounds", docId)
+  const gameId = round.gameId
+  const args = await getGameData(gameId)
+  await safeSetTestMode(args.game.isTestGame, async () => {
+    await runRoundProcessing(args)
+  })
   return false
 }

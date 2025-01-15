@@ -11,10 +11,17 @@ export default function GameInterface() {
   const [selectedTile, setSelectedTile] = useState<TileWithIndex>(null)
 
   const setOrToggleTile = (newTile: TileWithIndex) => {
-    if (newTile?.uid === selectedTile?.uid) {
+    setSelectedTile((currentTile) => {
+      if (currentTile?.uid === newTile?.uid) {
+        return null
+      }
+      return newTile
+    })
+  }
+
+  const closeTile = (tile: TileWithIndex) => {
+    if (tile?.uid === selectedTile?.uid) {
       setSelectedTile(null)
-    } else {
-      setSelectedTile(newTile)
     }
   }
 
@@ -28,7 +35,11 @@ export default function GameInterface() {
       </div>
 
       <div className="flex flex-grow justify-center">
-        <GameGrid onTileSelect={setOrToggleTile} selectedTile={selectedTile} />
+        <GameGrid
+          onTileSelect={setOrToggleTile}
+          selectedTile={selectedTile}
+          onTileClosed={closeTile}
+        />
       </div>
 
       <ElderCouncilDisplay></ElderCouncilDisplay>

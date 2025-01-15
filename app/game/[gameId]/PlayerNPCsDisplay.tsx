@@ -14,8 +14,6 @@ export const PlayerNPCsDisplay = ({
 }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
 
-  console.log("curr", currentPlayer.uid)
-
   const npcs =
     useObs(
       queryObs("npcs", ({ where }) => [

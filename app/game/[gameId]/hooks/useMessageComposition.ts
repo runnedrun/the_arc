@@ -12,14 +12,14 @@ import { GameInterfaceContext } from "../GameInterfaceContext"
 import { MapPosition } from "@/data/types/MapTile"
 
 interface MessageCompositionOptions {
-  type: ("npc" | "elderCouncil" | "tileHistory" | "tileAction")[]
+  types: ("npc" | "elderCouncil" | "tileHistory" | "tileAction")[]
   receiverId?: string
   tileLocation?: MapPosition
   senderId?: string
 }
 
 export function useMessageComposition({
-  type,
+  types,
   receiverId,
   tileLocation,
   senderId,
@@ -34,7 +34,7 @@ export function useMessageComposition({
           where("archived", "==", false),
         ] as OrObservable<PossibleQueryConstraint>[]
 
-        conditions.push(where("type", "in", type))
+        conditions.push(where("type", "in", types))
 
         if (receiverId) {
           conditions.push(where("receiverId", "==", receiverId))
@@ -49,10 +49,14 @@ export function useMessageComposition({
 
         return conditions
       }),
-      [game?.uid, receiverId, tileLocation?.x, tileLocation?.y, type]
+      [
+        game?.uid,
+        receiverId,
+        tileLocation?.x,
+        tileLocation?.y,
+        JSON.stringify(types),
+      ]
     ) || []
-
-  console.log("allMessages", allMessages)
 
   const composingMessage = allMessages?.find(
     (message) => message.roundId === currentRound?.uid
@@ -71,7 +75,7 @@ export function useMessageComposition({
         ...baseMessage,
         roundId: currentRound.uid,
         senderId: senderId || null,
-        type: Array.isArray(type) ? type[0] : type,
+        type: Array.isArray(types) ? types[0] : types,
         content: messageContent,
         roundIndex: currentRound.index,
         gameId: game.uid,
@@ -87,7 +91,7 @@ export function useMessageComposition({
       game?.uid,
       receiverId,
       tileLocation,
-      type,
+      types,
       senderId,
     ]
   )
