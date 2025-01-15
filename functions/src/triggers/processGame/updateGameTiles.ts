@@ -11,6 +11,10 @@ import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
 import { isTestMode } from "@/helpers/getUuid"
 import { getStorage } from "firebase-admin/storage"
 import fetch from "node-fetch"
+import fs from "fs"
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions"
+import path from "path"
+import { getMessageStrings } from "../processRound/getMessageStrings"
 
 const TileDescriptions = z.object({
   tiles: z.array(
@@ -24,51 +28,73 @@ const TileDescriptions = z.object({
 
 const getTileDescriptionsFromOpenAI = async (game: Game) => {
   const openAiClient = getOpenAIClient()
+  const messages: ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content: `You are a skill board game environment designer. You receive a description of an environment then return a a ${game.mapSize}x${game.mapSize} grid of tiles with descriptions of each tile.`,
+    },
+    {
+      role: "user",
+      content: getInitialPrompt(game),
+    },
+  ]
+
+  console.log("messages", messages)
+
   const completion = await openAiClient.beta.chat.completions.parse({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: "You are a skilled cartographer and environmental designer.",
-      },
-      {
-        role: "user",
-        content: getInitialPrompt(game.mapSize),
-      },
-    ],
+    model: "gpt-4o",
+    messages,
     response_format: zodResponseFormat(TileDescriptions, "tiles"),
     temperature: 0.7,
   })
+
+  if (isTestMode()) {
+    console.log(
+      "writing tileDescriptions.json",
+      completion.choices[0].message.parsed.tiles
+    )
+  }
 
   return completion.choices[0].message.parsed.tiles
 }
 
 const getTileDescriptions = async (game: Game) => {
-  return isTestMode()
-    ? sampleTileDescriptions.tiles
-    : getTileDescriptionsFromOpenAI(game)
+  // return isTestMode()
+  //   ? sampleTileDescriptions.tiles
+  //   : getTileDescriptionsFromOpenAI(game)
+  return getTileDescriptionsFromOpenAI(game)
 }
 
-const getInitialPrompt = (sizeOfGrid: number) =>
-  `Design a ${sizeOfGrid}x${sizeOfGrid} valley map where each tile is 3km square...`
-// ... rest of your existing prompt ...
+const getInitialPrompt = (game: Game) =>
+  `Design a ${game.mapSize}x${game.mapSize} world map where each tile represents an equal sized portion of the world.
+The world you are mapping is described as follows: 
+${game.environmentDescription}
+`
 
-const getDallePrompt = (tileHistory: Message[], previousPrompt: string) => {
+const getDallePrompt = (
+  tileHistory: Message[],
+  previousPrompt: string,
+  gameArgs: GameProcessingArgs
+) => {
   const previousPromptExplanation = `
-  This is the previous prompt you generated:
+  You previously used this prompt to reprsent the state of this environment:
   ${previousPrompt || "No previous prompt"}
   Make a new prompt that reflects this recent history of the environment from this year:
-  ${tileHistory.join("\n")}
+  ${getMessageStrings(tileHistory, gameArgs)}
   `
 
-  return `Create a dalle prompt for the current state of this environment.
+  return `Create a dall-e prompt for an image of the current state of this environment.
 ${previousPromptExplanation}
+
+The environment is situated within this world:
+${gameArgs.game.environmentDescription}
 
 Requirements:
 - the image should be in a vector art style
 - the image must fill the whole frame, no text, no border
 - Show the environment from a slightly elevated angle
-- Include appropriate flora, structures, and geographical features`
+- The prompt must be breif, 1 sentence or less and only describe visual elements, with no addition flavor text.
+`
 }
 
 const updateTileExplorationStatus = async (game: Game) => {
@@ -131,22 +157,21 @@ const uploadImageToStorage = async (
   return signedUrl
 }
 
-export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
+export const updateGameTiles = async (args: GameProcessingArgs) => {
   const openAiClient = getOpenAIClient()
 
   // Generate initial descriptions if no tiles exist
   const existingTiles = await queryDocs("mapTiles", (ref) =>
-    ref.where("gameId", "==", game.uid).where("archived", "==", false)
+    ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
   )
 
-  const tileDescriptions = await getTileDescriptions(game)
-
   if (existingTiles.length === 0) {
+    const tileDescriptions = await getTileDescriptions(args.game)
     // Create initial tiles
     await Promise.all(
       tileDescriptions.map(async (tile) => {
         const newTile: MapTile = {
-          gameId: game.uid,
+          gameId: args.game.uid,
           position: { x: tile.posX, y: tile.posY },
           explored: false,
           lastImageGeneratedAt: null,
@@ -158,7 +183,7 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
           content: tile.description,
           type: "tileHistory",
           tileLocation: { x: tile.posX, y: tile.posY },
-          gameId: game.uid,
+          gameId: args.game.uid,
           roundId: null,
           roundIndex: -1,
           senderId: "tileHistory",
@@ -172,11 +197,11 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
     )
   }
 
-  await updateTileExplorationStatus(game)
+  await updateTileExplorationStatus(args.game)
 
   // Update images for explored tiles
   const allTiles = await queryDocs("mapTiles", (ref) =>
-    ref.where("gameId", "==", game.uid).where("archived", "==", false)
+    ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
   )
 
   await Promise.all(
@@ -186,7 +211,7 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
 
       const tileHistory = await queryDocs("messages", (ref) =>
         ref
-          .where("gameId", "==", game.uid)
+          .where("gameId", "==", args.game.uid)
           .where("type", "==", "tileHistory")
           .where("tileLocation.x", "==", tile.position.x)
           .where("tileLocation.y", "==", tile.position.y)
@@ -203,9 +228,17 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
         return
       }
 
+      const prompt = getDallePrompt(
+        messagesSinceLastPrompt,
+        tile.previousDallePrompt,
+        args
+      )
+
+      console.log("prompt to gen dalle", prompt)
+
       // Generate DALL-E prompt
       const dallePromptCompletion = await openAiClient.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -214,10 +247,7 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
           },
           {
             role: "user",
-            content: getDallePrompt(
-              messagesSinceLastPrompt,
-              tile.previousDallePrompt
-            ),
+            content: prompt,
           },
         ],
         temperature: 0.7,
@@ -240,7 +270,7 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
 
       const storedImageUrl = await uploadImageToStorage(
         imageUrl,
-        game.uid,
+        args.game.uid,
         tile.position
       )
 

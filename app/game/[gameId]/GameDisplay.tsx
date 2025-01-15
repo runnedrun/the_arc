@@ -9,6 +9,7 @@ import GameInterface from "./GameInterface"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { ProvideTokenCountContext } from "./TokenCountContext"
 import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
+import { GameEnvironmentControl } from "@/app/game/[gameId]/GameEnvironmentControl"
 
 export function GameDisplay() {
   const { game, players, currentUserId, currentPlayer } =
@@ -36,11 +37,14 @@ export function GameDisplay() {
               <div className="rounded-lg bg-white p-6 text-center">
                 <h2 className="mb-4 text-xl">Game has not started yet</h2>
                 {game.createdBy === currentUserId && (
-                  <div className="flex items-center gap-2">
-                    <Button onClick={handleStartGame}>Start Game</Button>
-                    {!game.gameSetupCompletedAt && game.startTime && (
-                      <LoadingSpinner className="h-8 w-8"></LoadingSpinner>
-                    )}
+                  <div className="flex flex-col gap-5">
+                    <div className="flex items-center justify-center gap-2">
+                      <Button onClick={handleStartGame}>Start Game</Button>
+                      {!game.gameSetupCompletedAt && game.startTime && (
+                        <LoadingSpinner className="h-8 w-8"></LoadingSpinner>
+                      )}
+                    </div>
+                    <GameEnvironmentControl></GameEnvironmentControl>
                   </div>
                 )}
               </div>

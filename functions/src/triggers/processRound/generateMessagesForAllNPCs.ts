@@ -6,8 +6,8 @@ import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { NPC } from "@/data/types/NPC"
 import { Message } from "@/data/types/Message"
 import { MapTile } from "@/data/types/MapTile"
-import { getMessagesForTiles } from "./getMessagesForTiles"
-import { getMessageStrings } from "./getTileHistoryMessageStrings"
+import { getMessageStrings } from "./getMessageStrings"
+import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
 
 const MAX_MESSAGE_LENGTH = 150
 const MAX_HISTORY_MESSAGES = 40
@@ -15,18 +15,17 @@ const MAX_HISTORY_MESSAGES = 40
 const generateNPCMessage = async ({
   npc,
   npcMessages,
-  elderCouncilDecrees,
   currentTile,
   previousActions,
-  players,
+  gameArgs,
 }: {
   npc: NPC
   npcMessages: Message[]
-  elderCouncilDecrees: Message[]
   currentTile: MapTile
   previousActions: Message[]
-  players: GameProcessingArgs["players"]
+  gameArgs: GameProcessingArgs
 }) => {
+  const { game, elderCouncilDecrees } = gameArgs
   const openai = getOpenAIClient()
 
   const currentTileMessages = await queryDocs("messages", (ref) =>
@@ -38,13 +37,15 @@ const generateNPCMessage = async ({
       .limit(MAX_HISTORY_MESSAGES)
   )
 
-  const tileHistory = await getMessageStrings(currentTileMessages, players)
+  const tileHistory = await getMessageStrings(currentTileMessages, gameArgs)
 
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are ${npc.name}, a member of the valley. Generate a realistic action (max ${MAX_MESSAGE_LENGTH} characters) that you would take on your current tile, based on your previous interactions and the tile's history. The action should be written in third person. 
-      Your action could also include moving to a different tile, but you must describe the kind of of tile you want to move to, using information from the elder council to determine what kind of tiles exist.`,
+      content: `You are ${npc.name}, living in this world: ${getEnvironmentContextString(game)}. 
+
+Generate a realistic action (max ${MAX_MESSAGE_LENGTH} characters) that you would take on your current tile, based on your previous interactions and the tile's history. The action should be written in third person and must be possible within the established environment. 
+Your action could also include moving to a different tile, but you must describe the kind of tile you want to move to, using information from the elder council to determine what kind of tiles exist.`,
     },
     {
       role: "user",
@@ -101,10 +102,9 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
       const message = await generateNPCMessage({
         npc,
         npcMessages,
-        elderCouncilDecrees,
         currentTile,
         previousActions,
-        players,
+        gameArgs: args,
       })
 
       // Save the generated message

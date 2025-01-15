@@ -4,25 +4,28 @@ import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { Message } from "@/data/types/Message"
-import { getMessageStrings } from "./getTileHistoryMessageStrings"
+import { getMessageStrings } from "./getMessageStrings"
 import { sortBy } from "lodash-es"
+import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
 
 const generateHistoricalEntry = async ({
   messages,
-  players,
+  gameArgs,
 }: {
   messages: Message[]
-  players: GameProcessingArgs["players"]
+  gameArgs: GameProcessingArgs
 }) => {
-  const messageStrings = getMessageStrings(messages, players)
+  const messageStrings = getMessageStrings(messages, gameArgs)
   const gptMessages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are an AI Historian documenting the events in this environment, for a game similar to "Civilization". Your role is to:
+      content: `You are an AI Historian documenting the events in ${getEnvironmentContextString(gameArgs.game)}. 
+
+Your role is to:
 - Create a 1-2 sentence historical entry based on the actions that occurred
 - When actions are in conflict, give more weight to Elder Council actions over player/NPC actions
-- Ensure actions respect physical laws and the tile's environment
-- If actions are unrealistic or impossible, document the attempt and failure
+- Ensure actions respect physical laws and the environment's rules
+- If actions are unrealistic or impossible given the environment, document the attempt and failure
 - Write in past tense, third person, maintaining a historical tone`,
     },
     {
@@ -45,12 +48,9 @@ Write a 1-2 sentence historical entry for this year's events:`,
   return completion.choices[0].message.content?.trim()
 }
 
-export const addToTileHistory = async ({
-  currentRound,
-  mapTiles,
-  game,
-  players,
-}: GameProcessingArgs) => {
+export const addToTileHistory = async (args: GameProcessingArgs) => {
+  const { currentRound, mapTiles, game, players } = args
+
   const messagesGroupedByTile = await getMessagesForTiles({
     roundId: null,
     gameId: game.uid,
@@ -59,6 +59,12 @@ export const addToTileHistory = async ({
   await Promise.all(
     Object.entries(messagesGroupedByTile).map(
       async ([tileCoordsStr, messages]) => {
+        const mostRecentMessage = messages[0]
+        if (mostRecentMessage.roundId !== currentRound.uid) {
+          // this tiles doesn't have any new messsages this round
+          return
+        }
+
         const tileCoords = JSON.parse(tileCoordsStr)
         const tile = mapTiles.find(
           (t) => t.position.x === tileCoords.x && t.position.y === tileCoords.y
@@ -66,7 +72,7 @@ export const addToTileHistory = async ({
 
         const historyEntry = await generateHistoricalEntry({
           messages,
-          players,
+          gameArgs: args,
         })
 
         if (historyEntry) {

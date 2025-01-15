@@ -4,22 +4,18 @@ import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { Message } from "@/data/types/Message"
-import { getMessageStrings } from "./getTileHistoryMessageStrings"
+import { getMessageStrings } from "./getMessageStrings"
 
 const MAX_MESSAGE_LENGTH = 150
 
 export const generateElderCouncilResponse = async ({
   tileMessages,
-  elderCouncilDecrees,
-  players,
+  gameArgs,
 }: {
   tileMessages: Message[]
-  elderCouncilDecrees: Message[]
-  players: GameProcessingArgs["players"]
+  gameArgs: GameProcessingArgs
 }) => {
   const openai = getOpenAIClient()
-
-  const tileHistory = await getMessageStrings(tileMessages, players)
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -29,8 +25,8 @@ export const generateElderCouncilResponse = async ({
     {
       role: "user",
       content: `
-Recent actions and results on this tile: ${getMessageStrings(tileMessages, players).join("\n")}
-Your previous decrees: ${getMessageStrings(elderCouncilDecrees, players).join("\n")}
+Recent actions and results on this tile: ${getMessageStrings(tileMessages, gameArgs).join("\n")}
+Your previous decrees: ${getMessageStrings(gameArgs.elderCouncilDecrees, gameArgs).join("\n")}
 
 Based on these actions and your previous decrees, determine if intervention is needed. Respond with an action (max ${MAX_MESSAGE_LENGTH} characters) or "NO ACTION".`,
     },
@@ -47,16 +43,12 @@ Based on these actions and your previous decrees, determine if intervention is n
   return response === "NO ACTION" ? null : response.slice(0, MAX_MESSAGE_LENGTH)
 }
 
-export const generateElderCouncilTileActions = async ({
-  currentRound,
-  elderCouncilDecrees,
-  mapTiles,
-  game,
-  players,
-}: GameProcessingArgs) => {
+export const generateElderCouncilTileActions = async (
+  args: GameProcessingArgs
+) => {
   const messagesGroupedByTile = await getMessagesForTiles({
-    roundId: currentRound.uid,
-    gameId: game.uid,
+    roundId: args.currentRound.uid,
+    gameId: args.game.uid,
   })
 
   // Process each tile that has messages
@@ -64,7 +56,7 @@ export const generateElderCouncilTileActions = async ({
     Object.entries(messagesGroupedByTile).map(
       async ([tileLocationStr, messages]) => {
         const tileLocation = JSON.parse(tileLocationStr)
-        const tile = mapTiles.find(
+        const tile = args.mapTiles.find(
           (t) =>
             t.position.x === tileLocation.x && t.position.y === tileLocation.y
         )
@@ -74,8 +66,7 @@ export const generateElderCouncilTileActions = async ({
         // Generate council response based on tile activity
         const councilResponse = await generateElderCouncilResponse({
           tileMessages: messages,
-          elderCouncilDecrees,
-          players,
+          gameArgs: args,
         })
 
         if (!councilResponse) return null
@@ -86,9 +77,9 @@ export const generateElderCouncilTileActions = async ({
           content: councilResponse,
           senderId: "elderCouncil",
           tileLocation,
-          roundId: currentRound.uid,
-          roundIndex: currentRound.index,
-          gameId: game.uid,
+          roundId: args.currentRound.uid,
+          roundIndex: args.currentRound.index,
+          gameId: args.game.uid,
           type: "tileAction",
           processedAt: null,
         })

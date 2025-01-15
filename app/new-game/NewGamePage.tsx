@@ -14,7 +14,7 @@ import { Player } from "@/data/types/Player"
 import { getDefaultMapTile } from "@/data/types/MapTile"
 
 // Function to create a new game with valley tiles
-export const createNewGameWithTiles = async (
+export const createNewGameWithCreatorPlayer = async (
   userId: string,
   propOverrides?: Partial<Game>
 ): Promise<{ game: Game; player: Player }> => {
@@ -60,9 +60,7 @@ const LoggedInUserDisplay = () => {
 export const NewGamePage = () => {
   const user = useContext(UserContext)
   const handleCreateNewGame = async () => {
-    const newGame = await createNewGameWithTiles(user.user.uid)
-    console.log("New game created:", newGame)
-    // You can add additional logic here, such as redirecting to the new game page
+    await createNewGameWithCreatorPlayer(user.user.uid)
   }
 
   return (

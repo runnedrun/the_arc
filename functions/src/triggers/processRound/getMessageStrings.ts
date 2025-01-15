@@ -1,6 +1,6 @@
 import { Message } from "@/data/types/Message"
 import { GameProcessingArgs } from "../processGame/getGameData"
-import { getNpcId, idIsNpc } from "@/data/types/NPC"
+import { sortBy } from "lodash-es"
 
 interface MessagePrefixCreator {
   applies: (message: Message) => boolean
@@ -41,18 +41,27 @@ export const MessagePrefixes: MessagePrefixCreator[] = [
 
 export const getMessageStrings = (
   messages: Message[],
-  players: GameProcessingArgs["players"]
+  args: GameProcessingArgs
 ) => {
-  return messages.map((message) => {
-    const player = players.find((p) => p.uid === message.senderId)
+  const messagesWithIndex = sortBy(messages, (_) => _.createdAt.toMillis()).map(
+    (message, i) => ({
+      ...message,
+      index: i,
+    })
+  )
+
+  return messagesWithIndex.map((message) => {
+    const player = args.players.find((p) => p.uid === message.senderId)
+    const npc = args.npcs.find((n) => n.uid === message.senderId)
+    const sender = player || npc
 
     const prefix =
       MessagePrefixes.find((p) => p.applies(message))?.getPrefix() || ""
 
-    const playerPrefix = player ? `by ${player.name}` : ""
+    const senderPrefix = sender ? `by ${sender.name}` : ""
 
     const yearPrefix =
       message.roundIndex !== undefined ? `Year ${message.roundIndex}` : ""
-    return `${yearPrefix}${yearPrefix ? " - " : ""}${prefix} ${playerPrefix}: ${message.content}`
+    return `Event ${message.index + 1} - ${yearPrefix}${yearPrefix ? " - " : ""}${prefix} ${senderPrefix}: ${message.content}`
   })
 }
