@@ -5,6 +5,7 @@ import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { Message } from "@/data/types/Message"
 import { getMessageStrings } from "./getTileHistoryMessageStrings"
+import { sortBy } from "lodash-es"
 
 const generateHistoricalEntry = async ({
   messages,
@@ -27,10 +28,7 @@ const generateHistoricalEntry = async ({
     {
       role: "user",
       content: `
-Tile's previous history: ${messageStrings.join("\n")}
-
-Recent actions (Elder Council actions are authoritative):
-${messages.map((m) => `${m.senderId === "elderCouncil" ? "[ELDER COUNCIL]" : "[Actor]"}: ${m.content}`).join("\n")}
+Tile's previous history up until now: ${messageStrings.join("\n")}
 
 Write a 1-2 sentence historical entry for this year's events:`,
     },
@@ -66,15 +64,12 @@ export const addToTileHistory = async ({
           (t) => t.position.x === tileCoords.x && t.position.y === tileCoords.y
         )
 
-        if (!tile) return
-
         const historyEntry = await generateHistoricalEntry({
           messages,
           players,
         })
 
         if (historyEntry) {
-          console.log("creating tile histor", historyEntry)
           await fbCreate("messages", {
             tileLocation: tile.position,
             gameId: game.uid,

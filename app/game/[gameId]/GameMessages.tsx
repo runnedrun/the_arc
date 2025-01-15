@@ -28,22 +28,24 @@ export function GameMessages({
   return (
     <div className="flex flex-col gap-2">
       <ScrollArea className={scrollAreaClassName}>
-        {messages.length ? (
-          messages.map((message) => {
-            const renderer = messageRenderers.find((r) =>
-              r.matches(message, currentPlayer?.uid)
-            )
-            return renderer ? (
-              <div key={message.uid}>{renderer.render(message)}</div>
-            ) : (
-              <div key={message.uid} className="mb-2 rounded bg-white p-2">
-                {message.content}
-              </div>
-            )
-          })
-        ) : (
-          <div>No messages yet</div>
-        )}
+        <div className="flex flex-col-reverse">
+          {messages.length ? (
+            messages.map((message) => {
+              const renderer = messageRenderers.find((r) =>
+                r.matches(message, currentPlayer?.uid)
+              )
+              return renderer ? (
+                <div key={message.uid}>{renderer.render(message)}</div>
+              ) : (
+                <div key={message.uid} className="mb-2 rounded bg-white p-2">
+                  {message.content}
+                </div>
+              )
+            })
+          ) : (
+            <div>No messages yet</div>
+          )}
+        </div>
       </ScrollArea>
       {allowComposing && (
         <Textarea

@@ -53,9 +53,11 @@ Previous decrees: ${elderCouncilDecrees.map((d) => d.content).join("\n")}
 New events this round:
 ${getMessageStringsGroupedByTile(newHistoryEntriesFromThisRound, players)}
 
-Provide a single sentence recap focusing on notable events and their relationship to our decrees.`,
+Provide a single sentence recap focusing on notable events and their relationship to our decrees, if there are any.`,
     },
   ]
+
+  console.log(recapMessages)
 
   const recapCompletion = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -106,8 +108,6 @@ Return a JSON object with any new decrees needed to address these events. Format
     },
   ]
 
-  console.log(decreeMessages)
-
   const decreeCompletion = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: decreeMessages,
@@ -116,13 +116,13 @@ Return a JSON object with any new decrees needed to address these events. Format
     response_format: { type: "json_object" },
   })
 
+  console.log(decreeCompletion.choices[0].message.content)
+
   const parsedDecrees = DecreesSchema.parse(
     JSON.parse(
       decreeCompletion.choices[0].message.content || '{"newDecrees": []}'
     )
   )
-
-  console.log("parsed decrees", parsedDecrees)
 
   await Promise.all(
     parsedDecrees.newDecrees.map((decree) =>
@@ -146,8 +146,10 @@ Return a JSON object with any new decrees needed to address these events. Format
 export const generateElderCouncilMessages = async (
   args: GameProcessingArgs
 ) => {
-  const recap = await generateRecap(args)
-  const newDecrees = await generateNewDecrees(args)
+  const [recap, newDecrees] = await Promise.all([
+    generateRecap(args),
+    generateNewDecrees(args),
+  ])
 
   return {
     recap,

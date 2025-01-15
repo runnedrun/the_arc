@@ -10,6 +10,14 @@ interface MessageRenderer {
 export const messageRenderers: MessageRenderer[] = [
   // Elder Council Messages
   {
+    matches: (message) => message.type === "recap",
+    render: (message) => (
+      <div className="mb-2 rounded bg-purple-100 p-2 font-semibold">
+        📝 {message.content}
+      </div>
+    ),
+  },
+  {
     matches: (message) => message.senderId === "elderCouncil",
     render: (message) => (
       <div className="mb-2 rounded bg-purple-100 p-2 font-semibold">
