@@ -7,7 +7,7 @@ import { NPC } from "@/data/types/NPC"
 import { Message } from "@/data/types/Message"
 import { MapTile } from "@/data/types/MapTile"
 import { getMessagesForTiles } from "./getMessagesForTiles"
-import { getTileHistoryMessageStrings } from "./addToTileHistory"
+import { getMessageStrings } from "./getTileHistoryMessageStrings"
 
 const MAX_MESSAGE_LENGTH = 150
 const MAX_HISTORY_MESSAGES = 40
@@ -18,12 +18,14 @@ const generateNPCMessage = async ({
   elderCouncilDecrees,
   currentTile,
   previousActions,
+  players,
 }: {
   npc: NPC
   npcMessages: Message[]
   elderCouncilDecrees: Message[]
   currentTile: MapTile
   previousActions: Message[]
+  players: GameProcessingArgs["players"]
 }) => {
   const openai = getOpenAIClient()
 
@@ -36,7 +38,7 @@ const generateNPCMessage = async ({
       .limit(MAX_HISTORY_MESSAGES)
   )
 
-  const tileHistory = await getTileHistoryMessageStrings(currentTileMessages)
+  const tileHistory = await getMessageStrings(currentTileMessages, players)
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -67,7 +69,8 @@ Generate a single action that you would take, written in third person, max ${MAX
 }
 
 export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
-  const { game, currentRound, elderCouncilDecrees, mapTiles, npcs } = args
+  const { game, currentRound, elderCouncilDecrees, mapTiles, npcs, players } =
+    args
 
   const npcProcessingComplete = await Promise.all(
     npcs.map(async (npc) => {
@@ -101,6 +104,7 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
         elderCouncilDecrees,
         currentTile,
         previousActions,
+        players,
       })
 
       // Save the generated message

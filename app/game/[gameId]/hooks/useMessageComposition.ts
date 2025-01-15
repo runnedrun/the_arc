@@ -12,7 +12,7 @@ import { GameInterfaceContext } from "../GameInterfaceContext"
 import { MapPosition } from "@/data/types/MapTile"
 
 interface MessageCompositionOptions {
-  types: ("npc" | "elderCouncil" | "tileHistory" | "tileAction")[]
+  types: Message["type"][]
   receiverId?: string
   tileLocation?: MapPosition
   senderId?: string

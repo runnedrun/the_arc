@@ -4,29 +4,22 @@ import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { Message } from "@/data/types/Message"
-
-export const getTileHistoryMessageStrings = (messages: Message[]) => {
-  return messages.map((message) => {
-    const prefix =
-      message.type === "tileHistory"
-        ? "Results of previous actions:"
-        : "Action from user:"
-    return `${prefix}: ${message.content}`
-  })
-}
+import { getMessageStrings } from "./getTileHistoryMessageStrings"
 
 const generateHistoricalEntry = async ({
   messages,
+  players,
 }: {
   messages: Message[]
+  players: GameProcessingArgs["players"]
 }) => {
-  const messageStrings = getTileHistoryMessageStrings(messages)
+  const messageStrings = getMessageStrings(messages, players)
   const gptMessages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are an AI Historian documenting the events in this valley tile, for a game similar to "Civilization". Your role is to:
+      content: `You are an AI Historian documenting the events in this environment, for a game similar to "Civilization". Your role is to:
 - Create a 1-2 sentence historical entry based on the actions that occurred
-- Give more weight to Elder Council actions over player/NPC actions
+- When actions are in conflict, give more weight to Elder Council actions over player/NPC actions
 - Ensure actions respect physical laws and the tile's environment
 - If actions are unrealistic or impossible, document the attempt and failure
 - Write in past tense, third person, maintaining a historical tone`,
@@ -58,8 +51,12 @@ export const addToTileHistory = async ({
   currentRound,
   mapTiles,
   game,
+  players,
 }: GameProcessingArgs) => {
-  const messagesGroupedByTile = await getMessagesForTiles(null)
+  const messagesGroupedByTile = await getMessagesForTiles({
+    roundId: null,
+    gameId: game.uid,
+  })
 
   await Promise.all(
     Object.entries(messagesGroupedByTile).map(
@@ -73,9 +70,11 @@ export const addToTileHistory = async ({
 
         const historyEntry = await generateHistoricalEntry({
           messages,
+          players,
         })
 
         if (historyEntry) {
+          console.log("creating tile histor", historyEntry)
           await fbCreate("messages", {
             tileLocation: tile.position,
             gameId: game.uid,

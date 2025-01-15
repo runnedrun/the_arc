@@ -9,6 +9,7 @@ import { startNewRound } from "../processGame/startNewRound"
 import { fbSet } from "../../helpers/writer"
 import { Timestamp } from "firebase-admin/firestore"
 import { safeSetTestMode } from "@/helpers/getUuid"
+import { updateGameTiles } from "../processGame/updateGameTiles"
 
 const runRoundProcessing = async (args: GameProcessingArgs) => {
   const allPlayersHaveCompletedTheRound = args.players.every(
@@ -41,6 +42,8 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   console.log("Generating elder council messages")
   await generateElderCouncilMessages(args)
   await args.refresh()
+  console.log("Updating game tiles")
+  await updateGameTiles(args)
   console.log("Querying messages for this round")
   const messagesForThisRound = await queryDocs("messages", (ref) => {
     return ref

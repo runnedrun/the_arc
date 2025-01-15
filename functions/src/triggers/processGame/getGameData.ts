@@ -14,6 +14,8 @@ export type GameProcessingArgs = {
   mapTiles: MapTile[]
   npcs: NPC[]
   elderCouncilDecrees: Message[]
+  elderCouncilRequests: Message[]
+  elderCouncilMessages: Message[]
   refresh: () => Promise<void>
 }
 
@@ -22,7 +24,7 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
   const data = {} as GameProcessingArgs
 
   const refresh = async () => {
-    const [game, players, mapTiles, npcs, rounds, elderCouncilDecrees] =
+    const [game, players, mapTiles, npcs, rounds, elderCouncilMessages] =
       await Promise.all([
         readDoc("games", gameId),
         queryDocs("players", (ref) => {
@@ -46,12 +48,19 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
         queryDocs("messages", (ref) =>
           ref
             .where("gameId", "==", gameId)
-            .where("senderId", "==", "elderCouncil")
             .where("type", "==", "elderCouncil")
             .orderBy("createdAt", "desc")
             .limit(ELDER_COUNCIL_MAX_HISTORY_MESSAGES)
         ),
       ])
+
+    const elderCouncilDecrees = elderCouncilMessages.filter(
+      (m) => m.senderId === "elderCouncil"
+    )
+
+    const elderCouncilRequests = elderCouncilMessages.filter(
+      (m) => m.senderId !== "elderCouncil"
+    )
 
     const currentRound = rounds[0] || null
 
@@ -62,6 +71,8 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
       mapTiles: sortBy(mapTiles, (_) => `${_.position.x},${_.position.y}`),
       npcs,
       elderCouncilDecrees,
+      elderCouncilRequests,
+      elderCouncilMessages,
     } as GameProcessingArgs)
   }
 

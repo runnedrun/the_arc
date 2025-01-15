@@ -53,10 +53,16 @@ const getInitialPrompt = (sizeOfGrid: number) =>
   `Design a ${sizeOfGrid}x${sizeOfGrid} valley map where each tile is 3km square...`
 // ... rest of your existing prompt ...
 
-const getDallePrompt = (tileHistory: Message[]) => {
-  return `Create a dalle prompt for the current state of this environment, based on the following entries in the environments history:
+const getDallePrompt = (tileHistory: Message[], previousPrompt: string) => {
+  const previousPromptExplanation = `
+  This is the previous prompt you generated:
+  ${previousPrompt || "No previous prompt"}
+  Make a new prompt that reflects this recent history of the environment from this year:
+  ${tileHistory.join("\n")}
+  `
 
-${tileHistory.map((msg) => `Year ${msg.roundIndex}: ${msg.content}`).join("\n")}
+  return `Create a dalle prompt for the current state of this environment.
+${previousPromptExplanation}
 
 Requirements:
 - the image should be in a vector art style
@@ -175,6 +181,7 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
 
   await Promise.all(
     allTiles.map(async (tile) => {
+      console.log("processing tile")
       if (!tile.explored) return
 
       const tileHistory = await queryDocs("messages", (ref) =>
@@ -186,13 +193,13 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
           .orderBy("processedAt", "asc")
       )
 
-      const latestMessage = tileHistory[tileHistory.length - 1]
+      const messagesSinceLastPrompt = tileHistory.filter(
+        (message) => message.createdAt > tile.lastImageGeneratedAt
+      )
 
-      if (
-        !latestMessage ||
-        (tile.lastImageGeneratedAt &&
-          latestMessage.processedAt <= tile.lastImageGeneratedAt)
-      ) {
+      console.log("latestMessage", messagesSinceLastPrompt)
+
+      if (messagesSinceLastPrompt.length === 0) {
         return
       }
 
@@ -207,7 +214,10 @@ export const updateGameTiles = async ({ game }: GameProcessingArgs) => {
           },
           {
             role: "user",
-            content: getDallePrompt(tileHistory),
+            content: getDallePrompt(
+              messagesSinceLastPrompt,
+              tile.previousDallePrompt
+            ),
           },
         ],
         temperature: 0.7,

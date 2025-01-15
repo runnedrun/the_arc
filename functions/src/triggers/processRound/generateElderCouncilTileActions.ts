@@ -4,20 +4,22 @@ import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { Message } from "@/data/types/Message"
-import { getTileHistoryMessageStrings } from "./addToTileHistory"
+import { getMessageStrings } from "./getTileHistoryMessageStrings"
 
 const MAX_MESSAGE_LENGTH = 150
 
 export const generateElderCouncilResponse = async ({
   tileMessages,
   elderCouncilDecrees,
+  players,
 }: {
   tileMessages: Message[]
   elderCouncilDecrees: Message[]
+  players: GameProcessingArgs["players"]
 }) => {
   const openai = getOpenAIClient()
 
-  const tileHistory = await getTileHistoryMessageStrings(tileMessages)
+  const tileHistory = await getMessageStrings(tileMessages, players)
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -27,8 +29,8 @@ export const generateElderCouncilResponse = async ({
     {
       role: "user",
       content: `
-Recent actions and results this tile: ${tileHistory.join("\n")}
-Your previous decrees: ${elderCouncilDecrees.map((d) => d.content).join("\n")}
+Recent actions and results on this tile: ${getMessageStrings(tileMessages, players).join("\n")}
+Your previous decrees: ${getMessageStrings(elderCouncilDecrees, players).join("\n")}
 
 Based on these actions and your previous decrees, determine if intervention is needed. Respond with an action (max ${MAX_MESSAGE_LENGTH} characters) or "NO ACTION".`,
     },
@@ -50,8 +52,12 @@ export const generateElderCouncilTileActions = async ({
   elderCouncilDecrees,
   mapTiles,
   game,
+  players,
 }: GameProcessingArgs) => {
-  const messagesGroupedByTile = getMessagesForTiles(currentRound.uid)
+  const messagesGroupedByTile = await getMessagesForTiles({
+    roundId: currentRound.uid,
+    gameId: game.uid,
+  })
 
   // Process each tile that has messages
   const councilActions = await Promise.all(
@@ -69,6 +75,7 @@ export const generateElderCouncilTileActions = async ({
         const councilResponse = await generateElderCouncilResponse({
           tileMessages: messages,
           elderCouncilDecrees,
+          players,
         })
 
         if (!councilResponse) return null
