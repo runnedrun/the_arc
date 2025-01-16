@@ -8,6 +8,7 @@ import { joinGame } from "../join/[gameId]/JoinGameFlow"
 import { createNewGameWithCreatorPlayer } from "../new-game/NewGamePage"
 import { setTestMode } from "@/helpers/getUuid"
 import { defaultGameEnvironments } from "../game/[gameId]/defaultGameEnvironments"
+import { getDefaultMessage } from "@/data/types/Message"
 
 const testGameId = "2A7IZLkJwK"
 export const setupTestGameValley = async ({ userId }: { userId: string }) => {
@@ -61,45 +62,55 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
   )
   console.log("round exists", round)
 
-  await fbCreate("messages", {
-    content: "You love swimming, you want to do it all the time",
-    gameId: game.uid,
-    roundId: round.uid,
-    senderId: player.uid,
-    type: "npc",
-    processedAt: null,
-    receiverId: npc.uid,
-    tileLocation: null,
-    roundIndex: 0,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      content: "You love swimming, you want to do it all the time",
+      gameId: game.uid,
+      roundId: round.uid,
+      senderId: player.uid,
+      type: "npc",
+      processedAt: null,
+      receiverId: npc.uid,
+      tileLocation: null,
+      roundIndex: 0,
+    })
+  )
 
-  await fbCreate("messages", {
-    content:
-      "People should not be allowed to swim. It's dangerous, and it could pollute the water for everyone.",
-    gameId: game.uid,
-    roundId: round.uid,
-    senderId: player.uid,
-    type: "elderCouncil",
-    processedAt: null,
-    receiverId: "elderCouncil",
-    tileLocation: null,
-    roundIndex: 0,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      content:
+        "People should not be allowed to swim. It's dangerous, and it could pollute the water for everyone.",
+      gameId: game.uid,
+      roundId: round.uid,
+      senderId: player.uid,
+      type: "elderCouncil",
+      processedAt: null,
+      receiverId: "elderCouncil",
+      tileLocation: null,
+      roundIndex: 0,
+    })
+  )
 
-  await fbCreate("messages", {
-    content: "I spend the year creating  small water play ground in the river.",
-    gameId: game.uid,
-    roundId: round.uid,
-    senderId: player.uid,
-    type: "tileAction",
-    processedAt: null,
-    receiverId: null,
-    tileLocation: {
-      x: 0,
-      y: 0,
-    },
-    roundIndex: 0,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      content:
+        "I spend the year creating  small water play ground in the river.",
+      gameId: game.uid,
+      roundId: round.uid,
+      senderId: player.uid,
+      type: "tileAction",
+      processedAt: null,
+      receiverId: null,
+      tileLocation: {
+        x: 0,
+        y: 0,
+      },
+      roundIndex: 0,
+    })
+  )
 
   await triggerProcessOnWrite(
     fbUpdate("rounds", round.uid, {
@@ -162,48 +173,57 @@ export const setupTestGameNeonCity = async ({ userId }: { userId: string }) => {
   )
 
   // Create NPC message
-  await fbCreate("messages", {
-    content: "We need to establish secure data havens across the city grid",
-    gameId: game.uid,
-    roundId: round.uid,
-    senderId: player.uid,
-    type: "npc",
-    processedAt: null,
-    receiverId: npc.uid,
-    tileLocation: null,
-    roundIndex: 0,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      content: "We need to establish secure data havens across the city grid",
+      gameId: game.uid,
+      roundId: round.uid,
+      senderId: player.uid,
+      type: "npc",
+      processedAt: null,
+      receiverId: npc.uid,
+      tileLocation: null,
+      roundIndex: 0,
+    })
+  )
 
   // Create Elder Council message
-  await fbCreate("messages", {
-    content:
-      "Unauthorized hacking and data manipulation threatens the stability of our corporate systems. This must be stopped.",
-    gameId: game.uid,
-    roundId: round.uid,
-    senderId: player.uid,
-    type: "elderCouncil",
-    processedAt: null,
-    receiverId: "elderCouncil",
-    tileLocation: null,
-    roundIndex: 0,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      content:
+        "Unauthorized hacking and data manipulation threatens the stability of our corporate systems. This must be stopped.",
+      gameId: game.uid,
+      roundId: round.uid,
+      senderId: player.uid,
+      type: "elderCouncil",
+      processedAt: null,
+      receiverId: "elderCouncil",
+      tileLocation: null,
+      roundIndex: 0,
+    })
+  )
 
   // Create tile action
-  await fbCreate("messages", {
-    content:
-      "I establish a hidden server farm in an abandoned subway terminal.",
-    gameId: game.uid,
-    roundId: round.uid,
-    senderId: player.uid,
-    type: "tileAction",
-    processedAt: null,
-    receiverId: null,
-    tileLocation: {
-      x: 0,
-      y: 0,
-    },
-    roundIndex: 0,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      content:
+        "I establish a hidden server farm in an abandoned subway terminal.",
+      gameId: game.uid,
+      roundId: round.uid,
+      senderId: player.uid,
+      type: "tileAction",
+      processedAt: null,
+      receiverId: null,
+      tileLocation: {
+        x: 0,
+        y: 0,
+      },
+      roundIndex: 0,
+    })
+  )
 
   await triggerProcessOnWrite(
     fbUpdate("rounds", round.uid, {

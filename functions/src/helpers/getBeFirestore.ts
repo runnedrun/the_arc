@@ -1,4 +1,4 @@
-import { App, initializeApp } from "firebase-admin/app"
+import { App, getApps, initializeApp } from "firebase-admin/app"
 import { getDatabase } from "firebase-admin/database"
 import { initializeFirestore } from "firebase-admin/firestore"
 import { getStorage } from "firebase-admin/storage"
@@ -9,7 +9,8 @@ export const getBeApp = () => {
   // const projectIdObjForLocalScript = {
   //   databaseURL: `https://${getProjectId()}-default-rtdb.firebaseio.com`,
   // }
-  cachedApp = cachedApp || initializeApp()
+  const allApps = getApps()
+  cachedApp = allApps.length > 0 ? allApps[0] : initializeApp()
 
   return cachedApp
 }

@@ -13,7 +13,7 @@ import {
 import { NPC } from "@/data/types/NPC"
 import { cn } from "@/lib/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { NPCDisplay } from "./NPCDisplay"
 import { queryObs } from "@/data/readerFe"
 import GameInterface from "./GameInterface"
@@ -58,6 +58,12 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
   const [open, setOpen] = useState(false)
   const [selectedNpc, setSelectedNpc] = useState<NPC>()
   const npcsWithPendingMessages = useNPCsHaveMessagesForThisRound(npcOptions)
+
+  useEffect(() => {
+    if (npcsWithPendingMessages?.length && !selectedNpc) {
+      setSelectedNpc(npcsWithPendingMessages[0])
+    }
+  }, [npcsWithPendingMessages, selectedNpc])
 
   return (
     <div className="flex flex-col gap-4">

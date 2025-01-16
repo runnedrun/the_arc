@@ -29,8 +29,8 @@ ${args.game.environmentDescription}
 Requirements:
 - Generate a unique name that doesn't match any existing names: ${existingNames.join(", ")}
 - Create a unique personality that doesn't overlap with existing personalities: ${existingPersonalities.join(", ")}
-- The personality should brief, less than 100 characters, describing their core traits and motivations.
-- The name should be fantasy-appropriate but easily pronounceable
+- The personality should brief, less than 100 characters, and should include a unique, but rather small, motivation or goal they have.
+- The name should be world-appropriate but easily pronounceable
 - The personality should allow them to have interesting interactions with other characters and meaningfully influence the world's development`
 }
 

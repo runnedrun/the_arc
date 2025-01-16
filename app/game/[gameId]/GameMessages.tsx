@@ -1,60 +1,115 @@
-import { Message } from "@/data/types/Message"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
-import { useContext } from "react"
-import { TokenCountContext } from "./TokenCountContext"
+import { Message } from "@/data/types/Message"
+import { useContext, useEffect, useRef } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { messageRenderers } from "./messageRenderers"
+import { TokenCountContext } from "./TokenCountContext"
 
 interface GameMessagesProps {
   messages: Message[]
   composingMessage: Message
   updateComposingMessage: (messageContent: string) => void
-  allowComposing?: Boolean
+  sendMessage: () => void
   scrollAreaClassName?: string
+}
+
+function MessageDisplay({ message }: { message: Message }) {
+  const { currentPlayer } = useContext(GameInterfaceContext)
+
+  // Show typing indicator if message is processing but has no content
+  if (
+    !message.content &&
+    message.processingTriggeredAt &&
+    !message.processedAt
+  ) {
+    return (
+      <div className="flex items-center space-x-2 p-2">
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 delay-100" />
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 delay-200" />
+      </div>
+    )
+  }
+
+  const renderer = messageRenderers.find((r) =>
+    r.matches(message, currentPlayer?.uid)
+  )
+  return renderer ? (
+    <div>{renderer.render(message)}</div>
+  ) : (
+    <div className="mb-2 rounded bg-white p-2">{message.content}</div>
+  )
 }
 
 export function GameMessages({
   messages,
   composingMessage,
   updateComposingMessage,
-  allowComposing = true,
-  scrollAreaClassName = "h-40",
+  sendMessage,
+  scrollAreaClassName = "h-full",
 }: GameMessagesProps) {
-  const { charactersRemaining } = useContext(TokenCountContext)
-  const { playerHasEndedRound, currentPlayer } =
-    useContext(GameInterfaceContext)
+  const { charactersRemaining, charactersAvailable, charactersUsedThisRound } =
+    useContext(TokenCountContext)
+  const { playerHasEndedRound } = useContext(GameInterfaceContext)
+
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages?.[0]?.uid])
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
 
   return (
-    <div className="flex flex-col gap-2">
-      <ScrollArea className={scrollAreaClassName}>
+    <div className="flex h-full grow flex-col gap-2">
+      <ScrollArea className="flex-1">
         <div className="flex flex-col-reverse">
           {messages.length ? (
-            messages.map((message) => {
-              const renderer = messageRenderers.find((r) =>
-                r.matches(message, currentPlayer?.uid)
-              )
-              return renderer ? (
-                <div key={message.uid}>{renderer.render(message)}</div>
-              ) : (
-                <div key={message.uid} className="mb-2 rounded bg-white p-2">
-                  {message.content}
-                </div>
-              )
-            })
+            <>
+              <div ref={messagesEndRef} />
+              {messages.map((message) => (
+                <MessageDisplay key={message.uid} message={message} />
+              ))}
+            </>
           ) : (
             <div>No messages yet</div>
           )}
         </div>
       </ScrollArea>
-      {allowComposing && (
-        <Textarea
-          disabled={charactersRemaining <= 0 || playerHasEndedRound}
-          value={composingMessage?.content || ""}
-          onChange={(e) => updateComposingMessage(e.target.value)}
-          placeholder="Type your message..."
-          className="min-h-[100px]"
-        />
+      {sendMessage && (
+        <div className="flex-shrink-0 space-y-1">
+          <Textarea
+            disabled={playerHasEndedRound}
+            value={composingMessage?.content || ""}
+            onChange={(e) => {
+              const oldMessageLength = composingMessage?.content?.length || 0
+              const newMessageLength = e.target.value.length
+              const newCharactersUsed = newMessageLength - oldMessageLength
+
+              if (
+                charactersUsedThisRound + newCharactersUsed >
+                charactersAvailable
+              ) {
+                return
+              }
+              updateComposingMessage(e.target.value)
+            }}
+            onKeyDown={handleKeyPress}
+            placeholder="Type your message..."
+            className={`min-h-[100px] ${charactersRemaining <= 0 ? "border-red-500" : ""}`}
+          />
+          {charactersRemaining <= 0 && (
+            <p className="text-sm text-red-500">
+              You have reached the maximum character limit
+            </p>
+          )}
+        </div>
       )}
     </div>
   )

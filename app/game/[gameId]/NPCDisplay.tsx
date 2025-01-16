@@ -2,13 +2,21 @@ import { NPC } from "@/data/types/NPC"
 import { GameMessages } from "./GameMessages"
 import { useMessageComposition } from "./hooks/useMessageComposition"
 import Image from "next/image"
+import { useContext } from "react"
+import { GameInterfaceContext } from "./GameInterfaceContext"
 
 export function NPCDisplay({ npc }: { npc: NPC }) {
-  const { previousMessages, composingMessage, setComposingMessage } =
-    useMessageComposition({
-      types: ["npc"],
-      receiverId: npc.uid,
-    })
+  const { currentPlayer } = useContext(GameInterfaceContext)
+  const {
+    previousMessages,
+    composingMessage,
+    setComposingMessage,
+    sendMessage,
+  } = useMessageComposition({
+    types: ["npc"],
+    receiverId: npc.uid,
+    senderId: currentPlayer?.uid,
+  })
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,6 +42,7 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
         messages={previousMessages || []}
         composingMessage={composingMessage}
         updateComposingMessage={setComposingMessage}
+        sendMessage={sendMessage}
       />
     </div>
   )

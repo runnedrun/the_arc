@@ -4,7 +4,7 @@ import { fbCreate } from "../../helpers/writer"
 import { ChatCompletionMessageParam } from "openai/resources"
 import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { NPC } from "@/data/types/NPC"
-import { Message } from "@/data/types/Message"
+import { getDefaultMessage, Message } from "@/data/types/Message"
 import { MapTile } from "@/data/types/MapTile"
 import { getMessageStrings } from "./getMessageStrings"
 import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
@@ -108,17 +108,20 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
       })
 
       // Save the generated message
-      await fbCreate("messages", {
-        receiverId: null,
-        content: message,
-        senderId: npc.uid,
-        tileLocation: npc.currentTileLocation,
-        roundId: currentRound.uid,
-        roundIndex: currentRound.index,
-        gameId: game.uid,
-        type: "tileAction",
-        processedAt: null,
-      })
+      await fbCreate(
+        "messages",
+        getDefaultMessage({
+          receiverId: null,
+          content: message,
+          senderId: npc.uid,
+          tileLocation: npc.currentTileLocation,
+          roundId: currentRound.uid,
+          roundIndex: currentRound.index,
+          gameId: game.uid,
+          type: "tileAction",
+          processedAt: null,
+        })
+      )
 
       return message
     })

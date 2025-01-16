@@ -93,7 +93,7 @@ export function GameGrid({
                   )}
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-96">
+              <PopoverContent className="w-[600px]">
                 <TileInfoDisplay
                   selectedTile={{ ...tile, index }}
                 ></TileInfoDisplay>

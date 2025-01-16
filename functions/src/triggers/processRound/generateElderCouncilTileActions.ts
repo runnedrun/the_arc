@@ -3,7 +3,7 @@ import { ChatCompletionMessageParam } from "openai/resources"
 import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
-import { Message } from "@/data/types/Message"
+import { getDefaultMessage, Message } from "@/data/types/Message"
 import { getMessageStrings } from "./getMessageStrings"
 
 const MAX_MESSAGE_LENGTH = 150
@@ -72,17 +72,20 @@ export const generateElderCouncilTileActions = async (
         if (!councilResponse) return null
 
         // Create a new message from the elder council
-        await fbCreate("messages", {
-          receiverId: null,
-          content: councilResponse,
-          senderId: "elderCouncil",
-          tileLocation,
-          roundId: args.currentRound.uid,
-          roundIndex: args.currentRound.index,
-          gameId: args.game.uid,
-          type: "tileAction",
-          processedAt: null,
-        })
+        await fbCreate(
+          "messages",
+          getDefaultMessage({
+            receiverId: null,
+            content: councilResponse,
+            senderId: "elderCouncil",
+            tileLocation,
+            roundId: args.currentRound.uid,
+            roundIndex: args.currentRound.index,
+            gameId: args.game.uid,
+            type: "tileAction",
+            processedAt: null,
+          })
+        )
 
         return councilResponse
       }

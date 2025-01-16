@@ -17,6 +17,12 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   )
 
   console.log(
+    "charactersUsedThisRound",
+    args.currentRound.playersCompletedAt,
+    args.currentRound
+  )
+
+  console.log(
     "allPlayersHaveCompletedTheRound",
     allPlayersHaveCompletedTheRound,
     args.players,
@@ -56,6 +62,8 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
     messagesForThisRound.map((message) => {
       return fbSet("messages", message.uid, {
         processedAt: Timestamp.now(),
+        processingStartedAt: Timestamp.now(),
+        processingTriggeredAt: Timestamp.now(),
       })
     })
   )

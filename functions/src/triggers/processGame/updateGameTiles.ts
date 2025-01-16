@@ -1,6 +1,6 @@
 import { Game } from "@/data/types/Game"
 import { MapTile } from "@/data/types/MapTile"
-import { Message } from "@/data/types/Message"
+import { getDefaultMessage, Message } from "@/data/types/Message"
 import { isTestMode } from "@/helpers/getUuid"
 import { zodResponseFormat } from "openai/helpers/zod"
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions"
@@ -147,7 +147,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
           imageUrl: null,
         }
 
-        const newMessage: Message = {
+        const newMessage: Message = getDefaultMessage({
           content: tile.description,
           type: "tileHistory",
           tileLocation: { x: tile.posX, y: tile.posY },
@@ -157,7 +157,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
           senderId: "tileHistory",
           receiverId: null,
           processedAt: backendNow(),
-        }
+        })
 
         await fbCreate("messages", newMessage)
         await fbCreate("mapTiles", newTile)

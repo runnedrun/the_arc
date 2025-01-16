@@ -1,6 +1,7 @@
 import { Message } from "@/data/types/Message"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { sortBy } from "lodash-es"
+import { idIsNpc } from "@/data/types/NPC"
 
 interface MessagePrefixCreator {
   applies: (message: Message) => boolean
@@ -8,6 +9,14 @@ interface MessagePrefixCreator {
 }
 
 export const MessagePrefixes: MessagePrefixCreator[] = [
+  {
+    applies: (message) => message.type === "npc" && !idIsNpc(message.senderId),
+    getPrefix: () => "Message from player",
+  },
+  {
+    applies: (message) => message.type === "npc" && idIsNpc(message.senderId),
+    getPrefix: () => "Message from you",
+  },
   {
     applies: (message) => message.type === "tileHistory",
     getPrefix: () => "Results of previous actions",
@@ -32,7 +41,6 @@ export const MessagePrefixes: MessagePrefixCreator[] = [
       message.senderId !== "elderCouncil" && message.type === "tileAction",
     getPrefix: () => "Action",
   },
-
   {
     applies: (message) => message.type === "recap",
     getPrefix: () => "Recap",
@@ -40,6 +48,13 @@ export const MessagePrefixes: MessagePrefixCreator[] = [
 ]
 
 export const getMessageStrings = (
+  messages: Message[],
+  args: GameProcessingArgs
+) => {
+  return getMessageStringsZipped(messages, args).map((m) => m.stringMessage)
+}
+
+export const getMessageStringsZipped = (
   messages: Message[],
   args: GameProcessingArgs
 ) => {
@@ -62,6 +77,9 @@ export const getMessageStrings = (
 
     const yearPrefix =
       message.roundIndex !== undefined ? `Year ${message.roundIndex}` : ""
-    return `Event ${message.index + 1} - ${yearPrefix}${yearPrefix ? " - " : ""}${prefix} ${senderPrefix}: ${message.content}`
+    return {
+      stringMessage: `Event ${message.index + 1} - ${yearPrefix}${yearPrefix ? " - " : ""}${prefix} ${senderPrefix}: ${message.content}`,
+      message,
+    }
   })
 }

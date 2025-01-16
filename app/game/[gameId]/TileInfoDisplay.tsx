@@ -12,11 +12,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
-  const { previousMessages, composingMessage, setComposingMessage } =
-    useMessageComposition({
-      types: ["tileHistory", "tileAction"],
-      tileLocation: tile.position,
-    })
+  const {
+    previousMessages,
+    composingMessage,
+    setComposingMessage,
+    sendMessage,
+  } = useMessageComposition({
+    types: ["tileHistory", "tileAction"],
+    tileLocation: tile.position,
+    senderId: currentPlayer?.uid,
+  })
 
   const currentPlayerIsOnThisTile = isEqual(
     currentPlayer?.currentTileLocation,
@@ -28,7 +33,7 @@ export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
       messages={previousMessages}
       composingMessage={composingMessage}
       updateComposingMessage={setComposingMessage}
-      allowComposing={currentPlayerIsOnThisTile}
+      sendMessage={currentPlayerIsOnThisTile ? sendMessage : undefined}
     />
   )
 }
@@ -57,8 +62,8 @@ export const TileInfoDisplay = ({
               <Image
                 src={selectedTile.imageUrl}
                 alt="Tile Image"
-                width={400}
-                height={400}
+                width={250}
+                height={250}
               />
             </div>
             <div>History:</div>

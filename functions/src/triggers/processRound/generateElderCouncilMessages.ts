@@ -6,7 +6,7 @@ import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
 import { getMessageStrings } from "./getMessageStrings"
 import { Dictionary } from "lodash"
-import { Message } from "@/data/types/Message"
+import { getDefaultMessage, Message } from "@/data/types/Message"
 import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
 
 const DecreesSchema = z.object({
@@ -72,17 +72,20 @@ Provide a single sentence recap focusing on notable events and their relationshi
 
   const recap = recapCompletion.choices[0].message.content?.trim() || ""
 
-  await fbCreate("messages", {
-    gameId: game.uid,
-    roundId: currentRound.uid,
-    roundIndex: currentRound.index,
-    senderId: "elderCouncil",
-    receiverId: null,
-    content: recap,
-    type: "recap",
-    processedAt: null,
-    tileLocation: null,
-  })
+  await fbCreate(
+    "messages",
+    getDefaultMessage({
+      gameId: game.uid,
+      roundId: currentRound.uid,
+      roundIndex: currentRound.index,
+      senderId: "elderCouncil",
+      receiverId: null,
+      content: recap,
+      type: "recap",
+      processedAt: null,
+      tileLocation: null,
+    })
+  )
 
   return recap
 }
@@ -129,17 +132,20 @@ Return a JSON object with any new decrees needed to address these events. Format
 
   await Promise.all(
     parsedDecrees.newDecrees.map((decree) =>
-      fbCreate("messages", {
-        gameId: game.uid,
-        roundId: currentRound.uid,
-        roundIndex: currentRound.index,
-        senderId: "elderCouncil",
-        receiverId: null,
-        content: decree,
-        type: "elderCouncil",
-        processedAt: null,
-        tileLocation: null,
-      })
+      fbCreate(
+        "messages",
+        getDefaultMessage({
+          gameId: game.uid,
+          roundId: currentRound.uid,
+          roundIndex: currentRound.index,
+          senderId: "elderCouncil",
+          receiverId: null,
+          content: decree,
+          type: "elderCouncil",
+          processedAt: null,
+          tileLocation: null,
+        })
+      )
     )
   )
 

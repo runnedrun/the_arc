@@ -3,7 +3,7 @@ import { ChatCompletionMessageParam } from "openai/resources"
 import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
-import { Message } from "@/data/types/Message"
+import { getDefaultMessage, Message } from "@/data/types/Message"
 import { getMessageStrings } from "./getMessageStrings"
 import { sortBy } from "lodash-es"
 import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
@@ -76,17 +76,20 @@ export const addToTileHistory = async (args: GameProcessingArgs) => {
         })
 
         if (historyEntry) {
-          await fbCreate("messages", {
-            tileLocation: tile.position,
-            gameId: game.uid,
-            roundId: currentRound.uid,
-            roundIndex: currentRound.index,
-            content: historyEntry,
-            type: "tileHistory",
-            senderId: "elderCouncil",
-            receiverId: "player",
-            processedAt: null,
-          })
+          await fbCreate(
+            "messages",
+            getDefaultMessage({
+              tileLocation: tile.position,
+              gameId: game.uid,
+              roundId: currentRound.uid,
+              roundIndex: currentRound.index,
+              content: historyEntry,
+              type: "tileHistory",
+              senderId: "elderCouncil",
+              receiverId: "player",
+              processedAt: null,
+            })
+          )
         }
       }
     )

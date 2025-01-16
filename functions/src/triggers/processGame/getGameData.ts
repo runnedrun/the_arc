@@ -43,7 +43,10 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
             .where("archived", "==", false)
         }),
         queryDocs("rounds", (ref) => {
-          return ref.where("gameId", "==", gameId).orderBy("index").limit(1)
+          return ref
+            .where("gameId", "==", gameId)
+            .orderBy("index", "desc")
+            .limit(1)
         }),
         queryDocs("messages", (ref) =>
           ref

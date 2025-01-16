@@ -8,7 +8,7 @@ export const getNpcId = () => {
 }
 
 export const idIsNpc = (id: string) => {
-  return id.startsWith("__npc-")
+  return id?.startsWith("__npc-")
 }
 
 export type NPC = Model<{

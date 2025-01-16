@@ -10,6 +10,8 @@ import {
 } from "@/data/readerFe"
 import { GameInterfaceContext } from "../GameInterfaceContext"
 import { MapPosition } from "@/data/types/MapTile"
+import { Timestamp } from "firebase/firestore"
+import { ProcessMessageArgs } from "@/app/api/process_message/route"
 
 interface MessageCompositionOptions {
   types: Message["type"][]
@@ -28,7 +30,7 @@ export function useMessageComposition({
 
   const allMessages =
     useObs(
-      queryObs("messages", ({ where, orderBy }) => {
+      queryObs("messages", ({ where, orderBy, or }) => {
         const conditions = [
           where("gameId", "==", game?.uid),
           where("archived", "==", false),
@@ -37,7 +39,12 @@ export function useMessageComposition({
         conditions.push(where("type", "in", types))
 
         if (receiverId) {
-          conditions.push(where("receiverId", "==", receiverId))
+          conditions.push(
+            or(
+              where("receiverId", "==", receiverId),
+              where("senderId", "==", receiverId)
+            )
+          )
         }
 
         if (tileLocation) {
@@ -59,11 +66,11 @@ export function useMessageComposition({
     ) || []
 
   const composingMessage = allMessages?.find(
-    (message) => message.roundId === currentRound?.uid
+    (message) => message.roundId === currentRound?.uid && message.draft
   )
 
-  const previousMessages = allMessages.filter(
-    (msg) => msg.roundIndex < currentRound?.index
+  const previousMessages = allMessages?.filter(
+    (msg) => msg.roundId !== currentRound?.uid || msg.processingTriggeredAt
   )
 
   const setComposingMessage = useCallback(
@@ -81,6 +88,7 @@ export function useMessageComposition({
         gameId: game.uid,
         receiverId: receiverId || null,
         tileLocation: tileLocation || null,
+        draft: true,
       } as Message
 
       fbSet("messages", composingMessageId, message)
@@ -96,9 +104,31 @@ export function useMessageComposition({
     ]
   )
 
+  const sendMessage = useCallback(async () => {
+    if (!composingMessage?.content) return
+
+    const messageId = composingMessage.uid
+    await fbSet("messages", messageId, {
+      ...composingMessage,
+      draft: false,
+      processingTriggeredAt: Timestamp.now(),
+    })
+
+    const response = await fetch("/api/process_message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messageId } as ProcessMessageArgs),
+    })
+
+    if (!response.ok) {
+      console.error("Failed to process message")
+    }
+  }, [composingMessage])
+
   return {
     composingMessage,
     previousMessages,
     setComposingMessage,
+    sendMessage,
   }
 }
