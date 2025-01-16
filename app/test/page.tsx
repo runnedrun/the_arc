@@ -35,7 +35,7 @@ const TestButtons = () => {
     <div className="flex flex-col items-start gap-2 p-10">
       <ButtonWithLoading
         onClick={async () => {
-          const gameId = await setupTestGameNeonCity({ userId: user.user.uid })
+          const gameId = await setupTestGameValley({ userId: user.user.uid })
           console.log("gameId", gameId)
         }}
       >

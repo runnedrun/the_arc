@@ -29,6 +29,7 @@ export const createNewGameWithCreatorPlayer = async (
     name: "New Game",
     createdBy: userId,
     mapSize: defaultMapSize,
+    gameSetupCompletedAt: null,
     ...propOverrides,
   } as Game
 

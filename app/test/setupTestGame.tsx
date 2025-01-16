@@ -31,9 +31,9 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
     gameId: game.uid,
     userId: userId,
     playerName: "testPlayer",
-    secretVision:
-      "I want to create a world where everyone loves water and swimming.",
     existingPlayer: player,
+    playerPersonality:
+      "I am a farmer who wants to create a world where everyone loves water and swimming.",
   })
   await triggerProcessOnWrite(
     fbUpdate("games", game.uid, {
@@ -133,9 +133,9 @@ export const setupTestGameNeonCity = async ({ userId }: { userId: string }) => {
     gameId: game.uid,
     userId: userId,
     playerName: "testPlayer",
-    secretVision:
-      "I want to create a network of underground hackers who fight corporate control.",
     existingPlayer: player,
+    playerPersonality:
+      "I am a hacker who wants to take down the corporate system. I have a cybernetic arm, but actually I'm kind of a wimp. I'm not very strong in general, but my cyber arm is really strong.",
   })
 
   await triggerProcessOnWrite(

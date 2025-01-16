@@ -1,18 +1,10 @@
-import { getNPCDataForPlayer, getNpcId } from "@/data/types/NPC"
-import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "./getGameData"
+import { getNpcForGame } from "./getNpcForGame"
 
-export const addNewNPCForEachPlayer = async ({
-  players,
-  currentRound,
-}: GameProcessingArgs) => {
-  const roundIndex = currentRound?.index || 0
+export const addNewNPCForEachPlayer = async (args: GameProcessingArgs) => {
   await Promise.all(
-    players.map((player) => {
-      const npc = getNPCDataForPlayer(player, roundIndex)
-      return fbCreate("npcs", npc, {
-        id: getNpcId(),
-      })
+    args.players.map((player) => {
+      return getNpcForGame(args, player.currentTileLocation)
     })
   )
 }

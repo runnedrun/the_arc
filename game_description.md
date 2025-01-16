@@ -1,28 +1,32 @@
 This directory is for a browser based game, described below:
 
-The Arc is an AI-driven browser game where four players become the newly appointed leaders of tribes coexisting in a shared valley. Spanning 40 years of in-game time (represented by 40 rounds), each player secretly defines a vision for the valley’s future—be it populating it with mythical creatures or instilling a cultural love for a particular cuisine. The valley is depicted as a 4x4 grid, with each tile possessing its own evolving story written by AI historians. Players interact with these historians by sending messages composed of letters, the game’s primary resource, to influence the tile’s history in line with their objectives.
+The Arc is an AI-driven browser game where four players become the newly appointed leaders of communities coexisting in a shared region. Spanning 40 years of in-game time (represented by 40 rounds), each player secretly defines a vision for the region's future—be it populating it with mythical creatures or instilling a cultural love for a particular cuisine. The region is depicted as a 4x4 grid, with each tile possessing its own evolving story written by AI historians. Players interact with these historians by sending messages composed of letters, the game's primary resource, to influence the tile's history in line with their objectives.
 
-As time progresses and your character ages, your ability to act directly diminishes, shifting the focus to influencing NPC tribe members and leveraging the powerful Elder Council—a collective AI entity capable of enacting valley-wide changes. Strategic management of letters is crucial, as they are used to perform actions, and communicate with NPCs and the Council. The game culminates with an AI judge reviewing the valley’s entire history to determine which player’s vision most profoundly shaped the arc of the valley’s development. The Arc offers a unique blend of strategy, storytelling, and AI interaction, immersing players in a dynamic simulation of societal evolution.
+As time progresses and your character ages, your ability to act directly diminishes, shifting the focus to influencing NPC community members and leveraging the powerful Council—a collective AI entity capable of enacting region-wide changes. Strategic management of letters is crucial, as they are used to perform actions, and communicate with NPCs and the Council. The game culminates with an AI judge reviewing the region's entire history to determine which player's vision most profoundly shaped the arc of its development.
 
 Game Overview
 • Players: 4
 • Duration: 40 rounds (years), each round lasting 1.5 minutes
-• Objective: Achieve your secret vision for the valley’s future by influencing its development through strategic actions and interactions.
+• Objective: Achieve your secret vision for the region's future by influencing its development through strategic actions and interactions.
 
 Components
-• Valley Grid: A 4x4 grid representing the valley. Tiles remain hidden until explored by players or NPCs.
+• Region Grid: A 4x4 grid representing the play area. Tiles remain hidden until explored by players or NPCs.
 • Letters: The game's primary resource, used to perform actions.
 • AI Historians: AI models that record and update the history of each tile.
-• NPC Tribe Members: Randomly generated characters with unique personalities that appear throughout the valley.
-• Elder Council: A powerful AI entity that can affect the entire valley.
-• AI Judge: An AI that determines the winner based on the valley's history.
+• NPC Community Members: Randomly generated characters with unique personalities that appear throughout the region.
+• Elder Council: A powerful AI entity that can affect the entire region.
+• AI Judge: An AI that determines the winner based on the region's history.
 
-Setup 1. Secret Objectives:
-• Each player writes a secret vision for the valley’s future (max 200 characters).
-• This vision is kept hidden from other players. 2. Starting Positions:
-• Players begin on the center four tiles of the valley grid.
-• All other tiles start unexplored and hidden. 3. Initial Resources:
-• Each player starts with a stockpile of letters (e.g., 500 letters).
+Setup
+
+1. World Selection:
+   • Players collectively choose the setting for their game (e.g., cyberpunk metropolis, medieval kingdom, space station, underwater city)
+2. Secret Objectives:
+   • Each player is randomly assigned a secret vision for the region's future from a curated pool of possible visions.
+   • This vision is kept hidden from other players. 2. Starting Positions:
+   • Players begin on the center four tiles of the region grid.
+   • All other tiles start unexplored and hidden. 3. Initial Resources:
+   • Each player starts with a stockpile of letters (e.g., 500 letters).
 
 Game Play
 Game Structure
@@ -34,20 +38,20 @@ Game Structure
 Player Phase Actions
 During each round, players can: 1. Move:
 • Move to an adjacent tile (up, down, left, right). 2. Perform Actions on Tiles:
-• Send Messages to AI Historians: Describe actions to influence the tile’s story.
+• Send Messages to AI Historians: Describe actions to influence the tile's story.
 • Messages consume letters from your stockpile.
-• The maximum letters you can spend per round decreases as you age. 3. Interact with NPC Tribe Members:
+• The maximum letters you can spend per round decreases as you age. 3. Interact with NPC Community Members:
 • Communicate with NPCs on your tile to influence their behavior.
 • Messages consume letters.
 • Influenced NPCs may act in ways that support your objectives. 4. Influence the Elder Council:
-• Send proposals or requests to influence the Council’s decisions.
+• Send proposals or requests to influence the Council's decisions.
 
 AI Resolution Phase 1. Add Player Actions:
 • AI Historians RECEIVE the player messages, but do not update the history yet. 2. NPC Actions:
 • NPCs perform actions independently, influenced by prior interactions. 3. Elder Council Actions:
 • Acts on tiles or NPCs based on player contributions and proposals.
 • Can enforce policies, send messages to all NPCs, or punish non-compliance. 4. Tile History Updates:
-• Based on all the messages received. The AI Historians summarize the year’s events for each tile, taking into account plausibility based on the existing history for the tile
+• Based on all the messages received. The AI Historians summarize the year's events for each tile, taking into account plausibility based on the existing history for the tile
 
 Key Mechanics
 Letters (Resource Management)
@@ -62,7 +66,7 @@ Aging
 • Decreases by 10 incrementally each round.
 • Reaches zero in the last 10 rounds.
 
-NPC Tribe Members
+NPC Community Members
 • Generation: A new NPC appears on a random tile every 4 rounds
 • Initial State:
 • Spawns with a randomly generated personality and motivations
@@ -91,15 +95,15 @@ Exploration
 Elder Council
 • Role: A powerful AI that can influence any tile or NPC.
 • Actions:
-• Enforce policies across the valley.
+• Enforce policies across the region.
 • Send messages to all NPCs.
 • Punish or reward players and NPCs based on compliance.
 • Funding: Requires letters from players and NPCs to operate.
 
 Winning the Game
-• Objective Fulfillment: The AI Judge reviews the entire valley’s history.
+• Objective Fulfillment: The AI Judge reviews the entire region's history.
 • Evaluation: Determines which player best achieved their secret objective.
-• Outcome: The player whose vision most aligns with the valley’s history wins.
+• Outcome: The player whose vision most aligns with the region's history wins.
 
 Detailed Rules
 
@@ -120,12 +124,12 @@ Detailed Rules
 
 3. Elder Council Interaction
    • Contributions:
-   • Donate letters to enable the Council’s actions.
+   • Donate letters to enable the Council's actions.
    • Proposals:
    • Send messages suggesting policies or actions.
    • The Council may accept, modify, or ignore proposals.
    • Potential Actions:
-   • Implement valley-wide policies.
+   • Implement region-wide policies.
    • Punish non-compliant players or NPCs.
    • Influence tile histories.
 
@@ -141,8 +145,8 @@ Detailed Rules
    • Record the events and stories of each tile.
    • Decide the outcome of actions based on plausibility and existing history.
    • Influence on Histories:
-   • Your actions and NPCs’ actions shape the tile’s narrative.
-   • The histories contribute to the AI Judge’s final decision.
+   • Your actions and NPCs' actions shape the tile's narrative.
+   • The histories contribute to the AI Judge's final decision.
 
 Turn Sequence Summary 1. Player Phase (1.5 minutes):
 • Move to an adjacent tile.
@@ -161,8 +165,8 @@ Strategies and Tips
 • Early Investment: Influence NPCs early to act on your behalf later.
 • Resource Management: Balance immediate actions with saving for future
 • Elder Council Leverage: Use the Council to enact broader changes.
-• Adaptability: Be prepared to adjust your strategy based on other players’ actions.
+• Adaptability: Be prepared to adjust your strategy based on other players' actions.
 
 Conclusion
-Embark on a journey of societal development in The Arc. Use your strategic skills and the power of AI to bring your vision to life. Influence the valley’s narrative, collaborate or compete with other players, and leave a lasting legacy that shapes the future for generations to come.
-Good luck, and may your story be the one that defines the valley!
+Embark on a journey of societal development in The Arc. Use your strategic skills and the power of AI to bring your vision to life. Influence the region's narrative, collaborate or compete with other players, and leave a lasting legacy that shapes the future for generations to come.
+Good luck, and may your story be the one that defines the region!

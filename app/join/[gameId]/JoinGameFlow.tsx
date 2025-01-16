@@ -21,14 +21,14 @@ export async function joinGame({
   gameId,
   userId,
   playerName,
-  secretVision,
   existingPlayer = null,
+  playerPersonality = "",
 }: {
   gameId: string
   userId: string
   playerName: string
-  secretVision: string
   existingPlayer?: any | null
+  playerPersonality?: string
 }) {
   console.log("existingPlayer", existingPlayer, gameId, userId)
   // Get current players to determine the new player's index
@@ -79,9 +79,9 @@ export async function joinGame({
     userId,
     name: playerName || "New Player",
     letters: 500,
-    secretVision: secretVision.trim(),
     color: playerColor,
     currentTileLocation: mapPosition,
+    playerPersonality,
   })
 
   return uuid
@@ -90,7 +90,7 @@ export async function joinGame({
 export function JoinGameFlow({ gameId }: { gameId: string }) {
   const { uid: userId } = useContext(UserContext)?.user || {}
   const [playerName, setPlayerName] = useState("")
-  const [secretVision, setSecretVision] = useState("")
+  const [playerPersonality, setPlayerPersonality] = useState("")
   const [isJoining, setIsJoining] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
@@ -121,7 +121,7 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
   useEffect(() => {
     if (isAlreadyPlayer) {
       setPlayerName(existingPlayer.name || "")
-      setSecretVision(existingPlayer.secretVision || "")
+      setPlayerPersonality(existingPlayer.playerPersonality || "")
     }
   }, [isAlreadyPlayer, existingPlayer])
 
@@ -139,15 +139,6 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
   }
 
   const handleJoinGame = async () => {
-    if (!secretVision.trim()) {
-      toast({
-        title: "Secret Vision Required",
-        description: "Please enter your vision for the valley's future.",
-        variant: "destructive",
-      })
-      return
-    }
-
     setIsJoining(true)
 
     try {
@@ -155,8 +146,8 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
         gameId,
         userId,
         playerName,
-        secretVision,
         existingPlayer,
+        playerPersonality,
       })
 
       toast({
@@ -181,6 +172,7 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
       setIsJoining(true)
       await fbUpdate("players", existingPlayer.uid, {
         name: playerName,
+        playerPersonality,
       })
       toast({
         title: "Name Updated",
@@ -215,48 +207,6 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
     )
   }
 
-  if (gameHasStarted && !isAlreadyPlayer) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Update Your Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Player Name</label>
-              <Input
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="Enter your name"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Secret Vision</label>
-              <Textarea
-                value={secretVision}
-                disabled={true}
-                className="mt-1 resize-none bg-muted"
-                rows={3}
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                Your secret vision cannot be changed once set
-              </p>
-            </div>
-            <Button
-              onClick={handleUpdateName}
-              disabled={isJoining}
-              className="w-full"
-            >
-              {isJoining ? "Updating..." : "Update Name"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -271,29 +221,29 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
               onChange={(e) => setPlayerName(e.target.value)}
               placeholder="Enter your name"
               className="mt-1"
+              disabled={gameHasStarted}
             />
           </div>
           <div>
-            <label className="text-sm font-medium">
-              Secret Vision (Required)
-            </label>
+            <label className="text-sm font-medium">Character Personality</label>
             <Textarea
-              value={secretVision}
-              onChange={(e) => setSecretVision(e.target.value.slice(0, 200))}
-              placeholder="Enter your vision for the valley's future (max 200 characters)"
-              className="mt-1 resize-none"
-              rows={3}
+              value={playerPersonality}
+              onChange={(e) => setPlayerPersonality(e.target.value)}
+              placeholder="Describe your character's personality..."
+              className="mt-1"
+              disabled={gameHasStarted}
             />
-            <p className="mt-1 text-xs text-muted-foreground">
-              {secretVision.length}/200 characters
-            </p>
           </div>
           <Button
-            onClick={handleJoinGame}
-            disabled={isJoining || !secretVision.trim()}
+            onClick={isAlreadyPlayer ? handleUpdateName : handleJoinGame}
+            disabled={isJoining}
             className="w-full"
           >
-            {isJoining ? "Joining..." : "Join Game"}
+            {isJoining
+              ? "Saving..."
+              : isAlreadyPlayer
+                ? "Update Profile"
+                : "Join Game"}
           </Button>
         </div>
       </CardContent>

@@ -1,20 +1,18 @@
 import { Game } from "@/data/types/Game"
-import { queryDocs } from "../../helpers/reader"
-import { z } from "zod"
-import { backendNow, fbCreate, fbSet } from "../../helpers/writer"
-import { GameProcessingArgs } from "./getGameData"
-import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { MapTile } from "@/data/types/MapTile"
 import { Message } from "@/data/types/Message"
-import { zodResponseFormat } from "openai/helpers/zod"
-import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
 import { isTestMode } from "@/helpers/getUuid"
-import { getStorage } from "firebase-admin/storage"
-import fetch from "node-fetch"
-import fs from "fs"
+import { zodResponseFormat } from "openai/helpers/zod"
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions"
-import path from "path"
+import { z } from "zod"
+import { getOpenAIClient } from "../../helpers/getOpenAIClient"
+import { queryDocs } from "../../helpers/reader"
+import { backendNow, fbCreate, fbSet } from "../../helpers/writer"
 import { getMessageStrings } from "../processRound/getMessageStrings"
+import { GameProcessingArgs } from "./getGameData"
+import { uploadImageToStorage } from "./uploadImageToCloudStorage"
+import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
+import path from "path"
 
 const TileDescriptions = z.object({
   tiles: z.array(
@@ -59,10 +57,10 @@ const getTileDescriptionsFromOpenAI = async (game: Game) => {
 }
 
 const getTileDescriptions = async (game: Game) => {
-  // return isTestMode()
-  //   ? sampleTileDescriptions.tiles
-  //   : getTileDescriptionsFromOpenAI(game)
-  return getTileDescriptionsFromOpenAI(game)
+  return isTestMode()
+    ? sampleTileDescriptions.tiles
+    : getTileDescriptionsFromOpenAI(game)
+  // return getTileDescriptionsFromOpenAI(game)
 }
 
 const getInitialPrompt = (game: Game) =>
@@ -125,36 +123,6 @@ const updateTileExplorationStatus = async (game: Game) => {
   )
 
   return { players, tiles }
-}
-
-const uploadImageToStorage = async (
-  imageUrl: string,
-  gameId: string,
-  position: { x: number; y: number }
-): Promise<string> => {
-  // Download image from URL
-  const response = await fetch(imageUrl)
-  const imageBuffer = await response.buffer()
-
-  // Upload to Firebase Storage
-  const storage = getStorage()
-  const bucket = storage.bucket()
-  const fileName = `games/${gameId}/tiles/${position.x}_${position.y}_${Date.now()}.jpg`
-  const fileRef = bucket.file(fileName)
-
-  await fileRef.save(imageBuffer, {
-    metadata: {
-      contentType: "image/jpeg",
-    },
-  })
-
-  // Get the public URL
-  const [signedUrl] = await fileRef.getSignedUrl({
-    action: "read",
-    expires: "01-01-2100",
-  })
-
-  return signedUrl
 }
 
 export const updateGameTiles = async (args: GameProcessingArgs) => {
@@ -271,7 +239,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
       const storedImageUrl = await uploadImageToStorage(
         imageUrl,
         args.game.uid,
-        tile.position
+        path.join("tiles", `${tile.position.x}_${tile.position.y}.jpg`)
       )
 
       // Update tile with new image

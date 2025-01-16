@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from "uuid"
 import rand from "random-seed"
+import { isServerside } from "./isServerside"
 
 let testMode = false
-let seededRandom = rand.create("1234")
+let seededRandom = rand.create(isServerside() ? "5678" : "1234")
 
 const seeededRandomUUID = () => {
   const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

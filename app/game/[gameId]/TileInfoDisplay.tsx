@@ -7,6 +7,9 @@ import { GameInterfaceContext } from "./GameInterfaceContext"
 import { useContext } from "react"
 import { isEqual } from "lodash-es"
 import Image from "next/image"
+import { NPCsForTileDisplay } from "./PlayerNPCsDisplay"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
   const { previousMessages, composingMessage, setComposingMessage } =
@@ -42,17 +45,30 @@ export const TileInfoDisplay = ({
           Tile Info ({selectedTile.position.x}, {selectedTile.position.y})
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        <div className="flex w-full justify-center">
-          <Image
-            src={selectedTile.imageUrl}
-            alt="Tile Image"
-            width={400}
-            height={400}
-          />
-        </div>
-        <div>History:</div>
-        <TileHistoryDisplay tile={selectedTile}></TileHistoryDisplay>
+      <CardContent>
+        <Tabs defaultValue="info" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="info">Info</TabsTrigger>
+            <TabsTrigger value="npcs">NPCs</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="info" className="flex flex-col gap-3">
+            <div className="flex w-full justify-center">
+              <Image
+                src={selectedTile.imageUrl}
+                alt="Tile Image"
+                width={400}
+                height={400}
+              />
+            </div>
+            <div>History:</div>
+            <TileHistoryDisplay tile={selectedTile}></TileHistoryDisplay>
+          </TabsContent>
+
+          <TabsContent value="npcs">
+            <NPCsForTileDisplay selectedPosition={selectedTile.position} />
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   )

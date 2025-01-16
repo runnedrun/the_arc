@@ -27,7 +27,7 @@ type NPCsWithPendingMessageBool = NPC & {
   hasPendingMessages: boolean
 }
 
-export const useNPCsHavePendingMessages = (npcs: NPC[]) => {
+export const useNPCsHaveMessagesForThisRound = (npcs: NPC[]) => {
   const { currentRound, currentPlayer } = useContext(GameInterfaceContext)
   const obs = npcs.map((npc) => {
     return queryObs("messages", ({ where }) => {
@@ -57,7 +57,7 @@ export const useNPCsHavePendingMessages = (npcs: NPC[]) => {
 export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
   const [open, setOpen] = useState(false)
   const [selectedNpc, setSelectedNpc] = useState<NPC>()
-  const npcsWithPendingMessages = useNPCsHavePendingMessages(npcOptions)
+  const npcsWithPendingMessages = useNPCsHaveMessagesForThisRound(npcOptions)
 
   return (
     <div className="flex flex-col gap-4">

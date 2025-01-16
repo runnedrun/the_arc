@@ -8,6 +8,10 @@ import { TokenCountContext } from "./TokenCountContext"
 import { PlayerMarker } from "./components/PlayerMarker"
 import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
 import { LoadingComponent } from "@/components/LoadingComponent"
+import { Info } from "lucide-react"
+import { PlayerInfoModal } from "./components/PlayerInfoModal"
+import { useState } from "react"
+import Image from "next/image"
 
 export const PlayerInfoDisplay = () => {
   const {
@@ -59,16 +63,41 @@ export const PlayerInfoDisplay = () => {
     }
   }
 
+  const [showPlayerInfo, setShowPlayerInfo] = useState(false)
+
   return (
     <Card className="w-full">
       <CardHeader>
         <LoadingComponent isLoading={!currentPlayer}>
           <div className="flex items-center gap-2">
+            {currentPlayer?.playerImageUrl && (
+              <Image
+                src={currentPlayer?.playerImageUrl || ""}
+                alt={currentPlayer?.name || ""}
+                width={50}
+                height={50}
+              />
+            )}
             <CardTitle>{currentPlayer?.name}</CardTitle>
             <PlayerMarker player={currentPlayer}></PlayerMarker>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowPlayerInfo(true)}
+              className="h-8 w-8 p-0"
+            >
+              <Info className="h-4 w-4" />
+            </Button>
           </div>
         </LoadingComponent>
       </CardHeader>
+
+      <PlayerInfoModal
+        player={currentPlayer}
+        open={showPlayerInfo}
+        onOpenChange={setShowPlayerInfo}
+      />
+
       <CardContent>
         <p>Round: {round?.index}</p>
         <p>
