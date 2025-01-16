@@ -16,13 +16,11 @@ const generateNPCMessage = async ({
   npc,
   npcMessages,
   currentTile,
-  previousActions,
   gameArgs,
 }: {
   npc: NPC
   npcMessages: Message[]
   currentTile: MapTile
-  previousActions: Message[]
   gameArgs: GameProcessingArgs
 }) => {
   const { game, elderCouncilDecrees } = gameArgs
@@ -36,8 +34,9 @@ const generateNPCMessage = async ({
       .orderBy("createdAt", "desc")
       .limit(MAX_HISTORY_MESSAGES)
   )
+  const allMessagesToDisplay = [...npcMessages, ...currentTileMessages]
 
-  const tileHistory = await getMessageStrings(currentTileMessages, gameArgs)
+  const tileHistory = getMessageStrings(allMessagesToDisplay, gameArgs, npc.uid)
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -45,21 +44,24 @@ const generateNPCMessage = async ({
       content: `You are ${npc.name}, living in this world: ${getEnvironmentContextString(game)}. 
 
 Generate a realistic action (max ${MAX_MESSAGE_LENGTH} characters) that you would take on your current tile, based on your previous interactions and the tile's history. The action should be written in third person and must be possible within the established environment. 
-Your action could also include moving to a different tile, but you must describe the kind of tile you want to move to, using information from the elder council to determine what kind of tiles exist.`,
+Your action could also include moving to a different tile, but you must describe the direction you want to move in: north, south, east, west.`,
     },
     {
-      role: "user",
+      role: "system",
+      content: `You have the following personality:
+       ${npc.personality}`,
+    },
+    {
+      role: "system",
       content: `
-Recent messages to you by your tribe leader: ${npcMessages.map((m) => m.content).join("\n")}
-Recent tile history: ${tileHistory.join("\n")}
-Recent Elder Council decrees and announcements: ${elderCouncilDecrees.map((m) => m.content).join("\n")}
-Recent actions you took: ${previousActions.map((m) => m.content).join("\n")}
-Generate a single action that you would take, written in third person, max ${MAX_MESSAGE_LENGTH} characters.`,
+History of this tile and your interactions: ${tileHistory.join("\n")}
+Elder Council decrees: ${elderCouncilDecrees.map((m) => m.content).join("\n")}
+Generate a single action that you would take, written first person, max ${MAX_MESSAGE_LENGTH} characters.`,
     },
   ]
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o",
     messages,
     max_tokens: 60,
     temperature: 0.7,
@@ -70,8 +72,7 @@ Generate a single action that you would take, written in third person, max ${MAX
 }
 
 export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
-  const { game, currentRound, elderCouncilDecrees, mapTiles, npcs, players } =
-    args
+  const { game, currentRound, mapTiles, npcs } = args
 
   const npcProcessingComplete = await Promise.all(
     npcs.map(async (npc) => {
@@ -103,7 +104,6 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
         npc,
         npcMessages,
         currentTile,
-        previousActions,
         gameArgs: args,
       })
 

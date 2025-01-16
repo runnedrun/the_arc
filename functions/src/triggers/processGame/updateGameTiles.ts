@@ -37,8 +37,6 @@ const getTileDescriptionsFromOpenAI = async (game: Game) => {
     },
   ]
 
-  console.log("messages", messages)
-
   const completion = await openAiClient.beta.chat.completions.parse({
     model: "gpt-4o",
     messages,
@@ -174,7 +172,6 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
 
   await Promise.all(
     allTiles.map(async (tile) => {
-      console.log("processing tile")
       if (!tile.explored) return
 
       const tileHistory = await queryDocs("messages", (ref) =>
@@ -190,8 +187,6 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
         (message) => message.createdAt > tile.lastImageGeneratedAt
       )
 
-      console.log("latestMessage", messagesSinceLastPrompt)
-
       if (messagesSinceLastPrompt.length === 0) {
         return
       }
@@ -201,8 +196,6 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
         tile.previousDallePrompt,
         args
       )
-
-      console.log("prompt to gen dalle", prompt)
 
       // Generate DALL-E prompt
       const dallePromptCompletion = await openAiClient.chat.completions.create({
@@ -222,8 +215,6 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
       })
 
       const dallePrompt = dallePromptCompletion.choices[0].message.content
-
-      console.log("dallePrompt", dallePrompt)
 
       // Generate image with DALL-E 3
       const imageResponse = await openAiClient.images.generate({

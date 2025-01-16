@@ -22,7 +22,7 @@ export const ElderCouncilDisplay = () => {
       <CardHeader>
         <CardTitle>Elder Council</CardTitle>
       </CardHeader>
-      <CardContent className="grow overflow-hidden">
+      <CardContent className="min-h-0 grow">
         <GameMessages
           messages={previousMessages || []}
           composingMessage={composingMessage}

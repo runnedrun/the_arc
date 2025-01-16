@@ -4,22 +4,23 @@ import { sortBy } from "lodash-es"
 import { idIsNpc } from "@/data/types/NPC"
 
 interface MessagePrefixCreator {
-  applies: (message: Message) => boolean
+  applies: (message: Message, viewingUserId: string) => boolean
   getPrefix: () => string
 }
 
 export const MessagePrefixes: MessagePrefixCreator[] = [
   {
+    applies: (message, viewingUserId) =>
+      viewingUserId && message.senderId === viewingUserId,
+    getPrefix: () => "Message from you",
+  },
+  {
     applies: (message) => message.type === "npc" && !idIsNpc(message.senderId),
     getPrefix: () => "Message from player",
   },
   {
-    applies: (message) => message.type === "npc" && idIsNpc(message.senderId),
-    getPrefix: () => "Message from you",
-  },
-  {
     applies: (message) => message.type === "tileHistory",
-    getPrefix: () => "Results of previous actions",
+    getPrefix: () => "Update from tile historian:",
   },
   {
     applies: (message) =>
@@ -49,14 +50,18 @@ export const MessagePrefixes: MessagePrefixCreator[] = [
 
 export const getMessageStrings = (
   messages: Message[],
-  args: GameProcessingArgs
+  args: GameProcessingArgs,
+  viewingUserId?: string
 ) => {
-  return getMessageStringsZipped(messages, args).map((m) => m.stringMessage)
+  return getMessageStringsZipped(messages, args, viewingUserId).map(
+    (m) => m.stringMessage
+  )
 }
 
 export const getMessageStringsZipped = (
   messages: Message[],
-  args: GameProcessingArgs
+  args: GameProcessingArgs,
+  viewingUserId?: string
 ) => {
   const messagesWithIndex = sortBy(messages, (_) => _.createdAt.toMillis()).map(
     (message, i) => ({
@@ -71,7 +76,9 @@ export const getMessageStringsZipped = (
     const sender = player || npc
 
     const prefix =
-      MessagePrefixes.find((p) => p.applies(message))?.getPrefix() || ""
+      MessagePrefixes.find((p) =>
+        p.applies(message, viewingUserId)
+      )?.getPrefix() || ""
 
     const senderPrefix = sender ? `by ${sender.name}` : ""
 

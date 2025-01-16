@@ -35,8 +35,9 @@ function MessageDisplay({ message }: { message: Message }) {
   const renderer = messageRenderers.find((r) =>
     r.matches(message, currentPlayer?.uid)
   )
-  return renderer ? (
-    <div>{renderer.render(message)}</div>
+  const RendererComponent = renderer?.RenderComponent
+  return RendererComponent ? (
+    <RendererComponent message={message} />
   ) : (
     <div className="mb-2 rounded bg-white p-2">{message.content}</div>
   )
@@ -67,7 +68,7 @@ export function GameMessages({
   }
 
   return (
-    <div className="flex h-full grow flex-col gap-2">
+    <div className="flex h-full min-h-0 grow flex-col gap-2">
       <ScrollArea className="flex-1">
         <div className="flex flex-col-reverse">
           {messages.length ? (

@@ -7,6 +7,7 @@ import { queryDocs, readDoc } from "@/functions/src/helpers/reader"
 import { backendNow, fbCreate, fbUpdate } from "@/functions/src/helpers/writer"
 import { getGameData } from "@/functions/src/triggers/processGame/getGameData"
 import { getMessageStringsZipped } from "@/functions/src/triggers/processRound/getMessageStrings"
+import { sortBy } from "lodash-es"
 import { NextApiRequest, NextApiResponse } from "next"
 import { NextRequest, NextResponse } from "next/server"
 import { ChatCompletionMessageParam } from "openai/resources"
@@ -41,13 +42,32 @@ export async function POST(req: NextRequest) {
       .orderBy("createdAt", "asc")
   )
 
+  const gameData = await getGameData(message.gameId)
+  const npc = gameData.npcs.find((n) => n.uid === message.receiverId)
+
+  let tileHistoryMessages = []
+  if (message.type === "npc" && npc) {    
+    tileHistoryMessages = await queryDocs("messages", (ref) =>
+      ref
+        .where("gameId", "==", message.gameId)
+        .where("type", "==", "tileHistory")
+        .where("tileLocation.x", "==", npc.currentTileLocation.x)
+        .where("tileLocation.y", "==", npc.currentTileLocation.y)
+      .orderBy("createdAt", "asc")
+  )
+
   // Filter processed messages
-  const messagesToProcess = conversationMessages.filter(
+  const npcMesssagesToProcess = conversationMessages.filter(
     (msg) => msg.processingTriggeredAt
   )
 
+  const allMessagesToProcess = sortBy(
+    [...npcMesssagesToProcess, ...tileHistoryMessages],
+    "createdAt"
+  )
+
   // Get game data
-  const gameData = await getGameData(message.gameId)
+  
 
   // Create reply message using fbCreate
   const replyMessage: Omit<Message, keyof ModelBase> = {
@@ -68,10 +88,10 @@ export async function POST(req: NextRequest) {
   const replyRef = await fbCreate("messages", replyMessage)
 
   // Get message strings
-  const messageStrings = getMessageStringsZipped(messagesToProcess, gameData)
+  const messageStrings = getMessageStringsZipped(allMessagesToProcess, gameData)
 
   // Prepare system prompt
-  const messageStructurePrompt = `Even though the message inputs have labels for sender, year, etc, your reply must be ONLY the message with no preamble or label. 
+  const messageStructurePrompt = `Even though the message inputs have labels for sender, year, etc, your reply must be ONLY the message with no preamble or label. Avoid asking questions. 
 Your mesage to the player:`
 
   let systemPrompt = ""
@@ -94,6 +114,8 @@ Your mesage to the player:`
 
       You are talking to a player in this world. You talk to them once a year.`
   }
+
+  console.log("messageStrings", messageStrings)
 
   const gptMessages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
