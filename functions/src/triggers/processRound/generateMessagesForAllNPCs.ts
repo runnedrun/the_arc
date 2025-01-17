@@ -44,7 +44,8 @@ const generateNPCMessage = async ({
       content: `You are ${npc.name}, living in this world: ${getEnvironmentContextString(game)}. 
 
 Generate a realistic action (max ${MAX_MESSAGE_LENGTH} characters) that you would take on your current tile, based on your previous interactions and the tile's history. The action should be written in third person and must be possible within the established environment. 
-Your action could also include moving to a different tile, but you must describe the direction you want to move in: north, south, east, west.`,
+
+Your action could also include moving to a different tile, but you must describe the direction you want to move in: north, south, east, west and the reason for why you're moving— but unless you've been there before, you don't know what's in that direction.`,
     },
     {
       role: "system",
@@ -74,8 +75,10 @@ Generate a single action that you would take, written first person, max ${MAX_ME
 export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
   const { game, currentRound, mapTiles, npcs } = args
 
+  const activeNpcs = npcs.filter((npc) => npc.active)
+
   const npcProcessingComplete = await Promise.all(
-    npcs.map(async (npc) => {
+    activeNpcs.map(async (npc) => {
       // Run all queries in parallel
       const [npcMessages, previousActions] = await Promise.all([
         queryDocs("messages", (ref) =>

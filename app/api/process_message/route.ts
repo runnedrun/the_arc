@@ -8,7 +8,6 @@ import { backendNow, fbCreate, fbUpdate } from "@/functions/src/helpers/writer"
 import { getGameData } from "@/functions/src/triggers/processGame/getGameData"
 import { getMessageStringsZipped } from "@/functions/src/triggers/processRound/getMessageStrings"
 import { sortBy } from "lodash-es"
-import { NextApiRequest, NextApiResponse } from "next"
 import { NextRequest, NextResponse } from "next/server"
 import { ChatCompletionMessageParam } from "openai/resources"
 
@@ -46,15 +45,16 @@ export async function POST(req: NextRequest) {
   const npc = gameData.npcs.find((n) => n.uid === message.receiverId)
 
   let tileHistoryMessages = []
-  if (message.type === "npc" && npc) {    
+  if (message.type === "npc" && npc) {
     tileHistoryMessages = await queryDocs("messages", (ref) =>
       ref
         .where("gameId", "==", message.gameId)
         .where("type", "==", "tileHistory")
         .where("tileLocation.x", "==", npc.currentTileLocation.x)
         .where("tileLocation.y", "==", npc.currentTileLocation.y)
-      .orderBy("createdAt", "asc")
-  )
+        .orderBy("createdAt", "asc")
+    )
+  }
 
   // Filter processed messages
   const npcMesssagesToProcess = conversationMessages.filter(
@@ -67,7 +67,6 @@ export async function POST(req: NextRequest) {
   )
 
   // Get game data
-  
 
   // Create reply message using fbCreate
   const replyMessage: Omit<Message, keyof ModelBase> = {
@@ -100,7 +99,7 @@ Your mesage to the player:`
       The world you exist in:
       ${gameData.game.environmentDescription}
       You are talking with a player in this game world. You talk to them once a year.
-      Respond briefly and authoritatively, in no more than 2 sentences.`
+      Respond briefly and authoritatively, in no more than 2 sentences. This dicsussion will be used later to inform the creation of decrees.`
   } else {
     const npc = gameData.npcs.find((n) => n.uid === message.receiverId)
     if (!npc) throw new Error("NPC not found")
@@ -146,8 +145,6 @@ Your mesage to the player:`
     content: responseContent,
     processedAt: backendNow(),
   })
-
-  console.log("updated message", replyRef.id, responseContent)
 
   await fbUpdate("messages", messageId, {
     processedAt: backendNow(),

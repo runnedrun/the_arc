@@ -20,17 +20,19 @@ export const generateElderCouncilResponse = async ({
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are the Elder Council, a powerful governing body in the valley. Review the recent actions on this tile and determine if intervention is needed based on your previous decrees. If intervention is needed, generate a single action (max ${MAX_MESSAGE_LENGTH} characters) written in third person. If no action is needed, respond with exactly "NO ACTION".`,
+      content: `You are the executive branch of the Elder Council, a powerful governing body. Review the recent actions on in thie environment and determine if you need to take action to intervene to uphold your previous decrees. If intervention is needed, generate a single action (max ${MAX_MESSAGE_LENGTH} characters) written in first person (we ...). If no action is needed, respond with exactly "NO ACTION".`,
     },
     {
       role: "user",
       content: `
-Recent actions and results on this tile: ${getMessageStrings(tileMessages, gameArgs).join("\n")}
+Recent history of this environment: ${getMessageStrings(tileMessages, gameArgs).join("\n")}
 Your previous decrees: ${getMessageStrings(gameArgs.elderCouncilDecrees, gameArgs).join("\n")}
 
-Based on these actions and your previous decrees, determine if intervention is needed. Respond with an action (max ${MAX_MESSAGE_LENGTH} characters) or "NO ACTION".`,
+Based on these actions and your previous decrees, respond with an action you take (max ${MAX_MESSAGE_LENGTH} characters) or "NO ACTION".`,
     },
   ]
+
+  console.log("elder council action messages", messages)
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o",

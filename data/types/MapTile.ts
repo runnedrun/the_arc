@@ -22,4 +22,6 @@ export type MapTile = Model<{
   lastImageGeneratedAt: Timestamp | null
   previousDallePrompt: string | null
   imageUrl: string | null // Replacing svg field
+  title: string | null
+  description: string | null
 }>

@@ -14,8 +14,15 @@ export const uploadImageToStorage = async (
   // Upload to Firebase Storage
   const storage = getStorage()
   const bucket = storage.bucket()
-  const fileName = path.join("games", gameId, filePath)
-  const fileRef = bucket.file(fileName)
+  const fileName = path.basename(filePath)
+  const fileNameWithTimestamp = `${Date.now()}-${fileName}`
+  const filePathWithTimestamp = filePath.replace(
+    fileName,
+    fileNameWithTimestamp
+  )
+  const fileLocation = path.join("games", gameId, filePathWithTimestamp)
+  console.log("fileLocation", fileLocation)
+  const fileRef = bucket.file(fileLocation)
 
   await fileRef.save(imageBuffer, {
     metadata: {

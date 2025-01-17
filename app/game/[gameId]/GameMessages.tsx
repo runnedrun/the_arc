@@ -32,6 +32,8 @@ function MessageDisplay({ message }: { message: Message }) {
     )
   }
 
+  message.type === "tileAction" && console.log("messageddd", message)
+
   const renderer = messageRenderers.find((r) =>
     r.matches(message, currentPlayer?.uid)
   )
@@ -48,7 +50,6 @@ export function GameMessages({
   composingMessage,
   updateComposingMessage,
   sendMessage,
-  scrollAreaClassName = "h-full",
 }: GameMessagesProps) {
   const { charactersRemaining, charactersAvailable, charactersUsedThisRound } =
     useContext(TokenCountContext)
@@ -57,7 +58,10 @@ export function GameMessages({
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    // allow the mesage to render before scroling
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, 100)
   }, [messages?.[0]?.uid])
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -68,8 +72,8 @@ export function GameMessages({
   }
 
   return (
-    <div className="flex h-full min-h-0 grow flex-col gap-2">
-      <ScrollArea className="flex-1">
+    <div className="flex min-h-0 grow flex-col gap-2">
+      <ScrollArea className="flex min-h-0 grow flex-col">
         <div className="flex flex-col-reverse">
           {messages.length ? (
             <>

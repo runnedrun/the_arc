@@ -18,9 +18,10 @@ export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
     setComposingMessage,
     sendMessage,
   } = useMessageComposition({
-    types: ["tileHistory", "tileAction"],
+    typesToShow: ["tileAction", "tileHistory"],
     tileLocation: tile.position,
     senderId: currentPlayer?.uid,
+    typeToSend: "tileAction",
   })
 
   const currentPlayerIsOnThisTile = isEqual(
@@ -44,29 +45,31 @@ export const TileInfoDisplay = ({
   selectedTile: TileWithIndex
 }) => {
   return (
-    <Card className="mr-4 w-full">
+    <Card className="mr-4 flex min-h-0 w-full flex-col">
       <CardHeader>
-        <CardTitle>
-          Tile Info ({selectedTile.position.x}, {selectedTile.position.y})
+        <CardTitle className="flex flex-col items-center gap-3">
+          <div className="text-2xl">{selectedTile.title}</div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="info" className="w-full">
+      <CardContent className="flex min-h-0 flex-col">
+        <Tabs defaultValue="info" className="flex min-h-0 grow flex-col">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="info">Info</TabsTrigger>
+            <TabsTrigger value="info">History</TabsTrigger>
             <TabsTrigger value="npcs">NPCs</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="info" className="flex flex-col gap-3">
+          <TabsContent
+            value="info"
+            className="flex min-h-0 grow flex-col gap-3"
+          >
             <div className="flex w-full justify-center">
               <Image
                 src={selectedTile.imageUrl}
                 alt="Tile Image"
-                width={250}
-                height={250}
+                width={200}
+                height={200}
               />
             </div>
-            <div>History:</div>
             <TileHistoryDisplay tile={selectedTile}></TileHistoryDisplay>
           </TabsContent>
 

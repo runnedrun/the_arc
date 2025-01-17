@@ -61,7 +61,6 @@ Requirements for each objective:
 }
 
 const setupPlayerImages = async (args: GameProcessingArgs) => {
-  console.log("setupPlayerImages", args.players)
   await Promise.all(
     args.players.map(async (player) => {
       const image = await setupCharacterImage({

@@ -13,9 +13,10 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
     setComposingMessage,
     sendMessage,
   } = useMessageComposition({
-    types: ["npc"],
+    typesToShow: ["npc"],
     receiverId: npc.uid,
     senderId: currentPlayer?.uid,
+    typeToSend: "npc",
   })
 
   return (

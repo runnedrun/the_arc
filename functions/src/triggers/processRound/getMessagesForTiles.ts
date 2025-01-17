@@ -1,11 +1,7 @@
-import { groupBy } from "lodash-es"
-import {
-  CollectionReferenceWithTypedWhere,
-  queryDocs,
-  QueryWithTypedWhere,
-} from "../../helpers/reader"
-import { SKIP } from "@/data/readerFe"
 import { Message } from "@/data/types/Message"
+import { groupBy } from "lodash-es"
+import { queryDocs, QueryWithTypedWhere } from "../../helpers/reader"
+import stableStringify from "safe-stable-stringify"
 
 export const getMessagesForTiles = async ({
   roundId,
@@ -24,6 +20,7 @@ export const getMessagesForTiles = async ({
     }
     return updatedRef
       .where("archived", "==", false)
+      .where("type", "in", ["tileAction", "tileHistory"])
       .orderBy("createdAt", "desc")
       .orderBy("tileLocation")
       .limit(100)
@@ -34,5 +31,5 @@ export const getMessagesForTiles = async ({
   )
 
   // Group messages by tile location
-  return groupBy(onlyTileMessages, (m) => JSON.stringify(m.tileLocation))
+  return groupBy(onlyTileMessages, (m) => stableStringify(m.tileLocation))
 }

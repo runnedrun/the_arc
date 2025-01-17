@@ -85,8 +85,8 @@ export const addToTileHistory = async (args: GameProcessingArgs) => {
               roundIndex: currentRound.index,
               content: historyEntry,
               type: "tileHistory",
-              senderId: "elderCouncil",
-              receiverId: "player",
+              senderId: "historian",
+              receiverId: null,
               processedAt: null,
             })
           )

@@ -44,9 +44,9 @@ async function generateRecap(args: GameProcessingArgs) {
   const recapMessages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are the Elder Council's scribe in ${getEnvironmentContextString(game)}. 
+      content: `You are a historian in this world: ${getEnvironmentContextString(game)}. 
 
-Create a single sentence recap of the notable events in the realm this round, focusing on activities that align with or contradict the council's decrees. Ensure the recap respects the established rules and nature of this environment.`,
+Create a single sentence recap of the notable events in the realm this year, focusing on activities that align with or contradict the world council's decrees. Ensure the recap respects the established rules and nature of this environment.`,
     },
     {
       role: "user",
@@ -91,22 +91,25 @@ Provide a single sentence recap focusing on notable events and their relationshi
 }
 
 async function generateNewDecrees(args: GameProcessingArgs) {
-  const { currentRound, game, elderCouncilMessages } = args
+  const { currentRound, game, allElderCouncilActivity } = args
+
   const openai = getOpenAIClient()
   const decreeMessages: ChatCompletionMessageParam[] = [
     {
       role: "system",
       content: `You are the Elder Council of this world: ${getEnvironmentContextString(game)}. 
 
-Your job is to make fair decrees (laws) based on requests from the players. Do your best to make decrees that follow what users request, as long as the user justifies the request and it aligns with the established rules of this environment.
+Your job is to make fair decrees (laws) based on requests from the players. Do your best to make decrees that follow what people request, as long as the person justifies the request and it aligns with the established rules of this environment.
+
+This is the annual end of year meeting of the Elder Council, in year ${currentRound.index}. You will make decrees based on the history of council deliberations.
 
 Return a JSON object with 'newDecrees' array. Each decree should be 1-2 sentences. Return empty array if there are no new, clear, requests since your last decree.`,
     },
     {
-      role: "user",
+      role: "system",
       content: `
-Here is the history of council requests and decisions:
-${getMessageStrings(elderCouncilMessages, args).join("\n")}
+Here is the history of past council deliberations and decrees:
+${getMessageStrings(allElderCouncilActivity, args).join("\n")}
 
 If requests are in conflict with each other or existing decrees, make a based on the reasoning provided by the players, using your judgement.
 
@@ -141,7 +144,7 @@ Return a JSON object with any new decrees needed to address these events. Format
           senderId: "elderCouncil",
           receiverId: null,
           content: decree,
-          type: "elderCouncil",
+          type: "councilDecree",
           processedAt: null,
           tileLocation: null,
         })

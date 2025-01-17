@@ -43,10 +43,7 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
   )
 
   const npc = await firstValueFrom(
-    queryObs("npcs", ({ where }) => [
-      where("gameId", "==", game.uid),
-      where("playerTribeId", "==", player.uid),
-    ]).pipe(
+    queryObs("npcs", ({ where }) => [where("gameId", "==", game.uid)]).pipe(
       filter((npcs) => npcs.length > 0),
       map((npcs) => npcs[0])
     )

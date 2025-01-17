@@ -29,11 +29,11 @@ export const setupCharacterImage = async ({
       {
         role: "system",
         content:
-          "Create a single, detailed sentence for DALL-E that describes a fantasy character's visual appearance. Focus only on visual elements like physical features, clothing, and atmosphere. Do not include non-visual elements or background story.",
+          "You are an expert dall-e prompt creator. Given the following description of a character generate a very brief (12 words or less) prompt for generating a high quality image of the following character, in a handrawn disney style. Specify that there must be no text.",
       },
       {
-        role: "user",
-        content: `Character name: ${name}\nPersonality: ${personality}\nWorld description: ${environmentDescription}`,
+        role: "system",
+        content: `Character: ${personality}\nWorld description: ${environmentDescription}`,
       },
     ],
     temperature: 0.7,
@@ -41,9 +41,11 @@ export const setupCharacterImage = async ({
 
   const optimizedPrompt = promptResponse.choices[0]?.message?.content
 
+  console.log("optimizedPrompt for character image", optimizedPrompt)
+
   // Then use the optimized prompt with DALL-E
   const response = await openAiClient.images.generate({
-    model: "dall-e-3",
+    model: "dall-e-2",
     prompt: optimizedPrompt,
     n: 1,
     size: "1024x1024",

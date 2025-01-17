@@ -24,6 +24,12 @@ const TileDescriptions = z.object({
   ),
 })
 
+const TileMetadata = z.object({
+  title: z.string(),
+  description: z.string(),
+  dallePrompt: z.string(),
+})
+
 const getTileDescriptionsFromOpenAI = async (game: Game) => {
   const openAiClient = getOpenAIClient()
   const messages: ChatCompletionMessageParam[] = [
@@ -67,30 +73,33 @@ The world you are mapping is described as follows:
 ${game.environmentDescription}
 `
 
-const getDallePrompt = (
+const getTileMetadataPrompt = (
   tileHistory: Message[],
-  previousPrompt: string,
+  tile: MapTile,
   gameArgs: GameProcessingArgs
 ) => {
   const previousPromptExplanation = `
-  You previously used this prompt to reprsent the state of this environment:
-  ${previousPrompt || "No previous prompt"}
-  Make a new prompt that reflects this recent history of the environment from this year:
+  Current description of the environment:
+  ${tile.description || "No previous prompt"}
+
+  Current title of the environment:
+  ${tile.title || "No title"}
+  
+  Recent history of the environment, since the description was last updated:
   ${getMessageStrings(tileHistory, gameArgs)}
   `
 
-  return `Create a dall-e prompt for an image of the current state of this environment.
+  return `Generate a new title, description, and DALL-E prompt for this environment.
+
 ${previousPromptExplanation}
 
 The environment is situated within this world:
 ${gameArgs.game.environmentDescription}
 
-Requirements:
-- the image should be in a vector art style
-- the image must fill the whole frame, no text, no border
-- Show the environment from a slightly elevated angle
-- The prompt must be breif, 1 sentence or less and only describe visual elements, with no addition flavor text.
-`
+Requirements for each field:
+- Title: A brief, evocative name for this location (10 words or less)
+- Description: A dry, factual description of the current state of this environment (30 words or less)
+- DALL-E prompt: A prompt for DALL-E 3 to generate an image of the environment in a disney, hand drawn animation style, showing ONLY the environment, filling the whole frame without text or borders (1 sentence)`
 }
 
 const updateTileExplorationStatus = async (game: Game) => {
@@ -143,6 +152,8 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
           lastImageGeneratedAt: null,
           previousDallePrompt: null,
           imageUrl: null,
+          title: null,
+          description: null,
         }
 
         const newMessage: Message = getDefaultMessage({
@@ -191,34 +202,35 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
         return
       }
 
-      const prompt = getDallePrompt(
-        messagesSinceLastPrompt,
-        tile.previousDallePrompt,
-        args
+      const prompt = getTileMetadataPrompt(messagesSinceLastPrompt, tile, args)
+
+      const metadataCompletion = await openAiClient.beta.chat.completions.parse(
+        {
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are an expert at describing environments concisely and creating effective DALL-E prompts.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          response_format: zodResponseFormat(TileMetadata, "tileMetadata"),
+          temperature: 0.7,
+        }
       )
 
-      // Generate DALL-E prompt
-      const dallePromptCompletion = await openAiClient.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are an expert at writing prompts for DALL-E 3 that generates an image a setting based on the history of that setting.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        temperature: 0.7,
-      })
+      const { title, description, dallePrompt } =
+        metadataCompletion.choices[0].message.parsed
 
-      const dallePrompt = dallePromptCompletion.choices[0].message.content
+      console.log("map dall-e prompt", dallePrompt)
 
       // Generate image with DALL-E 3
       const imageResponse = await openAiClient.images.generate({
-        model: "dall-e-3",
+        model: "dall-e-2",
         prompt: dallePrompt,
         size: "1024x1024",
         quality: "standard",
@@ -233,12 +245,14 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
         path.join("tiles", `${tile.position.x}_${tile.position.y}.jpg`)
       )
 
-      // Update tile with new image
+      // Update tile with new image and metadata
       await fbSet("mapTiles", tile.uid, {
         ...tile,
         imageUrl: storedImageUrl,
         lastImageGeneratedAt: backendNow(),
         previousDallePrompt: dallePrompt,
+        title,
+        description,
       })
     })
   )

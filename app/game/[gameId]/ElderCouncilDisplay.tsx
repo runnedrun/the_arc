@@ -12,9 +12,10 @@ export const ElderCouncilDisplay = () => {
     setComposingMessage,
     sendMessage,
   } = useMessageComposition({
-    types: ["elderCouncil", "recap"],
+    typesToShow: ["elderCouncil", "recap"],
     senderId: currentPlayer?.uid,
     receiverId: "elderCouncil",
+    typeToSend: "elderCouncil",
   })
 
   return (
@@ -22,7 +23,7 @@ export const ElderCouncilDisplay = () => {
       <CardHeader>
         <CardTitle>Elder Council</CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 grow">
+      <CardContent className="flex min-h-0 grow flex-col">
         <GameMessages
           messages={previousMessages || []}
           composingMessage={composingMessage}

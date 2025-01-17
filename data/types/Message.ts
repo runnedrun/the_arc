@@ -28,7 +28,13 @@ export type Message = Model<{
   content: string
   tileLocation: MapPosition
   roundIndex: number
-  type: "npc" | "recap" | "tileAction" | "tileHistory" | "elderCouncil"
+  type:
+    | "npc"
+    | "recap"
+    | "tileAction"
+    | "tileHistory"
+    | "elderCouncil"
+    | "councilDecree"
   processingTriggeredAt: Timestamp | null
   processingStartedAt: Timestamp | null
   processedAt: Timestamp | null

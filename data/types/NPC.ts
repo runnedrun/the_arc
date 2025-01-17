@@ -21,4 +21,5 @@ export type NPC = Model<{
   playerTribeId?: string
   personality?: string
   imageUrl?: string
+  active: boolean
 }>

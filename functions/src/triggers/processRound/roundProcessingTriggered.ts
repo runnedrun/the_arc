@@ -10,6 +10,7 @@ import { fbSet } from "../../helpers/writer"
 import { Timestamp } from "firebase-admin/firestore"
 import { safeSetTestMode } from "@/helpers/getUuid"
 import { updateGameTiles } from "../processGame/updateGameTiles"
+import { spawnNewNpc } from "./spawnNewNpc"
 
 const runRoundProcessing = async (args: GameProcessingArgs) => {
   const allPlayersHaveCompletedTheRound = args.players.every(
@@ -50,6 +51,12 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   await args.refresh()
   console.log("Updating game tiles")
   await updateGameTiles(args)
+  await args.refresh()
+
+  if (args.currentRound.index % 2 === 0) {
+    await spawnNewNpc(args)
+  }
+
   console.log("Querying messages for this round")
   const messagesForThisRound = await queryDocs("messages", (ref) => {
     return ref

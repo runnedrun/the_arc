@@ -69,15 +69,23 @@ export const getNpcForGame = async (
     gameId: args.game.uid,
   })
 
+  const npcTileIsExplored = args.mapTiles.some(
+    (tile) =>
+      tile.position.x === location.x &&
+      tile.position.y === location.y &&
+      tile.explored
+  )
+
   const npc: NPC = {
     gameId: args.game.uid,
     name: npcData.name,
     personality: npcData.personality,
     letters: 200,
     currentTileLocation: location,
-    createdRound: args.currentRound.index || null,
-    createdRoundId: args.currentRound.uid || null,
+    createdRound: args.currentRound?.index || null,
+    createdRoundId: args.currentRound?.uid || null,
     imageUrl: image,
+    active: npcTileIsExplored,
   }
 
   console.log("creating npc")

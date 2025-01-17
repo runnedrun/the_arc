@@ -5,7 +5,13 @@ import { idIsNpc } from "@/data/types/NPC"
 
 interface MessagePrefixCreator {
   applies: (message: Message, viewingUserId: string) => boolean
-  getPrefix: () => string
+  getPrefix: (message: Message, gameArgs: GameProcessingArgs) => string
+}
+
+const getSenderName = (message: Message, gameArgs: GameProcessingArgs) => {
+  const player = gameArgs.players.find((p) => p.uid === message.senderId)
+  const npc = gameArgs.npcs.find((n) => n.uid === message.senderId)
+  return player ? player.name : npc?.name || "Player"
 }
 
 export const MessagePrefixes: MessagePrefixCreator[] = [
@@ -16,21 +22,22 @@ export const MessagePrefixes: MessagePrefixCreator[] = [
   },
   {
     applies: (message) => message.type === "npc" && !idIsNpc(message.senderId),
-    getPrefix: () => "Message from player",
+    getPrefix: (message, gameArgs) =>
+      `Message from ${getSenderName(message, gameArgs)}`,
   },
   {
     applies: (message) => message.type === "tileHistory",
     getPrefix: () => "Update from tile historian:",
   },
   {
-    applies: (message) =>
-      message.senderId === "elderCouncil" && message.type === "elderCouncil",
+    applies: (message) => message.type === "councilDecree",
     getPrefix: () => "Elder Council decree",
   },
   {
     applies: (message) =>
       message.senderId !== "elderCouncil" && message.type === "elderCouncil",
-    getPrefix: () => "Elder Council request",
+    getPrefix: (message, gameArgs) =>
+      `Message to Elder Council from ${getSenderName(message, gameArgs)}`,
   },
   {
     applies: (message) =>
@@ -40,11 +47,12 @@ export const MessagePrefixes: MessagePrefixCreator[] = [
   {
     applies: (message) =>
       message.senderId !== "elderCouncil" && message.type === "tileAction",
-    getPrefix: () => "Action",
+    getPrefix: (message, gameArgs) =>
+      `Action by ${getSenderName(message, gameArgs)}`,
   },
   {
     applies: (message) => message.type === "recap",
-    getPrefix: () => "Recap",
+    getPrefix: () => "Annual recap by historian",
   },
 ]
 
@@ -71,21 +79,16 @@ export const getMessageStringsZipped = (
   )
 
   return messagesWithIndex.map((message) => {
-    const player = args.players.find((p) => p.uid === message.senderId)
-    const npc = args.npcs.find((n) => n.uid === message.senderId)
-    const sender = player || npc
-
     const prefix =
-      MessagePrefixes.find((p) =>
-        p.applies(message, viewingUserId)
-      )?.getPrefix() || ""
-
-    const senderPrefix = sender ? `by ${sender.name}` : ""
+      MessagePrefixes.find((p) => p.applies(message, viewingUserId))?.getPrefix(
+        message,
+        args
+      ) || ""
 
     const yearPrefix =
       message.roundIndex !== undefined ? `Year ${message.roundIndex}` : ""
     return {
-      stringMessage: `Event ${message.index + 1} - ${yearPrefix}${yearPrefix ? " - " : ""}${prefix} ${senderPrefix}: ${message.content}`,
+      stringMessage: `Event ${message.index + 1} - ${yearPrefix}${yearPrefix ? " - " : ""}${prefix}: ${message.content}`,
       message,
     }
   })

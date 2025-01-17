@@ -15,7 +15,7 @@ export type Round = Model<{
   startedAt?: Timestamp
   gameId: string
   index: number
-  playersCompletedAt: Record<string, Timestamp>
   processingStartedAt: Timestamp | null
+  playersCompletedAt: Record<string, Timestamp>
   processed: boolean
 }>

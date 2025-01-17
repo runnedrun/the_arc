@@ -14,14 +14,16 @@ import { Timestamp } from "firebase/firestore"
 import { ProcessMessageArgs } from "@/app/api/process_message/route"
 
 interface MessageCompositionOptions {
-  types: Message["type"][]
+  typesToShow: Message["type"][]
+  typeToSend?: Message["type"]
   receiverId?: string
   tileLocation?: MapPosition
   senderId?: string
 }
 
 export function useMessageComposition({
-  types,
+  typesToShow,
+  typeToSend,
   receiverId,
   tileLocation,
   senderId,
@@ -36,7 +38,7 @@ export function useMessageComposition({
           where("archived", "==", false),
         ] as OrObservable<PossibleQueryConstraint>[]
 
-        conditions.push(where("type", "in", types))
+        conditions.push(where("type", "in", typesToShow))
 
         if (receiverId) {
           conditions.push(
@@ -61,7 +63,7 @@ export function useMessageComposition({
         receiverId,
         tileLocation?.x,
         tileLocation?.y,
-        JSON.stringify(types),
+        JSON.stringify(typesToShow),
       ]
     ) || []
 
@@ -82,7 +84,7 @@ export function useMessageComposition({
         ...baseMessage,
         roundId: currentRound.uid,
         senderId: senderId || null,
-        type: Array.isArray(types) ? types[0] : types,
+        type: typeToSend,
         content: messageContent,
         roundIndex: currentRound.index,
         gameId: game.uid,
@@ -99,7 +101,7 @@ export function useMessageComposition({
       game?.uid,
       receiverId,
       tileLocation,
-      types,
+      typeToSend,
       senderId,
     ]
   )

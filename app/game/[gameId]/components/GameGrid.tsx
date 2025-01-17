@@ -93,7 +93,14 @@ export function GameGrid({
                   )}
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[600px]">
+              <PopoverContent
+                className="flex max-h-[850px] w-[600px] flex-col"
+                side="right"
+                align="start"
+                sideOffset={5}
+                alignOffset={0}
+                avoidCollisions
+              >
                 <TileInfoDisplay
                   selectedTile={{ ...tile, index }}
                 ></TileInfoDisplay>
