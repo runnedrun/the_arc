@@ -35,6 +35,7 @@ export type Message = Model<{
     | "tileHistory"
     | "elderCouncil"
     | "councilDecree"
+    | "tileMovement"
   processingTriggeredAt: Timestamp | null
   processingStartedAt: Timestamp | null
   processedAt: Timestamp | null

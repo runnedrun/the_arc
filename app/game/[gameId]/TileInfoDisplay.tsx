@@ -18,7 +18,7 @@ export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
     setComposingMessage,
     sendMessage,
   } = useMessageComposition({
-    typesToShow: ["tileAction", "tileHistory"],
+    typesToShow: ["tileAction", "tileHistory", "tileMovement"],
     tileLocation: tile.position,
     senderId: currentPlayer?.uid,
     typeToSend: "tileAction",

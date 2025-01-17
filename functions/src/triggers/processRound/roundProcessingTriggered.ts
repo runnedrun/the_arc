@@ -11,6 +11,7 @@ import { Timestamp } from "firebase-admin/firestore"
 import { safeSetTestMode } from "@/helpers/getUuid"
 import { updateGameTiles } from "../processGame/updateGameTiles"
 import { spawnNewNpc } from "./spawnNewNpc"
+import { determinePlayerMovement } from "./determinePlayerMovement"
 
 const runRoundProcessing = async (args: GameProcessingArgs) => {
   const allPlayersHaveCompletedTheRound = args.players.every(
@@ -39,6 +40,8 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   })
   console.log("Generating messages for all NPCs")
   await generateMessagesForAllNPCs(args)
+  await args.refresh()
+  await determinePlayerMovement(args)
   await args.refresh()
   console.log("Generating elder council tile actions")
   await generateElderCouncilTileActions(args)

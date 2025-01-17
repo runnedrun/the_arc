@@ -181,4 +181,24 @@ export const messageRenderers: MessageRenderer[] = [
       </SenderNameWrapper>
     ),
   },
+
+  // tile movement
+  {
+    matches: (message) =>
+      message.type === "tileMovement" && idIsNpc(message.senderId),
+    RenderComponent: ({ message }) => (
+      <SenderNameWrapper message={message} icon="🤖🚶‍♂️">
+        <div className="mb-2 rounded bg-red-50 p-2">{message.content}</div>
+      </SenderNameWrapper>
+    ),
+  },
+  {
+    matches: (message) =>
+      message.type === "tileMovement" && !idIsNpc(message.senderId),
+    RenderComponent: ({ message }) => (
+      <SenderNameWrapper message={message} icon="🚶‍♂️">
+        <div className="mb-2 rounded bg-red-50 p-2">{message.content}</div>
+      </SenderNameWrapper>
+    ),
+  },
 ]
