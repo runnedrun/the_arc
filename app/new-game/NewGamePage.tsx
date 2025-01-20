@@ -5,13 +5,11 @@ import { UserLoading } from "@/components/UserLoading"
 import { UserContext, UserProvider } from "@/data/context/UserContext"
 import { docObs } from "@/data/readerFe"
 import { Game, getDefaultGameData } from "@/data/types/Game"
+import { Player } from "@/data/types/Player"
 import { useObs } from "@/data/useObs"
-import { fbCreate, fbSet } from "@/data/writerFe"
-import { Timestamp } from "firebase/firestore"
+import { fbCreate } from "@/data/writerFe"
 import { useContext } from "react"
 import { ExistingGamesForUser } from "./ExistingGamesForUser"
-import { Player } from "@/data/types/Player"
-import { getDefaultMapTile } from "@/data/types/MapTile"
 
 // Function to create a new game with valley tiles
 export const createNewGameWithCreatorPlayer = async (

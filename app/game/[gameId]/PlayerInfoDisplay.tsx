@@ -45,7 +45,8 @@ export const PlayerInfoDisplay = () => {
   const getEndRoundButtonProps = () => {
     if (isRoundProcessing) {
       return {
-        disabled: true,
+        // disabled: true,
+        onClick: handleEndRound,
         children: "Updating stories...",
       }
     }

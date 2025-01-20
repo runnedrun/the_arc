@@ -154,6 +154,8 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
           imageUrl: null,
           title: null,
           description: null,
+          exploredInRoundId: null,
+          exploredInRoundIndex: null,
         }
 
         const newMessage: Message = getDefaultMessage({
@@ -169,6 +171,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
         })
 
         await fbCreate("messages", newMessage)
+
         await fbCreate("mapTiles", newTile)
       })
     )
@@ -195,12 +198,25 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
       )
 
       const messagesSinceLastPrompt = tileHistory.filter(
-        (message) => message.createdAt > tile.lastImageGeneratedAt
+        (message) =>
+          !tile.lastImageGeneratedAt ||
+          message.createdAt > tile.lastImageGeneratedAt
       )
 
-      if (messagesSinceLastPrompt.length === 0) {
+      const wasExploredThisRound =
+        tile.exploredInRoundId === args?.currentRound?.uid
+
+      if (messagesSinceLastPrompt.length === 0 && !wasExploredThisRound) {
         return
       }
+
+      console.log(
+        "updated image tile with coords",
+        tile.position.x,
+        tile.position.y,
+        messagesSinceLastPrompt.length,
+        messagesSinceLastPrompt.map((m) => m.content)
+      )
 
       const prompt = getTileMetadataPrompt(messagesSinceLastPrompt, tile, args)
 

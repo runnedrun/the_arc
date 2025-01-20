@@ -6,19 +6,12 @@ export type MapPosition = {
   y: number
 }
 
-export const getDefaultMapTile = (gameId: string, position: MapPosition) => ({
-  gameId,
-  position,
-  explored: false,
-  lastImageGeneratedAt: null,
-  previousDallePrompt: null,
-  imageUrl: null,
-})
-
 export type MapTile = Model<{
   gameId: string
   position: MapPosition
   explored: boolean
+  exploredInRoundId: string
+  exploredInRoundIndex: number
   lastImageGeneratedAt: Timestamp | null
   previousDallePrompt: string | null
   imageUrl: string | null // Replacing svg field

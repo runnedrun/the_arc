@@ -82,7 +82,7 @@ export const getNpcForGame = async (
     personality: npcData.personality,
     letters: 200,
     currentTileLocation: location,
-    createdRound: args.currentRound?.index || null,
+    createdRoundIndex: args.currentRound?.index || null,
     createdRoundId: args.currentRound?.uid || null,
     imageUrl: image,
     active: npcTileIsExplored,

@@ -3,6 +3,7 @@ import { idIsNpc } from "@/data/types/NPC"
 import { ReactNode, FC, useContext } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { cn } from "@/lib/utils"
+import { isConversationalMessage } from "./isConversationalMessage"
 
 interface MessageRenderer {
   matches: (message: Message, currentPlayerId: string) => boolean
@@ -46,9 +47,6 @@ export const SenderNameWrapper = ({
     </div>
   )
 }
-
-const isConversationalMessage = (message: Message) =>
-  message.type === "npc" || message.type === "elderCouncil"
 
 export const messageRenderers: MessageRenderer[] = [
   // Elder Council Messages

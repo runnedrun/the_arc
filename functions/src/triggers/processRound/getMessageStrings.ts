@@ -2,6 +2,7 @@ import { Message } from "@/data/types/Message"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { sortBy } from "lodash-es"
 import { idIsNpc } from "@/data/types/NPC"
+import { isConversationalMessage } from "@/app/game/[gameId]/isConversationalMessage"
 
 interface MessagePrefixCreator {
   applies: (message: Message, viewingUserId: string) => boolean
@@ -17,11 +18,14 @@ const getSenderName = (message: Message, gameArgs: GameProcessingArgs) => {
 export const MessagePrefixes: MessagePrefixCreator[] = [
   {
     applies: (message, viewingUserId) =>
-      viewingUserId && message.senderId === viewingUserId,
+      isConversationalMessage(message) &&
+      !!viewingUserId &&
+      message.senderId === viewingUserId,
     getPrefix: () => "Message from you",
   },
   {
-    applies: (message) => message.type === "npc" && !idIsNpc(message.senderId),
+    applies: (message) =>
+      isConversationalMessage(message) && !idIsNpc(message.senderId),
     getPrefix: (message, gameArgs) =>
       `Message from ${getSenderName(message, gameArgs)}`,
   },

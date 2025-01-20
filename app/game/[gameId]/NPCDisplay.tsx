@@ -4,9 +4,14 @@ import { useMessageComposition } from "./hooks/useMessageComposition"
 import Image from "next/image"
 import { useContext } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
+import { isEqual } from "lodash-es"
 
 export function NPCDisplay({ npc }: { npc: NPC }) {
   const { currentPlayer } = useContext(GameInterfaceContext)
+  const playerIsOnTileWithNpc = isEqual(
+    currentPlayer?.currentTileLocation,
+    npc.currentTileLocation
+  )
   const {
     previousMessages,
     composingMessage,
@@ -43,7 +48,7 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
         messages={previousMessages || []}
         composingMessage={composingMessage}
         updateComposingMessage={setComposingMessage}
-        sendMessage={sendMessage}
+        sendMessage={playerIsOnTileWithNpc ? sendMessage : undefined}
       />
     </div>
   )

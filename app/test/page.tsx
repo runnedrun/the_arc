@@ -5,7 +5,12 @@ import { useContext, useState } from "react"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { setupTestGameValley, setupTestGameNeonCity } from "./setupTestGame"
+import {
+  setupTestGameValley,
+  setupTestGameNeonCity,
+  advanceRound,
+  resetToStartOfRound0,
+} from "./setupTestGame"
 
 const ButtonWithLoading = ({
   onClick,
@@ -40,6 +45,21 @@ const TestButtons = () => {
         }}
       >
         Setup Test Game
+      </ButtonWithLoading>
+      <ButtonWithLoading
+        onClick={async () => {
+          await advanceRound({ gameId: "2A7IZLkJwK" })
+        }}
+      >
+        Advance Round
+      </ButtonWithLoading>
+
+      <ButtonWithLoading
+        onClick={async () => {
+          await resetToStartOfRound0({ gameId: "2A7IZLkJwK" })
+        }}
+      >
+        Reset to Start of Round 0
       </ButtonWithLoading>
       <Link href={`/game/2A7IZLkJwK`}>
         <div className="cursor-pointer text-sm text-gray-500 hover:underline">

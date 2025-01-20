@@ -8,10 +8,14 @@ import { fbSet, fbCreate, backendNow } from "../../helpers/writer"
 import { MapPosition } from "@/data/types/MapTile"
 
 // Schema for GPT response
-const MovementSchema = z.record(
-  z.string(),
-  z.enum(["north", "south", "east", "west"])
-)
+const MovementSchema = z.object({
+  movements: z.array(
+    z.object({
+      entityIndex: z.number(),
+      direction: z.enum(["north", "south", "east", "west"]),
+    })
+  ),
+})
 
 const getNewPosition = (
   currentPos: MapPosition,
@@ -95,58 +99,80 @@ export const determinePlayerMovement = async (args: GameProcessingArgs) => {
           },
           {
             role: "user",
-            content: `Based on these actions, determine where each entity should move:\n${formattedActions}`,
+            content: `Based on these actions, which are in the format "Entity Index: Action", determine where each entity should move:\n${formattedActions}`,
           },
         ],
         response_format: zodResponseFormat(MovementSchema, "movements"),
         temperature: 0.2,
       })
 
-      const movements = completion.choices[0].message.parsed
-
       // Process all movements for this tile in parallel
       await Promise.all(
-        Object.entries(movements).map(async ([indexStr, direction]) => {
-          const index = parseInt(indexStr)
-          const entity = entitiesOnTile[index]
-          if (!entity?.currentTileLocation) return
+        completion.choices[0].message.parsed.movements.map(
+          async ({ entityIndex, direction }) => {
+            const entity = entitiesOnTile[entityIndex]
+            if (!entity?.currentTileLocation) return
 
-          const newPosition = getNewPosition(
-            entity.currentTileLocation,
-            direction,
-            game.mapSize
-          )
+            const newPosition = getNewPosition(
+              entity.currentTileLocation,
+              direction,
+              game.mapSize
+            )
 
-          // Create movement message and update position in parallel
-          await Promise.all([
-            fbCreate(
-              "messages",
-              getDefaultMessage({
-                gameId: game.uid,
-                roundId: currentRound.uid,
-                type: "tileMovement",
-                content: newPosition
-                  ? `${entity.name} moved ${direction}`
-                  : `${entity.name} tried to move ${direction} but reached the end of the map`,
-                tileLocation: entity.currentTileLocation,
-                senderId: null,
-                receiverId: null,
-                roundIndex: currentRound.index,
-                processedAt: backendNow(),
-              })
-            ),
-            // Only update position if movement is valid
-            newPosition
-              ? fbSet(
+            // Create an array of promises for parallel execution
+            const updatePromises = [
+              fbCreate(
+                "messages",
+                getDefaultMessage({
+                  gameId: game.uid,
+                  roundId: currentRound.uid,
+                  type: "tileMovement",
+                  content: newPosition
+                    ? `${entity.name} moved ${direction}`
+                    : `${entity.name} tried to move ${direction} but reached the end of the map`,
+                  tileLocation: entity.currentTileLocation,
+                  senderId: null,
+                  receiverId: null,
+                  roundIndex: currentRound.index,
+                  processedAt: backendNow(),
+                })
+              ),
+            ]
+
+            // Only add position update and explored status if movement is valid
+            if (newPosition) {
+              updatePromises.push(
+                fbSet(
                   entity.hasOwnProperty("userId") ? "players" : "npcs",
                   entity.uid,
                   {
                     currentTileLocation: newPosition,
                   }
                 )
-              : Promise.resolve(),
-          ])
-        })
+              )
+
+              const newMapTile = args.mapTiles.find(
+                (mt) =>
+                  mt.position.x === newPosition.x &&
+                  mt.position.y === newPosition.y
+              )
+
+              // Mark new tile as explored only for players
+              if (entity.hasOwnProperty("userId")) {
+                updatePromises.push(
+                  fbSet(`mapTiles`, newMapTile.uid, {
+                    explored: true,
+                    exploredInRoundId: currentRound.uid,
+                    exploredInRoundIndex: currentRound.index,
+                  })
+                )
+              }
+            }
+
+            // Execute all updates in parallel
+            await Promise.all(updatePromises)
+          }
+        )
       )
     })
   )

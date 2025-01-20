@@ -19,16 +19,8 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   )
 
   console.log(
-    "charactersUsedThisRound",
-    args.currentRound.playersCompletedAt,
-    args.currentRound
-  )
-
-  console.log(
     "allPlayersHaveCompletedTheRound",
-    allPlayersHaveCompletedTheRound,
-    args.players,
-    args.currentRound
+    allPlayersHaveCompletedTheRound
   )
 
   if (!allPlayersHaveCompletedTheRound) {
@@ -56,7 +48,8 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   await updateGameTiles(args)
   await args.refresh()
 
-  if (args.currentRound.index % 2 === 0) {
+  if (args.currentRound.index % 2 === 1) {
+    console.log("Spawning new NPC")
     await spawnNewNpc(args)
   }
 

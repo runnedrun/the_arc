@@ -16,7 +16,7 @@ export type NPC = Model<{
   name: string
   currentTileLocation?: MapPosition
   letters?: number
-  createdRound?: number
+  createdRoundIndex?: number
   createdRoundId: string
   playerTribeId?: string
   personality?: string

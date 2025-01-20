@@ -57,18 +57,103 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
       map((rounds) => rounds[0])
     )
   )
-  console.log("round exists", round)
 
+  return game.uid
+}
+
+export const resetToStartOfRound0 = async ({ gameId }: { gameId: string }) => {
+  const allRounds = await firstValueFrom(
+    queryObs("rounds", ({ where }) => [where("gameId", "==", gameId)])
+  )
+
+  const allRoundsAfterRound0 = allRounds.filter((r) => r.index > 0)
+
+  await fbBatchDelete(
+    "rounds",
+    allRoundsAfterRound0.map((r) => r.uid)
+  )
+
+  const allMessages = await firstValueFrom(
+    queryObs("messages", ({ where }) => [where("gameId", "==", gameId)])
+  )
+
+  const messagesFromRoundsAfterRound0 = allMessages.filter(
+    (m) => m.roundIndex > 0
+  )
+
+  await fbBatchDelete(
+    "messages",
+    messagesFromRoundsAfterRound0.map((m) => m.uid)
+  )
+
+  const allNpcs = await firstValueFrom(
+    queryObs("npcs", ({ where }) => [where("gameId", "==", gameId)])
+  )
+
+  const allNpcsCreatedAfterRound0 = allNpcs.filter(
+    (n) => n.createdRoundIndex > 0
+  )
+
+  await fbBatchDelete(
+    "npcs",
+    allNpcsCreatedAfterRound0.map((n) => n.uid)
+  )
+
+  const npcFromRound0 = allNpcsCreatedAfterRound0.find(
+    (n) => n.createdRoundIndex === 0
+  )
+
+  await fbUpdate("npcs", npcFromRound0.uid, {
+    currentTileLocation: {
+      x: 0,
+      y: 0,
+    },
+  })
+
+  const player = await firstValueFrom(
+    queryObs("players", ({ where }) => [where("gameId", "==", gameId)]).pipe(
+      filter((players) => players.length > 0),
+      map((players) => players[0])
+    )
+  )
+
+  await fbUpdate("players", player.uid, {
+    currentTileLocation: {
+      x: 0,
+      y: 0,
+    },
+  })
+}
+
+export const advanceRound = async ({ gameId }: { gameId: string }) => {
+  const currentRound = await firstValueFrom(
+    queryObs("rounds", ({ where }) => [where("gameId", "==", gameId)]).pipe(
+      filter((rounds) => rounds.length > 0),
+      map((rounds) => rounds[0])
+    )
+  )
+  const player1 = await firstValueFrom(
+    queryObs("players", ({ where }) => [where("gameId", "==", gameId)]).pipe(
+      filter((players) => players.length > 0),
+      map((players) => players[0])
+    )
+  )
+  const npc1 = await firstValueFrom(
+    queryObs("npcs", ({ where }) => [where("gameId", "==", gameId)]).pipe(
+      filter((npcs) => npcs.length > 0),
+      map((npcs) => npcs[0])
+    )
+  )
   await fbCreate(
     "messages",
     getDefaultMessage({
-      content: "You love swimming, you want to do it all the time",
-      gameId: game.uid,
-      roundId: round.uid,
-      senderId: player.uid,
+      content: "You should head east!",
+      gameId: gameId,
+      roundId: currentRound.uid,
+      senderId: player1.uid,
       type: "npc",
       processedAt: null,
-      receiverId: npc.uid,
+      receiverId: npc1.uid,
       tileLocation: null,
       roundIndex: 0,
     })
@@ -79,9 +164,9 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
     getDefaultMessage({
       content:
         "People should not be allowed to swim. It's dangerous, and it could pollute the water for everyone.",
-      gameId: game.uid,
-      roundId: round.uid,
-      senderId: player.uid,
+      gameId: gameId,
+      roundId: currentRound.uid,
+      senderId: player1.uid,
       type: "elderCouncil",
       processedAt: null,
       receiverId: "elderCouncil",
@@ -94,10 +179,10 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
     "messages",
     getDefaultMessage({
       content:
-        "I spend the year creating  small water play ground in the river.",
-      gameId: game.uid,
-      roundId: round.uid,
-      senderId: player.uid,
+        "I spend the year creating  small water play ground in the river. Then I move south.",
+      gameId: gameId,
+      roundId: currentRound.uid,
+      senderId: player1.uid,
       type: "tileAction",
       processedAt: null,
       receiverId: null,
@@ -110,14 +195,12 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
   )
 
   await triggerProcessOnWrite(
-    fbUpdate("rounds", round.uid, {
+    fbUpdate("rounds", currentRound.uid, {
       playersCompletedAt: {
-        [player.uid]: Timestamp.now(),
+        [player1.uid]: Timestamp.now(),
       },
     })
   )
-
-  return game.uid
 }
 
 export const setupTestGameNeonCity = async ({ userId }: { userId: string }) => {

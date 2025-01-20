@@ -38,6 +38,8 @@ const generateNPCMessage = async ({
 
   const tileHistory = getMessageStrings(allMessagesToDisplay, gameArgs, npc.uid)
 
+  console.log("tile history for npc", tileHistory)
+
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -69,6 +71,7 @@ Generate a single action that you would take, written first person, max ${MAX_ME
   })
 
   const generatedMessage = completion.choices[0].message.content || ""
+
   return generatedMessage.slice(0, MAX_MESSAGE_LENGTH)
 }
 
@@ -80,17 +83,10 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
   const npcProcessingComplete = await Promise.all(
     activeNpcs.map(async (npc) => {
       // Run all queries in parallel
-      const [npcMessages, previousActions] = await Promise.all([
+      const [npcMessages] = await Promise.all([
         queryDocs("messages", (ref) =>
           ref
             .where("receiverId", "==", npc.uid)
-            .orderBy("createdAt", "desc")
-            .limit(MAX_HISTORY_MESSAGES)
-        ),
-
-        queryDocs("messages", (ref) =>
-          ref
-            .where("senderId", "==", npc.uid)
             .orderBy("createdAt", "desc")
             .limit(MAX_HISTORY_MESSAGES)
         ),
@@ -109,6 +105,7 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
         currentTile,
         gameArgs: args,
       })
+      console.log("taking action for npc", npc.uid, message)
 
       // Save the generated message
       await fbCreate(
