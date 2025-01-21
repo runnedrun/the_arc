@@ -39,7 +39,7 @@ Write a 1-2 sentence historical entry for this year's events:`,
   const openAi = getOpenAIClient()
 
   const completion = await openAi.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o",
     messages: gptMessages,
     max_tokens: 100,
     temperature: 0.7,

@@ -11,9 +11,9 @@ import { isEqual } from "lodash-es"
 
 interface GameMessagesProps {
   messages: Message[]
-  composingMessage: Message
-  updateComposingMessage: (messageContent: string) => void
-  sendMessage: () => void
+  composingMessage?: Message
+  updateComposingMessage?: (messageContent: string) => void
+  sendMessage?: () => void
   scrollAreaClassName?: string
   allowClicking?: boolean
 }
@@ -142,7 +142,7 @@ export function GameMessages({
               ) {
                 return
               }
-              updateComposingMessage(e.target.value)
+              updateComposingMessage?.(e.target.value)
             }}
             onKeyDown={handleKeyPress}
             placeholder="Type your message..."

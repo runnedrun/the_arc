@@ -24,7 +24,7 @@ export const setupCharacterImage = async ({
 
   // First, generate an optimized prompt using GPT-4
   const promptResponse = await openAiClient.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -45,9 +45,10 @@ export const setupCharacterImage = async ({
 
   // Then use the optimized prompt with DALL-E
   const response = await openAiClient.images.generate({
-    model: "dall-e-2",
+    model: "dall-e-3",
     prompt: optimizedPrompt,
     n: 1,
+    quality: "standard",
     size: "1024x1024",
   })
 

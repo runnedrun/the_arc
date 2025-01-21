@@ -13,7 +13,7 @@ import { z } from "zod"
 
 const ObjectiveScoring = z.object({
   publicObjectiveWinnerIndex: z.number().nullable(),
-  secretObjectiveWinnerIndex: z.number().nullable(),
+  secretObjectiveWinnersIndices: z.array(z.number()),
   recap: z.string(),
 })
 
@@ -82,7 +82,7 @@ export const scoreCurrentObjectives = async (args: GameProcessingArgs) => {
     messages: [
       {
         role: "system",
-        content: `You are judging a game where players shape the history of a world by influencing different regions (tiles). Each player has a secret objective they're trying to achieve, and there's also a public objective that all players can contribute to. You'll analyze the history of tile changes and determine who best achieved their objectives.`,
+        content: `You are judging a game where players shape the history of a world by influencing different regions (tiles). Each player has a secret objective they're trying to achieve, and there's also a public objective that all players can contribute to. You'll analyze the history of tile changes and determine who best achieved their objectives. Multiple players can achieve their secret objectives simultaneously.`,
       },
       {
         role: "user",
@@ -102,7 +102,7 @@ ${gameWorldDescription}
 
 Please determine:
 1. Which player index (if any) best achieved the public objective
-2. Which player index (if any) best achieved their secret objective
+2. Which player indices (can be multiple) achieved their secret objectives
 3. Provide a recap explaining the winners without revealing losing players' secret objectives`,
       },
     ],
@@ -110,7 +110,7 @@ Please determine:
     temperature: 0.7,
   })
 
-  const { publicObjectiveWinnerIndex, secretObjectiveWinnerIndex, recap } =
+  const { publicObjectiveWinnerIndex, secretObjectiveWinnersIndices, recap } =
     completion.choices[0].message.parsed
 
   // Update player scores
@@ -125,17 +125,20 @@ Please determine:
     })
   }
 
-  if (secretObjectiveWinnerIndex !== null) {
-    const winner = players[secretObjectiveWinnerIndex]
-    const secretObjective = currentSecretObjectiveByPlayer[winner.uid]
-    await fbSet("players", winner.uid, {
-      secretObjectivePoints: (winner.secretObjectivePoints || 0) + 1,
-      secretObjectivesScored: [
-        ...(winner.secretObjectivesScored || []),
-        secretObjective?.uid || "",
-      ],
+  // Update secret objective winners
+  await Promise.all(
+    secretObjectiveWinnersIndices.map((winnerIndex) => {
+      const winner = players[winnerIndex]
+      const secretObjective = currentSecretObjectiveByPlayer[winner.uid]
+      return fbSet("players", winner.uid, {
+        secretObjectivePoints: (winner.secretObjectivePoints || 0) + 1,
+        secretObjectivesScored: [
+          ...(winner.secretObjectivesScored || []),
+          secretObjective?.uid || "",
+        ],
+      })
     })
-  }
+  )
 
   // Create recap message
   const recapMessage = getDefaultMessage({

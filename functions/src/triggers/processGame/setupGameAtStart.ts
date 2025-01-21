@@ -4,7 +4,7 @@ import { GameProcessingArgs } from "./getGameData"
 import { addNewNPCForEachPlayerAtGameStart } from "./setupNPCsForEachPlayer"
 import { startNewRound } from "./startNewRound"
 import { updateGameTiles } from "./updateGameTiles"
-import { assignPlayerSecretVisionsAndSetupPlayerImages } from "./assignPlayerSecretVisionsAndSetupPlayerImages"
+import { setupPlayerImages } from "./setupPlayerImages"
 import { createObjectives } from "./createObjectives"
 
 export const setupGameAtStart = async (args: GameProcessingArgs) => {
@@ -13,7 +13,7 @@ export const setupGameAtStart = async (args: GameProcessingArgs) => {
 
   await Promise.all([
     updateGameTiles(newArgs),
-    assignPlayerSecretVisionsAndSetupPlayerImages(newArgs),
+    setupPlayerImages(newArgs),
     addNewNPCForEachPlayerAtGameStart(newArgs),
     createObjectives(newArgs),
   ])

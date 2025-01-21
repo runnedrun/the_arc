@@ -1,10 +1,8 @@
-import { GameProcessingArgs } from "./getGameData"
-import { fbSet } from "../../helpers/writer"
-import { z } from "zod"
 import { setupCharacterImage } from "../../helpers/setupCharacterImage"
-import { createObjectives } from "./createObjectives"
+import { fbSet } from "../../helpers/writer"
+import { GameProcessingArgs } from "./getGameData"
 
-const setupPlayerImages = async (args: GameProcessingArgs) => {
+export const setupPlayerImages = async (args: GameProcessingArgs) => {
   await Promise.all(
     args.players.map(async (player) => {
       const image = await setupCharacterImage({
@@ -20,10 +18,4 @@ const setupPlayerImages = async (args: GameProcessingArgs) => {
       })
     })
   )
-}
-
-export const assignPlayerSecretVisionsAndSetupPlayerImages = async (
-  args: GameProcessingArgs
-) => {
-  await Promise.all([setupPlayerImages(args)])
 }
