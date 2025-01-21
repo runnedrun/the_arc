@@ -6,7 +6,6 @@ export interface Player extends ModelBase {
   userId: string
   name?: string
   letters?: number
-  secretVision?: string
   playerPersonality?: string
   playerImageUrl?: string
   color?: string // hex color code

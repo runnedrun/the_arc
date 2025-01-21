@@ -21,21 +21,37 @@ interface MinimalGameArgs {
   npcs: NPC[]
 }
 
+interface GetSerializedMessagesOpts {
+  currentPlayerId?: string
+  usePlayerIndexes?: boolean
+}
+
 const getMessageConfig = (
   message: Message,
-  currentPlayerId?: string,
-  gameArgs?: MinimalGameArgs
+  gameArgs: MinimalGameArgs,
+  opts: GetSerializedMessagesOpts = {}
 ): SerializedMessage => {
-  const getSenderName = () => {
-    if (gameArgs) {
-      const player = gameArgs.players.find((p) => p.uid === message.senderId)
-      const npc = gameArgs.npcs.find((n) => n.uid === message.senderId)
+  const playersSorted = sortBy(gameArgs.players, "uid")
+  const npcsSorted = sortBy(gameArgs.npcs, "uid")
+  const getCharacterName = (uid: string) => {
+    if (opts.usePlayerIndexes) {
+      const playerIndex = playersSorted.findIndex((p) => p.uid === uid)
+      const npcIndex = npcsSorted.findIndex((n) => n.uid === uid)
+      if (playerIndex !== -1) {
+        return `Player ${playerIndex + 1}`
+      } else if (npcIndex !== -1) {
+        return `NPC ${npcIndex + 1}`
+      } else {
+        return "Unknown"
+      }
+    } else {
+      const player = gameArgs.players.find((p) => p.uid === uid)
+      const npc = gameArgs.npcs.find((n) => n.uid === uid)
       return player?.name || npc?.name || "Unknown"
     }
-    return message.senderId === "elderCouncil" ? "Elder Council" : "Unknown"
   }
 
-  const isCurrentUser = message.senderId === currentPlayerId
+  const isCurrentUser = message.senderId === opts.currentPlayerId
 
   // Base configurations for different message types
   const configs: Record<string, Partial<SerializedMessage>> = {
@@ -61,6 +77,16 @@ const getMessageConfig = (
     tileMovement: {
       icon: idIsNpc(message.senderId) ? "🤖🚶‍♂️" : "🚶‍♂️",
       bgColor: "bg-red-50",
+    },
+    secretObjective: {
+      icon: "🤫",
+      senderName: `Secret Objective for ${getCharacterName(message.receiverId)}`,
+      bgColor: "bg-indigo-100",
+    },
+    publicObjective: {
+      icon: "🎯",
+      senderName: "Public Objective",
+      bgColor: "bg-amber-100",
     },
   }
 
@@ -95,7 +121,7 @@ const getMessageConfig = (
 
   return {
     senderId: message.senderId,
-    senderName: config.senderName || getSenderName(),
+    senderName: config.senderName || getCharacterName(message.senderId),
     content: message.content || "",
     icon: config.icon || "💬",
     originalMessage: message,
@@ -108,17 +134,15 @@ const getMessageConfig = (
 export const getSerializedMessage = (
   message: Message,
   gameArgs: MinimalGameArgs,
-  currentPlayerId?: string
+  opts: GetSerializedMessagesOpts
 ) => {
-  return getMessageConfig(message, currentPlayerId, gameArgs)
+  return getMessageConfig(message, gameArgs, opts)
 }
 
 export const getSerializedMessages = (
   messages: Message[],
   gameArgs: MinimalGameArgs,
-  currentPlayerId?: string
+  opts: GetSerializedMessagesOpts
 ) => {
-  return messages.map((message) =>
-    getMessageConfig(message, currentPlayerId, gameArgs)
-  )
+  return messages.map((message) => getMessageConfig(message, gameArgs, opts))
 }

@@ -42,10 +42,6 @@ export const PlayerInfoModal = ({
             <h3 className="font-semibold">Personality</h3>
             <p>{player?.playerPersonality || "No personality set"}</p>
           </div>
-          <div>
-            <h3 className="font-semibold">Secret Objective</h3>
-            <p>{player?.secretVision || "No objective set"}</p>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

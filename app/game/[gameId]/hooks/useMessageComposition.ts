@@ -67,13 +67,9 @@ export function useMessageComposition({
       ]
     ) || []
 
-  const composingMessage = allMessages?.find(
-    (message) => message.roundId === currentRound?.uid && message.draft
-  )
+  const composingMessage = allMessages?.find((message) => message.draft)
 
-  const previousMessages = allMessages?.filter(
-    (msg) => msg.roundId !== currentRound?.uid || msg.processingTriggeredAt
-  )
+  const messages = allMessages?.filter((msg) => !msg.draft)
 
   const setComposingMessage = useCallback(
     (messageContent: string) => {
@@ -129,7 +125,7 @@ export function useMessageComposition({
 
   return {
     composingMessage,
-    previousMessages,
+    messages,
     setComposingMessage,
     sendMessage,
   }

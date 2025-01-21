@@ -10,6 +10,12 @@ import { GameInterfaceContext } from "./GameInterfaceContext"
 import { ProvideTokenCountContext } from "./TokenCountContext"
 import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
 import { GameEnvironmentControl } from "@/app/game/[gameId]/GameEnvironmentControl"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export function GameDisplay() {
   const { game, players, currentUserId, currentPlayer } =
@@ -23,35 +29,37 @@ export function GameDisplay() {
   }
 
   return (
-    <div className="container relative mx-auto p-4">
-      {!game || !players || !currentPlayer ? (
-        <LoadingState />
-      ) : (
-        <>
-          <ProvideTokenCountContext>
-            <GameInterface />
-          </ProvideTokenCountContext>
+    <div className="flex h-screen items-start justify-center p-4">
+      <div className="container relative">
+        {!game || !players || !currentPlayer ? (
+          <LoadingState />
+        ) : (
+          <>
+            <ProvideTokenCountContext>
+              <GameInterface />
+            </ProvideTokenCountContext>
 
-          {!game.gameSetupCompletedAt && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-              <div className="rounded-lg bg-white p-6 text-center">
-                <h2 className="mb-4 text-xl">Game has not started yet</h2>
+            <Dialog open={!game.gameSetupCompletedAt} modal>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Game has not started yet</DialogTitle>
+                </DialogHeader>
                 {game.createdBy === currentUserId && (
                   <div className="flex flex-col gap-5">
                     <div className="flex items-center justify-center gap-2">
                       <Button onClick={handleStartGame}>Start Game</Button>
                       {!game.gameSetupCompletedAt && game.startTime && (
-                        <LoadingSpinner className="h-8 w-8"></LoadingSpinner>
+                        <LoadingSpinner className="h-8 w-8" />
                       )}
                     </div>
-                    <GameEnvironmentControl></GameEnvironmentControl>
+                    <GameEnvironmentControl />
                   </div>
                 )}
-              </div>
-            </div>
-          )}
-        </>
-      )}
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
+      </div>
     </div>
   )
 }

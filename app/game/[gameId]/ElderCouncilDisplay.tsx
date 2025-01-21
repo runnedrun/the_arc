@@ -1,13 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { GameMessages } from "./GameMessages"
-import { useMessageComposition } from "./hooks/useMessageComposition"
 import { useContext } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
+import { GameMessages } from "./GameMessages"
+import { useMessageComposition } from "./hooks/useMessageComposition"
+import { sortBy } from "lodash-es"
+import { useObjectives } from "./useObjectives"
 
 export const ElderCouncilDisplay = () => {
-  const { currentPlayer } = useContext(GameInterfaceContext)
+  const { currentPlayer, game } = useContext(GameInterfaceContext)
   const {
-    previousMessages,
+    messages: previousMessages,
     composingMessage,
     setComposingMessage,
     sendMessage,
@@ -18,14 +20,21 @@ export const ElderCouncilDisplay = () => {
     typeToSend: "elderCouncil",
   })
 
+  const { allObjectives } = useObjectives()
+
+  const allMessages = sortBy(
+    [...previousMessages, ...allObjectives],
+    "createdAt"
+  )
+
   return (
-    <Card className="ml-4 flex h-[700px] w-1/4 flex-col">
+    <Card className="flex min-h-0 w-full grow flex-col">
       <CardHeader>
         <CardTitle>Elder Council</CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 grow flex-col">
         <GameMessages
-          messages={previousMessages || []}
+          messages={allMessages}
           composingMessage={composingMessage}
           updateComposingMessage={setComposingMessage}
           sendMessage={sendMessage}

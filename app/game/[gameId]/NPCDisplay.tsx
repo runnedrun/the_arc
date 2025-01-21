@@ -13,7 +13,7 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
     npc.currentTileLocation
   )
   const {
-    previousMessages,
+    messages: previousMessages,
     composingMessage,
     setComposingMessage,
     sendMessage,

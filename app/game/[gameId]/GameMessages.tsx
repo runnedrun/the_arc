@@ -52,7 +52,7 @@ function MessageDisplay({
       players,
       npcs,
     },
-    currentPlayer?.uid
+    { currentPlayerId: currentPlayer?.uid }
   )
 
   const npcsOnCurrentTile = npcs.filter((npc) =>

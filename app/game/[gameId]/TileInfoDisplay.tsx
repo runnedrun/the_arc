@@ -16,17 +16,13 @@ import {
 
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
-  const {
-    previousMessages,
-    composingMessage,
-    setComposingMessage,
-    sendMessage,
-  } = useMessageComposition({
-    typesToShow: ["tileAction", "tileHistory", "tileMovement"],
-    tileLocation: tile.position,
-    senderId: currentPlayer?.uid,
-    typeToSend: "tileAction",
-  })
+  const { messages, composingMessage, setComposingMessage, sendMessage } =
+    useMessageComposition({
+      typesToShow: ["tileAction", "tileHistory", "tileMovement"],
+      tileLocation: tile.position,
+      senderId: currentPlayer?.uid,
+      typeToSend: "tileAction",
+    })
 
   const currentPlayerIsOnThisTile = isEqual(
     currentPlayer?.currentTileLocation,
@@ -36,7 +32,7 @@ export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   return (
     <GameMessages
       allowClicking
-      messages={previousMessages}
+      messages={messages}
       composingMessage={composingMessage}
       updateComposingMessage={setComposingMessage}
       sendMessage={currentPlayerIsOnThisTile ? sendMessage : undefined}

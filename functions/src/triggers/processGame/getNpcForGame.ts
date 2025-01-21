@@ -7,6 +7,7 @@ import { fbCreate } from "../../helpers/writer"
 import { MapPosition } from "@/data/types/MapTile"
 import { setupCharacterImage } from "../../helpers/setupCharacterImage"
 import { isNil } from "lodash-es"
+import { getDefaultMessage } from "@/data/types/Message"
 
 const NPCSchema = z.object({
   name: z.string(),
@@ -95,7 +96,21 @@ export const getNpcForGame = async (
   }
 
   console.log("creating npc")
-  await Promise.all([fbCreate("npcs", npc, { id: npcId })])
+  await Promise.all([
+    fbCreate("npcs", npc, { id: npcId }),
+    fbCreate(
+      "messages",
+      getDefaultMessage({
+        senderId: npcId,
+        roundId: args.currentRound.uid,
+        roundIndex: args.currentRound.index,
+        tileLocation: location,
+        content: `${npc.name} entered tile`,
+        gameId: args.game.uid,
+        type: "tileMovement",
+      })
+    ),
+  ])
 
   return npc
 }

@@ -1,9 +1,9 @@
 import { MapTile } from "@/data/types/MapTile"
 import { useState } from "react"
 import { GameGrid } from "./components/GameGrid"
+import { ObjectivesButton } from "./components/ObjectivesModal"
 import { ElderCouncilDisplay } from "./ElderCouncilDisplay"
 import { PlayerInfoDisplay } from "./PlayerInfoDisplay"
-import { NPCsForTileDisplay } from "./PlayerNPCsDisplay"
 
 export type TileWithIndex = MapTile & { index: number }
 
@@ -26,7 +26,7 @@ export default function GameInterface() {
   }
 
   return (
-    <div className="flex h-screen items-start justify-center p-4">
+    <div className="flex items-start justify-center">
       <div className="flex w-1/4 flex-col gap-3">
         <PlayerInfoDisplay></PlayerInfoDisplay>
       </div>
@@ -39,7 +39,10 @@ export default function GameInterface() {
         />
       </div>
 
-      <ElderCouncilDisplay></ElderCouncilDisplay>
+      <div className="ml-4 flex h-[700px] w-1/4 flex-col gap-2">
+        <ObjectivesButton />
+        <ElderCouncilDisplay />
+      </div>
     </div>
   )
 }

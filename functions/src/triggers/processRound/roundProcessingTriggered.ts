@@ -12,6 +12,7 @@ import { safeSetTestMode } from "@/helpers/getUuid"
 import { updateGameTiles } from "../processGame/updateGameTiles"
 import { spawnNewNpc } from "./spawnNewNpc"
 import { determinePlayerMovement } from "./determinePlayerMovement"
+import { createObjectives } from "../processGame/createObjectives"
 
 const runRoundProcessing = async (args: GameProcessingArgs) => {
   const allPlayersHaveCompletedTheRound = args.players.every(
@@ -33,10 +34,11 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   console.log("Generating messages for all NPCs")
   await generateMessagesForAllNPCs(args)
   await args.refresh()
-  await determinePlayerMovement(args)
-  await args.refresh()
   console.log("Generating elder council tile actions")
   await generateElderCouncilTileActions(args)
+  await args.refresh()
+  console.log("Determining player movement")
+  await determinePlayerMovement(args)
   await args.refresh()
   console.log("Adding to tile history")
   await addToTileHistory(args)
@@ -47,6 +49,11 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   console.log("Updating game tiles")
   await updateGameTiles(args)
   await args.refresh()
+
+  if (args.currentRound.index % 4 === 0) {
+    console.log("Creating new objectives")
+    await createObjectives(args)
+  }
 
   if (args.currentRound.index % 2 === 1) {
     console.log("Spawning new NPC")

@@ -37,7 +37,7 @@ export const getMessageStrings = (
   const serializedMessages = getSerializedMessages(
     sortAndFilterMessages(messages),
     args,
-    viewingUserId
+    { currentPlayerId: viewingUserId }
   )
   return serializedMessages.map((m, i) => getStringFromSerializedMessage(m, i))
 }
@@ -50,7 +50,7 @@ export const getMessageStringsZipped = (
   const serializedMessages = getSerializedMessages(
     sortAndFilterMessages(messages),
     args,
-    viewingUserId
+    { currentPlayerId: viewingUserId }
   )
   return serializedMessages.map((serializedMessage, i) => ({
     stringMessage: getStringFromSerializedMessage(serializedMessage, i),

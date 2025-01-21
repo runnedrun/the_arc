@@ -36,6 +36,8 @@ export type Message = Model<{
     | "elderCouncil"
     | "councilDecree"
     | "tileMovement"
+    | "secretObjective"
+    | "publicObjective"
   processingTriggeredAt: Timestamp | null
   processingStartedAt: Timestamp | null
   processedAt: Timestamp | null
