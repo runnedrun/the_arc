@@ -16,15 +16,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import Link from "next/link"
 
 export function GameDisplay() {
-  const { game, players, currentUserId, currentPlayer } =
+  const { game, players, currentUserId, currentPlayer, playersHaveLoaded } =
     useContext(GameInterfaceContext)
   const handleStartGame = async () => {
     await triggerProcessOnWrite(
       fbUpdate("games", game.uid, {
         startTime: Timestamp.now(),
       })
+    )
+  }
+
+  console.log("playersHaveLoaded", playersHaveLoaded)
+  console.log("currentPlayer", currentPlayer)
+  if (playersHaveLoaded && !currentPlayer) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-4">
+          <div>You are not a player in this game</div>
+          <Link href={`/join/${game?.uid}`}>
+            <Button variant="outline">Join game</Button>
+          </Link>
+        </div>
+      </div>
     )
   }
 

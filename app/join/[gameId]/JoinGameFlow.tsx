@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { firstValueFrom } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
+import { JoinAsExistingPlayerDisplay } from "./JoinAsExistingPlayerDisplay"
 
 export async function joinGame({
   gameId,
@@ -107,7 +108,7 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
   }
 
   // Check if user is already a player
-  const existingPlayers =
+  const existingPlayersForThisUser =
     useObs(
       queryObs("players", ({ where }) => [
         where("gameId", "==", gameId),
@@ -116,7 +117,9 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
       [gameId, userId]
     ) || []
 
-  const existingPlayer = existingPlayers[0] || null
+  console.log("existing players for this user", existingPlayersForThisUser)
+
+  const existingPlayer = existingPlayersForThisUser[0] || null
 
   const isAlreadyPlayer = !!existingPlayer
 
@@ -140,6 +143,10 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
         </CardContent>
       </Card>
     )
+  }
+
+  if (!isAlreadyPlayer) {
+    return <JoinAsExistingPlayerDisplay gameId={gameId} userId={userId} />
   }
 
   const handleJoinGame = async () => {
@@ -196,21 +203,6 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
 
   const gameHasStarted = game?.startTime != null
 
-  if (gameHasStarted && !isAlreadyPlayer) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Game Already Started</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            Sorry, this game has already begun and is not accepting new players.
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -249,6 +241,16 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
                 ? "Update Profile"
                 : "Join Game"}
           </Button>
+          <div className="flex w-full justify-center">
+            <Button
+              variant="link"
+              onClick={() =>
+                fbSet("players", existingPlayer.uid, { userId: null })
+              }
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

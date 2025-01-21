@@ -25,7 +25,7 @@ export type Game = Model<{
   gameSetupCompletedAt?: Timestamp
   endTime: Timestamp | null
   elderCouncilLetters: number
-  createdBy: string // player id
+  createdBy: string // userId
   mapSize: number
   name: string
   startingCharacterCount: number

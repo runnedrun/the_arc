@@ -7,6 +7,7 @@ import { Player } from "@/data/types/Player"
 import { Round } from "@/data/types/Round"
 import { useObs } from "@/data/useObs"
 import { limit } from "firebase/firestore"
+import { isNil } from "lodash-es"
 import { createContext, useContext } from "react"
 
 interface GameInterfaceContext {
@@ -16,6 +17,7 @@ interface GameInterfaceContext {
   currentRound: Round
   mapTiles: MapTile[]
   currentPlayer: Player
+  playersHaveLoaded: boolean
   npcs: NPC[]
   playerHasEndedRound: boolean
 }
@@ -28,14 +30,16 @@ export const ProvideGameInterfaceContext = ({
 }: React.PropsWithChildren<{ gameId: string }>) => {
   const game = useObs(docObs("games", gameId), [gameId])
 
-  const players =
-    useObs(
-      queryObs("players", ({ where }) => [
-        where("gameId", "==", gameId),
-        where("archived", "==", false),
-      ]),
-      [gameId]
-    ) || []
+  const players = useObs(
+    queryObs("players", ({ where }) => [
+      where("gameId", "==", gameId),
+      where("archived", "==", false),
+    ]),
+    [gameId]
+  )
+
+  const playersArray = players || []
+  const playersHaveLoaded = !isNil(playersArray)
 
   const npcs =
     useObs(
@@ -69,10 +73,10 @@ export const ProvideGameInterfaceContext = ({
 
   const currentUserId = useContext(UserContext)?.user?.uid
 
-  const currentPlayer = players.find((_) => _.userId === currentUserId)
+  const currentPlayer = playersArray.find((_) => _.userId === currentUserId)
 
   const playerHasEndedRound =
-    !!currentRound?.playersCompletedAt?.[currentPlayer.uid]
+    !!currentRound?.playersCompletedAt?.[currentPlayer?.uid]
 
   return (
     <GameInterfaceContext.Provider
@@ -81,7 +85,8 @@ export const ProvideGameInterfaceContext = ({
         currentUserId,
         game,
         mapTiles,
-        players,
+        players: playersArray,
+        playersHaveLoaded,
         currentRound,
         npcs,
         playerHasEndedRound,

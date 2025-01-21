@@ -12,6 +12,18 @@ import { docObs } from "@/data/readerFe"
 import { useObs } from "@/data/useObs"
 import { combineLatest } from "rxjs"
 import { GameMessages } from "../GameMessages"
+import { Trash2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { fbDelete } from "@/data/writerFe"
 
 const ScoredObjectivesDisplay = ({ messageIds }: { messageIds: string[] }) => {
   const messages =
@@ -67,7 +79,13 @@ const ScoreLink = ({
 }
 
 export const ScoresDisplay = () => {
-  const { players, currentUserId } = useContext(GameInterfaceContext)
+  const { players, currentUserId, game } = useContext(GameInterfaceContext)
+  const [playerToDelete, setPlayerToDelete] = useState<string | null>(null)
+
+  const handleDeletePlayer = (playerId: string) => {
+    fbDelete("players", playerId)
+    setPlayerToDelete(null)
+  }
 
   return (
     <Card className="w-full">
@@ -77,7 +95,17 @@ export const ScoresDisplay = () => {
       <CardContent>
         <div className="flex flex-col gap-4">
           {players.map((player) => (
-            <div key={player.uid} className="flex gap-2">
+            <div key={player.uid} className="flex items-center gap-2">
+              {game.createdBy === currentUserId && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setPlayerToDelete(player.uid)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
               <div className="font-bold">{player.name}:</div>
               <div className="flex flex-wrap gap-2">
                 <div>
@@ -114,6 +142,31 @@ export const ScoresDisplay = () => {
           ))}
         </div>
       </CardContent>
+
+      <AlertDialog
+        open={!!playerToDelete}
+        onOpenChange={() => setPlayerToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the player from the game. This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                playerToDelete && handleDeletePlayer(playerToDelete)
+              }
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

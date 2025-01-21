@@ -41,8 +41,6 @@ export const setupCharacterImage = async ({
 
   const optimizedPrompt = promptResponse.choices[0]?.message?.content
 
-  console.log("optimizedPrompt for character image", optimizedPrompt)
-
   // Then use the optimized prompt with DALL-E
   const response = await openAiClient.images.generate({
     model: "dall-e-3",
