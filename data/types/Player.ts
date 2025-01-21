@@ -10,4 +10,8 @@ export interface Player extends ModelBase {
   playerImageUrl?: string
   color?: string // hex color code
   currentTileLocation?: MapPosition
+  secretObjectivePoints?: number
+  secretObjectivesScored: string[] // message ids
+  publicObjectivePoints?: number
+  publicObjectivesScored: string[] // message ids
 }

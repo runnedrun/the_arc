@@ -34,11 +34,23 @@ export async function POST(req: NextRequest) {
   }
 
   // Get conversation messages using queryDocs
-  const conversationMessages = await queryDocs("messages", (ref) =>
+  const conversationMessagesFrom = await queryDocs("messages", (ref) =>
     ref
       .where("gameId", "==", message.gameId)
       .where("receiverId", "==", message.receiverId)
       .orderBy("createdAt", "asc")
+  )
+
+  const conversationMessagesTo = await queryDocs("messages", (ref) =>
+    ref
+      .where("gameId", "==", message.gameId)
+      .where("senderId", "==", message.receiverId)
+      .orderBy("createdAt", "desc")
+  )
+
+  const conversationMessages = sortBy(
+    [...conversationMessagesFrom, ...conversationMessagesTo],
+    (message) => message.createdAt.toMillis()
   )
 
   const gameData = await getGameData(message.gameId)
@@ -87,7 +99,7 @@ export async function POST(req: NextRequest) {
   const replyRef = await fbCreate("messages", replyMessage)
 
   // Get message strings
-  const messageStrings = getMessageStringsZipped(allMessagesToProcess, gameData)
+  let messageStrings = getMessageStringsZipped(allMessagesToProcess, gameData)
 
   // Prepare system prompt
   const messageStructurePrompt = `Even though the message inputs have labels for sender, year, etc, your reply must be ONLY the message with no preamble or label. Avoid asking questions. 
@@ -95,6 +107,26 @@ Your mesage to the player:`
 
   let systemPrompt = ""
   if (message.receiverId === "elderCouncil") {
+    const objectiveMessages = await queryDocs("messages", (ref) =>
+      ref
+        .where("gameId", "==", message.gameId)
+        .where("type", "in", ["secretObjective", "objective"])
+        .orderBy("createdAt", "asc")
+    )
+
+    const objectiveMessagesForThisUser = objectiveMessages.filter(
+      (message) =>
+        message.senderId === message.receiverId ||
+        message.type === "publicObjective"
+    )
+
+    const allMessages = sortBy(
+      [...conversationMessages, ...objectiveMessagesForThisUser],
+      (message) => message.createdAt.toMillis()
+    )
+
+    messageStrings = getMessageStringsZipped(allMessages, gameData)
+
     systemPrompt = `You are the governing Council of ${gameData.game.environmentName}, a game world. 
       The world you exist in:
       ${gameData.game.environmentDescription}

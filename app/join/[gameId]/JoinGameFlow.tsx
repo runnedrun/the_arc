@@ -82,6 +82,10 @@ export async function joinGame({
     color: playerColor,
     currentTileLocation: mapPosition,
     playerPersonality,
+    secretObjectivePoints: 0,
+    publicObjectivePoints: 0,
+    secretObjectivesScored: [],
+    publicObjectivesScored: [],
   })
 
   return uuid

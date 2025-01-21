@@ -41,6 +41,10 @@ export const createNewGameWithCreatorPlayer = async (
       y: 0,
     },
     name: "Player 1",
+    secretObjectivePoints: 0,
+    publicObjectivePoints: 0,
+    secretObjectivesScored: [],
+    publicObjectivesScored: [],
   }
   const playerRef = await fbCreate("players", newPlayer)
 

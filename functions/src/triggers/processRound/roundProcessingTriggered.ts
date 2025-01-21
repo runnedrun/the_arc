@@ -13,6 +13,23 @@ import { updateGameTiles } from "../processGame/updateGameTiles"
 import { spawnNewNpc } from "./spawnNewNpc"
 import { determinePlayerMovement } from "./determinePlayerMovement"
 import { createObjectives } from "../processGame/createObjectives"
+import { scoreCurrentObjectives } from "./scoreCurrentObjectives"
+
+const updateObjectives = async (args: GameProcessingArgs) => {
+  if (args.currentRound.index % 4 === 0) {
+    console.log("Scoring current objectives")
+    await scoreCurrentObjectives(args)
+    console.log("Creating new objectives")
+    await createObjectives(args)
+  }
+}
+
+const spawnNpcs = async (args: GameProcessingArgs) => {
+  if (args.currentRound.index % 2 === 1) {
+    console.log("Spawning new NPC")
+    await spawnNewNpc(args)
+  }
+}
 
 const runRoundProcessing = async (args: GameProcessingArgs) => {
   const allPlayersHaveCompletedTheRound = args.players.every(
@@ -47,18 +64,12 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
   await generateElderCouncilMessages(args)
   await args.refresh()
   console.log("Updating game tiles")
-  await updateGameTiles(args)
+  await Promise.all([
+    updateObjectives(args),
+    updateGameTiles(args),
+    spawnNpcs(args),
+  ])
   await args.refresh()
-
-  if (args.currentRound.index % 4 === 0) {
-    console.log("Creating new objectives")
-    await createObjectives(args)
-  }
-
-  if (args.currentRound.index % 2 === 1) {
-    console.log("Spawning new NPC")
-    await spawnNewNpc(args)
-  }
 
   console.log("Querying messages for this round")
   const messagesForThisRound = await queryDocs("messages", (ref) => {

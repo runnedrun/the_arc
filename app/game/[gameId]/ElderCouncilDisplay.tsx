@@ -24,7 +24,7 @@ export const ElderCouncilDisplay = () => {
 
   const allMessages = sortBy(
     [...previousMessages, ...allObjectives],
-    "createdAt"
+    (message) => -1 * message.createdAt.toMillis()
   )
 
   return (

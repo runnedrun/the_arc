@@ -50,8 +50,6 @@ export function GameGrid({
           const thisTileIsSelected =
             selectedTile && index === selectedTile?.index
 
-          console.log("thisTileIsSelected", thisTileIsSelected)
-
           return (
             <div
               key={tile.uid}
@@ -77,7 +75,6 @@ export function GameGrid({
                 <PopoverTrigger asChild>
                   <div
                     onClick={() => {
-                      console.log("tile", tile.uid, tile.explored)
                       tile.explored && onTileSelect({ ...tile, index })
                     }}
                     className={cn(
