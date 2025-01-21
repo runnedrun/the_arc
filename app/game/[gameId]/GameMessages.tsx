@@ -3,8 +3,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Message } from "@/data/types/Message"
 import { useContext, useEffect, useRef } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
-import { messageRenderers } from "./messageRenderers"
 import { TokenCountContext } from "./TokenCountContext"
+import { SerializedMessageDisplay } from "./SerializedMessageDisplay"
+import { getSerializedMessage } from "./getSerializedMessages"
+import { useTileInfoDisplay } from "./TileInfoDisplayContext"
+import { isEqual } from "lodash-es"
 
 interface GameMessagesProps {
   messages: Message[]
@@ -12,10 +15,19 @@ interface GameMessagesProps {
   updateComposingMessage: (messageContent: string) => void
   sendMessage: () => void
   scrollAreaClassName?: string
+  allowClicking?: boolean
 }
 
-function MessageDisplay({ message }: { message: Message }) {
-  const { currentPlayer } = useContext(GameInterfaceContext)
+function MessageDisplay({
+  message,
+  allowClicking = false,
+}: {
+  message: Message
+  allowClicking?: boolean
+}) {
+  const { currentPlayer, npcs, players } = useContext(GameInterfaceContext)
+
+  const { setSelectedTab, setSelectedNPC, openTile } = useTileInfoDisplay()
 
   // Show typing indicator if message is processing but has no content
   if (
@@ -34,14 +46,36 @@ function MessageDisplay({ message }: { message: Message }) {
 
   message.type === "tileAction" && console.log("messageddd", message)
 
-  const renderer = messageRenderers.find((r) =>
-    r.matches(message, currentPlayer?.uid)
+  const serializedMessage = getSerializedMessage(
+    message,
+    {
+      players,
+      npcs,
+    },
+    currentPlayer?.uid
   )
-  const RendererComponent = renderer?.RenderComponent
-  return RendererComponent ? (
-    <RendererComponent message={message} />
-  ) : (
-    <div className="mb-2 rounded bg-white p-2">{message.content}</div>
+
+  const npcsOnCurrentTile = npcs.filter((npc) =>
+    isEqual(openTile?.position, npc.currentTileLocation)
+  )
+
+  const npcForMessage = npcsOnCurrentTile.find(
+    (npc) => npc.uid === message.senderId
+  )
+
+  const handleClick =
+    npcForMessage && allowClicking
+      ? () => {
+          setSelectedNPC(npcForMessage)
+          setSelectedTab("npcs")
+        }
+      : undefined
+
+  return (
+    <SerializedMessageDisplay
+      message={serializedMessage}
+      onNameClick={handleClick}
+    />
   )
 }
 
@@ -50,6 +84,7 @@ export function GameMessages({
   composingMessage,
   updateComposingMessage,
   sendMessage,
+  allowClicking = false,
 }: GameMessagesProps) {
   const { charactersRemaining, charactersAvailable, charactersUsedThisRound } =
     useContext(TokenCountContext)
@@ -79,7 +114,11 @@ export function GameMessages({
             <>
               <div ref={messagesEndRef} />
               {messages.map((message) => (
-                <MessageDisplay key={message.uid} message={message} />
+                <MessageDisplay
+                  key={message.uid}
+                  message={message}
+                  allowClicking={allowClicking}
+                />
               ))}
             </>
           ) : (

@@ -25,7 +25,7 @@ export const PlayerInfoModal = ({
           <DialogTitle>{player?.name}'s Information</DialogTitle>
         </DialogHeader>
         <div className="mb-6 flex justify-center">
-          <div className="relative h-32 w-32 overflow-hidden rounded-full">
+          <div className="relative h-56 w-56 overflow-hidden rounded-full">
             {player?.playerImageUrl && (
               <Image
                 src={player?.playerImageUrl}

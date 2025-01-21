@@ -10,18 +10,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { NPC } from "@/data/types/NPC"
-import { cn } from "@/lib/utils"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { useContext, useState, useEffect } from "react"
-import { NPCDisplay } from "./NPCDisplay"
 import { queryObs } from "@/data/readerFe"
-import GameInterface from "./GameInterface"
-import { GameInterfaceContext } from "./GameInterfaceContext"
-import { combineLatest } from "rxjs"
+import { NPC } from "@/data/types/NPC"
 import { useObs } from "@/data/useObs"
-import { limit } from "firebase/firestore"
+import { cn } from "@/lib/utils"
 import { CommandItem } from "cmdk"
+import { limit } from "firebase/firestore"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
+import { combineLatest } from "rxjs"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { NPCDisplay } from "./NPCDisplay"
+import { useTileInfoDisplay } from "./TileInfoDisplayContext"
 
 type NPCsWithPendingMessageBool = NPC & {
   hasPendingMessages: boolean
@@ -56,14 +56,14 @@ export const useNPCsHaveMessagesForThisRound = (npcs: NPC[]) => {
 
 export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
   const [open, setOpen] = useState(false)
-  const [selectedNpc, setSelectedNpc] = useState<NPC>()
+  const { selectedNPC, setSelectedNPC } = useTileInfoDisplay()
   const npcsWithPendingMessages = useNPCsHaveMessagesForThisRound(npcOptions)
 
   useEffect(() => {
-    if (npcsWithPendingMessages?.length && !selectedNpc) {
-      setSelectedNpc(npcsWithPendingMessages[0])
+    if (npcsWithPendingMessages?.length && !selectedNPC) {
+      setSelectedNPC(npcsWithPendingMessages[0])
     }
-  }, [npcsWithPendingMessages, selectedNpc])
+  }, [npcsWithPendingMessages, selectedNPC, setSelectedNPC])
 
   return (
     <div className="flex max-h-[600px] flex-col gap-4 overflow-hidden">
@@ -75,7 +75,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
             aria-expanded={open}
             className="justify-between"
           >
-            {selectedNpc?.name || "Select NPC..."}
+            {selectedNPC?.name || "Select NPC..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -90,7 +90,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
                     className="flex items-center gap-1"
                     key={npc.uid}
                     onSelect={() => {
-                      setSelectedNpc(npc)
+                      setSelectedNPC(npc)
                       setOpen(false)
                     }}
                   >
@@ -106,7 +106,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
         </PopoverContent>
       </Popover>
 
-      {selectedNpc && <NPCDisplay npc={selectedNpc} />}
+      {selectedNPC && <NPCDisplay npc={selectedNPC} />}
     </div>
   )
 }

@@ -1,8 +1,9 @@
 import { Message } from "@/data/types/Message"
 import { GameProcessingArgs } from "@/functions/src/triggers/processGame/getGameData"
-import { idIsNpc } from "@/data/types/NPC"
+import { idIsNpc, NPC } from "@/data/types/NPC"
 import { isConversationalMessage } from "./isConversationalMessage"
 import { sortBy } from "lodash-es"
+import { Player } from "@/data/types/Player"
 
 export interface SerializedMessage {
   senderId?: string
@@ -15,10 +16,15 @@ export interface SerializedMessage {
   align?: "left" | "right"
 }
 
+interface MinimalGameArgs {
+  players: Player[]
+  npcs: NPC[]
+}
+
 const getMessageConfig = (
   message: Message,
   currentPlayerId?: string,
-  gameArgs?: GameProcessingArgs
+  gameArgs?: MinimalGameArgs
 ): SerializedMessage => {
   const getSenderName = () => {
     if (gameArgs) {
@@ -99,29 +105,20 @@ const getMessageConfig = (
   }
 }
 
-export const getSerializedMessages = (
-  messages: Message[],
-  gameArgs: GameProcessingArgs,
+export const getSerializedMessage = (
+  message: Message,
+  gameArgs: MinimalGameArgs,
   currentPlayerId?: string
 ) => {
-  return sortBy(messages, (m) => m.createdAt.toMillis()).map((message) =>
-    getMessageConfig(message, currentPlayerId, gameArgs)
-  )
+  return getMessageConfig(message, currentPlayerId, gameArgs)
 }
 
-export const getStringFromSerializedMessage = (
-  serializedMessage: SerializedMessage,
-  index: number,
-  includeYear = true
+export const getSerializedMessages = (
+  messages: Message[],
+  gameArgs: MinimalGameArgs,
+  currentPlayerId?: string
 ) => {
-  const yearPrefix =
-    includeYear && serializedMessage.originalMessage.roundIndex !== undefined
-      ? `Year ${serializedMessage.originalMessage.roundIndex}`
-      : ""
-
-  const prefix = `${serializedMessage.senderName}`
-
-  return `Event ${index + 1}${yearPrefix ? ` - ${yearPrefix}` : ""} - ${prefix}: ${
-    serializedMessage.content
-  }`
+  return messages.map((message) =>
+    getMessageConfig(message, currentPlayerId, gameArgs)
+  )
 }

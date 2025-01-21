@@ -38,8 +38,6 @@ const generateNPCMessage = async ({
 
   const tileHistory = getMessageStrings(allMessagesToDisplay, gameArgs, npc.uid)
 
-  console.log("tile history for npc", tileHistory)
-
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -105,7 +103,6 @@ export const generateMessagesForAllNPCs = async (args: GameProcessingArgs) => {
         currentTile,
         gameArgs: args,
       })
-      console.log("taking action for npc", npc.uid, message)
 
       // Save the generated message
       await fbCreate(

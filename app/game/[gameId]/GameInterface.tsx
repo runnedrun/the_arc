@@ -31,7 +31,7 @@ export default function GameInterface() {
         <PlayerInfoDisplay></PlayerInfoDisplay>
       </div>
 
-      <div className="flex flex-grow justify-center">
+      <div className="flex flex-grow justify-center p-4">
         <GameGrid
           onTileSelect={setOrToggleTile}
           selectedTile={selectedTile}

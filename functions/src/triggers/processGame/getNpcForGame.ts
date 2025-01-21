@@ -6,6 +6,7 @@ import { NPC, getNpcId } from "@/data/types/NPC"
 import { fbCreate } from "../../helpers/writer"
 import { MapPosition } from "@/data/types/MapTile"
 import { setupCharacterImage } from "../../helpers/setupCharacterImage"
+import { isNil } from "lodash-es"
 
 const NPCSchema = z.object({
   name: z.string(),
@@ -36,7 +37,8 @@ Requirements:
 
 export const getNpcForGame = async (
   args: GameProcessingArgs,
-  location: MapPosition
+  location: MapPosition,
+  forceActive = false
 ) => {
   const openAiClient = getOpenAIClient()
 
@@ -82,10 +84,14 @@ export const getNpcForGame = async (
     personality: npcData.personality,
     letters: 200,
     currentTileLocation: location,
-    createdRoundIndex: args.currentRound?.index || null,
-    createdRoundId: args.currentRound?.uid || null,
+    createdRoundIndex: isNil(args.currentRound?.index)
+      ? null
+      : args.currentRound?.index,
+    createdRoundId: isNil(args.currentRound?.uid)
+      ? null
+      : args.currentRound?.uid,
     imageUrl: image,
-    active: npcTileIsExplored,
+    active: forceActive || npcTileIsExplored,
   }
 
   console.log("creating npc")

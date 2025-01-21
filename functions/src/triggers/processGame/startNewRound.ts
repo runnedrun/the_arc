@@ -28,6 +28,6 @@ export const startNewRound = async ({
     })
   )
 
-  await fbCreate("rounds", newRound)
-  return newRound
+  const ref = await fbCreate("rounds", newRound)
+  return { ...newRound, uid: ref.id }
 }

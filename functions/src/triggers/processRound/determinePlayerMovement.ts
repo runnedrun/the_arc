@@ -131,7 +131,7 @@ export const determinePlayerMovement = async (args: GameProcessingArgs) => {
                     ? `${entity.name} moved ${direction}`
                     : `${entity.name} tried to move ${direction} but reached the end of the map`,
                   tileLocation: entity.currentTileLocation,
-                  senderId: null,
+                  senderId: entity.uid,
                   receiverId: null,
                   roundIndex: currentRound.index,
                   processedAt: backendNow(),
@@ -148,6 +148,23 @@ export const determinePlayerMovement = async (args: GameProcessingArgs) => {
                   {
                     currentTileLocation: newPosition,
                   }
+                )
+              )
+
+              updatePromises.push(
+                fbCreate(
+                  "messages",
+                  getDefaultMessage({
+                    gameId: game.uid,
+                    roundId: currentRound.uid,
+                    type: "tileMovement",
+                    content: `${entity.name} entered the tile`,
+                    tileLocation: newPosition,
+                    senderId: entity.uid,
+                    receiverId: null,
+                    roundIndex: currentRound.index + 1,
+                    processedAt: backendNow(),
+                  })
                 )
               )
 

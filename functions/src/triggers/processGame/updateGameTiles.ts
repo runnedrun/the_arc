@@ -102,13 +102,13 @@ Requirements for each field:
 - DALL-E prompt: A prompt for DALL-E 3 to generate an image of the environment in a disney, hand drawn animation style, showing ONLY the environment, filling the whole frame without text or borders (1 sentence)`
 }
 
-const updateTileExplorationStatus = async (game: Game) => {
+const updateTileExplorationStatus = async (args: GameProcessingArgs) => {
   const [players, tiles] = await Promise.all([
     queryDocs("players", (ref) =>
-      ref.where("gameId", "==", game.uid).where("archived", "==", false)
+      ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
     ),
     queryDocs("mapTiles", (ref) =>
-      ref.where("gameId", "==", game.uid).where("archived", "==", false)
+      ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
     ),
   ])
 
@@ -124,6 +124,8 @@ const updateTileExplorationStatus = async (game: Game) => {
         await fbSet("mapTiles", tile.uid, {
           ...tile,
           explored: true,
+          exploredInRoundId: args.currentRound?.uid || null,
+          exploredInRoundIndex: args.currentRound?.index || null,
         })
       }
     })
@@ -177,7 +179,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
     )
   }
 
-  await updateTileExplorationStatus(args.game)
+  await updateTileExplorationStatus(args)
 
   // Update images for explored tiles
   const allTiles = await queryDocs("mapTiles", (ref) =>

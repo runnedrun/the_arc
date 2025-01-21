@@ -144,6 +144,7 @@ export const advanceRound = async ({ gameId }: { gameId: string }) => {
       map((npcs) => npcs[0])
     )
   )
+
   await fbCreate(
     "messages",
     getDefaultMessage({
@@ -152,10 +153,12 @@ export const advanceRound = async ({ gameId }: { gameId: string }) => {
       roundId: currentRound.uid,
       senderId: player1.uid,
       type: "npc",
-      processedAt: null,
       receiverId: npc1.uid,
       tileLocation: null,
       roundIndex: 0,
+      processedAt: Timestamp.now(),
+      processingStartedAt: Timestamp.now(),
+      processingTriggeredAt: Timestamp.now(),
     })
   )
 
@@ -168,7 +171,9 @@ export const advanceRound = async ({ gameId }: { gameId: string }) => {
       roundId: currentRound.uid,
       senderId: player1.uid,
       type: "elderCouncil",
-      processedAt: null,
+      processedAt: Timestamp.now(),
+      processingStartedAt: Timestamp.now(),
+      processingTriggeredAt: Timestamp.now(),
       receiverId: "elderCouncil",
       tileLocation: null,
       roundIndex: 0,
@@ -184,7 +189,7 @@ export const advanceRound = async ({ gameId }: { gameId: string }) => {
       roundId: currentRound.uid,
       senderId: player1.uid,
       type: "tileAction",
-      processedAt: null,
+
       receiverId: null,
       tileLocation: {
         x: 0,

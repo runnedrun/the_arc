@@ -1,9 +1,33 @@
 import {
   getSerializedMessages,
-  getStringFromSerializedMessage,
+  SerializedMessage,
 } from "@/app/game/[gameId]/getSerializedMessages"
 import { Message } from "@/data/types/Message"
 import { GameProcessingArgs } from "../processGame/getGameData"
+import { sortBy } from "lodash-es"
+
+export const getStringFromSerializedMessage = (
+  serializedMessage: SerializedMessage,
+  index: number,
+  includeYear = true
+) => {
+  const yearPrefix =
+    includeYear && serializedMessage.originalMessage.roundIndex !== undefined
+      ? `Year ${serializedMessage.originalMessage.roundIndex}`
+      : ""
+
+  const prefix = `${serializedMessage.senderName}`
+
+  return `Event ${index + 1}${yearPrefix ? ` - ${yearPrefix}` : ""} - ${prefix}: ${
+    serializedMessage.content
+  }`
+}
+
+const sortAndFilterMessages = (messages: Message[]) => {
+  return sortBy(messages, (m) => m.createdAt.toMillis()).filter(
+    (m) => !!m.content
+  )
+}
 
 export const getMessageStrings = (
   messages: Message[],
@@ -11,7 +35,7 @@ export const getMessageStrings = (
   viewingUserId?: string
 ) => {
   const serializedMessages = getSerializedMessages(
-    messages,
+    sortAndFilterMessages(messages),
     args,
     viewingUserId
   )
@@ -24,7 +48,7 @@ export const getMessageStringsZipped = (
   viewingUserId?: string
 ) => {
   const serializedMessages = getSerializedMessages(
-    messages,
+    sortAndFilterMessages(messages),
     args,
     viewingUserId
   )

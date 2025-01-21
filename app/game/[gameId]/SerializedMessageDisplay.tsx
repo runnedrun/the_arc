@@ -1,10 +1,14 @@
-import { SerializedMessage } from "./getSerializedMessages"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { SerializedMessage } from "./getSerializedMessages"
+import { useTileInfoDisplay } from "./TileInfoDisplayContext"
 
 export function SerializedMessageDisplay({
   message,
+  onNameClick,
 }: {
   message: SerializedMessage
+  onNameClick: () => void
 }) {
   // Show typing indicator if message is processing but has no content
   if (
@@ -30,7 +34,17 @@ export function SerializedMessageDisplay({
         )}
       >
         <div className="text-2xl">{message.icon}</div>
-        <div className="font-semibold">{message.senderName}</div>
+        {onNameClick ? (
+          <Button
+            variant="ghost"
+            className="h-auto p-0 font-semibold hover:bg-transparent hover:underline"
+            onClick={onNameClick}
+          >
+            {message.senderName}
+          </Button>
+        ) : (
+          <div className="font-semibold">{message.senderName}</div>
+        )}
       </div>
       <div
         className={cn(
