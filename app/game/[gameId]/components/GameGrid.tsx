@@ -1,15 +1,15 @@
-import { MapPosition, MapTile } from "@/data/types/MapTile"
-import { groupBy, isEqual, sortBy } from "lodash-es"
-import { useContext } from "react"
-import { GameInterfaceContext } from "../GameInterfaceContext"
-import { NPCsMarker, PlayerMarker } from "./PlayerMarker"
-import { TileInfoDisplay } from "../TileInfoDisplay"
-import { TileWithIndex } from "../GameInterface"
-import { Popover, PopoverTrigger } from "@/components/ui/popover"
-import { PopoverContent } from "@radix-ui/react-popover"
+import { MapTile } from "@/data/types/MapTile"
 import { cn } from "@/lib/utils"
+import { groupBy, isEqual, sortBy } from "lodash-es"
 import Image from "next/image"
+import { useContext } from "react"
+import { TileWithIndex } from "../GameInterface"
+import { GameInterfaceContext } from "../GameInterfaceContext"
 import { CardinalDirections } from "./CardinalDirections"
+import { NPCsMarker, PlayerMarker } from "./PlayerMarker"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { TileInfoDisplay } from "../TileInfoDisplay"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 interface GameGridProps {
   onTileSelect: (position: MapTile & { index: number }) => void
@@ -29,7 +29,7 @@ export function GameGrid({
 
   return (
     <div className="relative">
-      <div className="absolute -left-[78px] -top-[78px] w-full">
+      <div className="pointer-events-none absolute -left-[78px] -top-[78px] w-full">
         <CardinalDirections />
       </div>
       <div className="grid grid-cols-4 gap-1">
@@ -50,7 +50,37 @@ export function GameGrid({
           const thisTileIsSelected =
             selectedTile && index === selectedTile?.index
 
-          return (
+          const tileDisplay = (
+            <div
+              onClick={() => {
+                tile.explored && onTileSelect({ ...tile, index })
+              }}
+              className={cn(
+                "flex h-[100px] w-[100px] items-center justify-center"
+              )}
+            >
+              {tile.explored && tile.imageUrl ? (
+                <Image
+                  src={tile.imageUrl}
+                  alt={`Tile ${index + 1}`}
+                  className="h-full w-full object-cover"
+                  width={100}
+                  height={100}
+                />
+              ) : (
+                <span
+                  className={cn(
+                    "font-bold",
+                    tile.explored ? "text-white" : "text-gray-500"
+                  )}
+                >
+                  {index + 1}
+                </span>
+              )}
+            </div>
+          )
+
+          const wholeTile = (
             <div
               key={tile.uid}
               className={cn(
@@ -64,64 +94,7 @@ export function GameGrid({
                 }
               )}
             >
-              <Popover
-                open={thisTileIsSelected}
-                onOpenChange={(open) => {
-                  if (!open) {
-                    onTileClosed({ ...tile, index })
-                  }
-                }}
-              >
-                <PopoverTrigger asChild>
-                  <div
-                    onClick={() => {
-                      tile.explored && onTileSelect({ ...tile, index })
-                    }}
-                    className={cn(
-                      "flex h-[100px] w-[100px] items-center justify-center"
-                    )}
-                  >
-                    {tile.explored && tile.imageUrl ? (
-                      <Image
-                        src={tile.imageUrl}
-                        alt={`Tile ${index + 1}`}
-                        className="h-full w-full object-cover"
-                        width={100}
-                        height={100}
-                      />
-                    ) : (
-                      <span
-                        className={cn(
-                          "font-bold",
-                          tile.explored ? "text-white" : "text-gray-500"
-                        )}
-                      >
-                        {index + 1}
-                      </span>
-                    )}
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="relative flex max-h-[850px] w-[600px] flex-col"
-                  side="right"
-                  align="start"
-                  sideOffset={5}
-                  alignOffset={0}
-                  avoidCollisions
-                >
-                  <button
-                    onClick={() => onTileClosed({ ...tile, index })}
-                    className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-gray-200"
-                    aria-label="Close"
-                  >
-                    ✕
-                  </button>
-                  <TileInfoDisplay
-                    selectedTile={{ ...tile, index }}
-                  ></TileInfoDisplay>
-                </PopoverContent>
-              </Popover>
-
+              {tileDisplay}
               {playersOnTile.map((player, playerIndex) => (
                 <div
                   key={player.uid}
@@ -162,8 +135,28 @@ export function GameGrid({
                 })}
             </div>
           )
+
+          return wholeTile
         })}
       </div>
+      <Dialog
+        open={selectedTile !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            onTileSelect(null)
+          }
+        }}
+      >
+        <DialogTitle className="sr-only">Tile Info</DialogTitle>
+        <DialogContent
+          aria-describedby="Tile Info"
+          className="flex h-[90vh] flex-col"
+        >
+          {selectedTile && (
+            <TileInfoDisplay selectedTile={selectedTile}></TileInfoDisplay>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

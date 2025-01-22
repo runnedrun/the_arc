@@ -48,13 +48,13 @@ const TileInfoDisplayContent = ({
   const { selectedTab, setSelectedTab } = useTileInfoDisplay()
 
   return (
-    <Card className="mr-4 flex min-h-0 w-full flex-col">
+    <div className="flex min-h-0 grow flex-col">
       <CardHeader>
         <CardTitle className="flex flex-col items-center gap-3">
           <div className="text-2xl">{selectedTile.title}</div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex min-h-0 flex-col">
+      <CardContent className="flex min-h-0 grow flex-col">
         <Tabs
           value={selectedTab}
           onValueChange={setSelectedTab}
@@ -85,7 +85,7 @@ const TileInfoDisplayContent = ({
           </TabsContent>
         </Tabs>
       </CardContent>
-    </Card>
+    </div>
   )
 }
 

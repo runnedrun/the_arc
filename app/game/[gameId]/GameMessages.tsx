@@ -108,24 +108,22 @@ export function GameMessages({
 
   return (
     <div className="flex min-h-0 grow flex-col gap-2">
-      <ScrollArea className="flex min-h-0 grow flex-col">
-        <div className="flex flex-col-reverse">
-          {messages.length ? (
-            <>
-              <div ref={messagesEndRef} />
-              {messages.map((message) => (
-                <MessageDisplay
-                  key={message.uid}
-                  message={message}
-                  allowClicking={allowClicking}
-                />
-              ))}
-            </>
-          ) : (
-            <div>No messages yet</div>
-          )}
-        </div>
-      </ScrollArea>
+      <div className="flex grow flex-col-reverse overflow-y-auto">
+        {messages.length ? (
+          <>
+            <div ref={messagesEndRef} />
+            {messages.map((message) => (
+              <MessageDisplay
+                key={message.uid}
+                message={message}
+                allowClicking={allowClicking}
+              />
+            ))}
+          </>
+        ) : (
+          <div>No messages yet</div>
+        )}
+      </div>
       {sendMessage && (
         <div className="flex-shrink-0 space-y-1">
           <Textarea

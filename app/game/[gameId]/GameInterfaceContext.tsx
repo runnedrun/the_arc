@@ -20,6 +20,7 @@ interface GameInterfaceContext {
   playersHaveLoaded: boolean
   npcs: NPC[]
   playerHasEndedRound: boolean
+  userHasLoaded: boolean
 }
 
 export const GameInterfaceContext = createContext(null as GameInterfaceContext)
@@ -39,7 +40,7 @@ export const ProvideGameInterfaceContext = ({
   )
 
   const playersArray = players || []
-  const playersHaveLoaded = !isNil(playersArray)
+  const playersHaveLoaded = !isNil(players)
 
   const npcs =
     useObs(
@@ -71,7 +72,10 @@ export const ProvideGameInterfaceContext = ({
 
   const currentRound = currentRoundArray[0]
 
-  const currentUserId = useContext(UserContext)?.user?.uid
+  const userContext = useContext(UserContext)
+  const userHasLoaded = !isNil(userContext?.loading)
+
+  const currentUserId = userContext?.user?.uid
 
   const currentPlayer = playersArray.find((_) => _.userId === currentUserId)
 
@@ -90,6 +94,7 @@ export const ProvideGameInterfaceContext = ({
         currentRound,
         npcs,
         playerHasEndedRound,
+        userHasLoaded,
       }}
     >
       {children}

@@ -19,8 +19,14 @@ import {
 import Link from "next/link"
 
 export function GameDisplay() {
-  const { game, players, currentUserId, currentPlayer, playersHaveLoaded } =
-    useContext(GameInterfaceContext)
+  const {
+    game,
+    players,
+    currentUserId,
+    currentPlayer,
+    playersHaveLoaded,
+    userHasLoaded,
+  } = useContext(GameInterfaceContext)
   const handleStartGame = async () => {
     await triggerProcessOnWrite(
       fbUpdate("games", game.uid, {
@@ -29,9 +35,7 @@ export function GameDisplay() {
     )
   }
 
-  console.log("playersHaveLoaded", playersHaveLoaded)
-  console.log("currentPlayer", currentPlayer)
-  if (playersHaveLoaded && !currentPlayer) {
+  if (playersHaveLoaded && userHasLoaded && !currentPlayer) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-4">
@@ -46,7 +50,7 @@ export function GameDisplay() {
 
   return (
     <div className="flex h-screen items-start justify-center p-4">
-      <div className="container relative">
+      <div className="container relative h-full">
         {!game || !players || !currentPlayer ? (
           <LoadingState />
         ) : (
