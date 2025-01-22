@@ -51,7 +51,7 @@ export async function joinGame({
       { y: mapSize - 1, x: 0 }, // Bottom-left
       { y: mapSize - 1, x: mapSize - 1 }, // Bottom-right
     ]
-    const positionIndex = existingPlayers.length
+    const positionIndex = existingPlayers.length % cornerPositions.length
     mapPosition = cornerPositions[positionIndex]
   }
 

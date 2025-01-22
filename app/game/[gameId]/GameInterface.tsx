@@ -1,5 +1,5 @@
 import { MapTile } from "@/data/types/MapTile"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { GameGrid } from "./components/GameGrid"
 import { ObjectivesButton } from "./components/ObjectivesModal"
 import { ElderCouncilDisplay } from "./ElderCouncilDisplay"
@@ -7,12 +7,14 @@ import { PlayerInfoDisplay } from "./PlayerInfoDisplay"
 import { ScoresDisplay } from "./components/ScoresDisplay"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMediaQuery } from "react-responsive"
+import { GameInterfaceContext } from "./GameInterfaceContext"
 
 export type TileWithIndex = MapTile & { index: number }
 
 export default function GameInterface() {
   const [selectedTile, setSelectedTile] = useState<TileWithIndex>(null)
   const isDesktop = useMediaQuery({ minWidth: 768 })
+  const { currentPlayer } = useContext(GameInterfaceContext)
 
   const setOrToggleTile = (newTile: TileWithIndex) => {
     setSelectedTile((currentTile) => {
@@ -30,15 +32,22 @@ export default function GameInterface() {
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="flex h-full w-full flex-col gap-4">
+      {!currentPlayer?.hasStartedGame && (
+        <div className="flex flex-grow items-center justify-center">
+          <div className="text-center text-lg">
+            You are observing, you will start next round.
+          </div>
+        </div>
+      )}
       {isDesktop ? (
-        <div className="flex items-start justify-center">
+        <div className="flex min-h-0 grow items-start justify-center">
           <div className="flex w-1/4 flex-col gap-3">
             <PlayerInfoDisplay />
             <ScoresDisplay />
           </div>
 
-          <div className="flex flex-grow justify-center p-4">
+          <div className="flex flex-grow items-center">
             <GameGrid
               onTileSelect={setOrToggleTile}
               selectedTile={selectedTile}
@@ -52,7 +61,10 @@ export default function GameInterface() {
           </div>
         </div>
       ) : (
-        <Tabs defaultValue="map" className="flex h-full w-full flex-col">
+        <Tabs
+          defaultValue="map"
+          className="flex h-full min-h-0 w-full grow flex-col"
+        >
           <TabsList className="w-full">
             <TabsTrigger value="info" className="flex-1">
               Info

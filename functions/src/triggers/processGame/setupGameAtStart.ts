@@ -1,10 +1,9 @@
 import { Timestamp } from "firebase-admin/firestore"
 import { fbSet } from "../../helpers/writer"
 import { GameProcessingArgs } from "./getGameData"
-import { addNewNPCForEachPlayerAtGameStart } from "./setupNPCsForEachPlayer"
 import { startNewRound } from "./startNewRound"
 import { updateGameTiles } from "./updateGameTiles"
-import { setupPlayerImages } from "./setupPlayerImages"
+import { setupNewPlayers } from "./setupNewPlayers"
 import { createObjectives } from "./createObjectives"
 
 export const setupGameAtStart = async (args: GameProcessingArgs) => {
@@ -13,8 +12,7 @@ export const setupGameAtStart = async (args: GameProcessingArgs) => {
 
   await Promise.all([
     updateGameTiles(newArgs),
-    setupPlayerImages(newArgs),
-    addNewNPCForEachPlayerAtGameStart(newArgs),
+    setupNewPlayers(newArgs),
     createObjectives(newArgs),
   ])
 

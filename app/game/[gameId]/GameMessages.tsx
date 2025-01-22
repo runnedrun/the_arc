@@ -88,7 +88,10 @@ export function GameMessages({
 }: GameMessagesProps) {
   const { charactersRemaining, charactersAvailable, charactersUsedThisRound } =
     useContext(TokenCountContext)
-  const { playerHasEndedRound } = useContext(GameInterfaceContext)
+  const { playerHasEndedRound, currentPlayer } =
+    useContext(GameInterfaceContext)
+
+  const playerHasStarted = currentPlayer.hasStartedGame
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -124,7 +127,7 @@ export function GameMessages({
           <div>No messages yet</div>
         )}
       </div>
-      {sendMessage && (
+      {sendMessage && playerHasStarted && (
         <div className="flex-shrink-0 space-y-1">
           <Textarea
             disabled={playerHasEndedRound}

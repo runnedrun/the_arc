@@ -14,4 +14,5 @@ export interface Player extends ModelBase {
   secretObjectivesScored: string[] // message ids
   publicObjectivePoints?: number
   publicObjectivesScored: string[] // message ids
+  hasStartedGame?: boolean
 }

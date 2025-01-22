@@ -14,6 +14,7 @@ import { spawnNewNpc } from "./spawnNewNpc"
 import { determinePlayerMovement } from "./determinePlayerMovement"
 import { createObjectives } from "../processGame/createObjectives"
 import { scoreCurrentObjectives } from "./scoreCurrentObjectives"
+import { setupNewPlayers } from "../processGame/setupNewPlayers"
 
 const updateObjectives = async (args: GameProcessingArgs) => {
   if (args.currentRound.index % 4 === 0) {
@@ -68,6 +69,7 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
     updateObjectives(args),
     updateGameTiles(args),
     spawnNpcs(args),
+    setupNewPlayers(args),
   ])
   await args.refresh()
 
