@@ -11,6 +11,7 @@ export type GameProcessingArgs = {
   game: Game
   currentRound: Round
   players: Player[]
+  allPlayersIncludingArchived: Player[]
   mapTiles: MapTile[]
   npcs: NPC[]
   elderCouncilDecrees: Message[]
@@ -26,7 +27,7 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
   const refresh = async () => {
     const [
       game,
-      players,
+      allPlayersIncludingArchived,
       mapTiles,
       npcs,
       rounds,
@@ -34,14 +35,18 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
       elderCouncilDecrees,
     ] = await Promise.all([
       readDoc("games", gameId),
-      queryDocs("players", (ref) => {
-        return ref.where("gameId", "==", gameId).where("archived", "==", false)
-      }),
+      queryDocs(
+        "players",
+        (ref) => {
+          return ref.where("gameId", "==", gameId)
+        },
+        { includeArchived: true }
+      ),
       queryDocs("mapTiles", (ref) => {
-        return ref.where("gameId", "==", gameId).where("archived", "==", false)
+        return ref.where("gameId", "==", gameId)
       }),
       queryDocs("npcs", (ref) => {
-        return ref.where("gameId", "==", gameId).where("archived", "==", false)
+        return ref.where("gameId", "==", gameId)
       }),
       queryDocs("rounds", (ref) => {
         return ref
@@ -65,6 +70,11 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
       ),
     ])
 
+    const players = sortBy(
+      allPlayersIncludingArchived.filter((p) => !p.archived),
+      (_) => _.createdAt
+    )
+
     const allElderCouncilActivity = sortBy(
       [...elderCouncilDecrees, ...elderCouncilDiscussion],
       (m) => m.createdAt.toDate()
@@ -75,6 +85,7 @@ export async function getGameData(gameId: string): Promise<GameProcessingArgs> {
     Object.assign(data, {
       game,
       players,
+      allPlayersIncludingArchived,
       currentRound,
       mapTiles: sortBy(mapTiles, (_) => `${_.position.x},${_.position.y}`),
       npcs,

@@ -73,6 +73,8 @@ export const PlayerInfoDisplay = () => {
           <div className="flex items-center gap-2">
             {currentPlayer?.playerImageUrl && (
               <Image
+                className="cursor-pointer"
+                onClick={() => setShowPlayerInfo(true)}
                 src={currentPlayer?.playerImageUrl || ""}
                 alt={currentPlayer?.name || ""}
                 width={50}
@@ -81,14 +83,6 @@ export const PlayerInfoDisplay = () => {
             )}
             <CardTitle>{currentPlayer?.name}</CardTitle>
             <PlayerMarker player={currentPlayer}></PlayerMarker>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowPlayerInfo(true)}
-              className="h-8 w-8 p-0"
-            >
-              <Info className="h-4 w-4" />
-            </Button>
           </div>
         </LoadingComponent>
       </CardHeader>

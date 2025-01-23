@@ -19,10 +19,11 @@ const getMessageStringsGroupedByTile = (
 ) => {
   return Object.entries(messages)
     .map(([tileCoords, tileMessages]) => {
-      const tileHistory = getMessageStrings(tileMessages, gameArgs)
-      gameArgs
+      const tileHistory = getMessageStrings(tileMessages, gameArgs, {
+        emptyMessage: "No history",
+      })
       return `Tile ${tileCoords}:
-    ${tileHistory.join("\n")}
+    ${tileHistory}
   `
     })
     .join("/n")
@@ -109,7 +110,9 @@ Return a JSON object with 'newDecrees' array. Each decree should be 1-2 sentence
       role: "system",
       content: `
 Here is the history of past council deliberations and decrees:
-${getMessageStrings(allElderCouncilActivity, args).join("\n")}
+${getMessageStrings(allElderCouncilActivity, args, {
+  emptyMessage: "No history",
+})}
 
 If requests are in conflict with each other or existing decrees, make a based on the reasoning provided by the players, using your judgement.
 

@@ -263,7 +263,7 @@ export type TypedLimit = (
   limit: number | Observable<number>
 ) => QueryLimitConstraint | Observable<QueryLimitConstraint>
 
-type PossibleQueryConstraint =
+export type PossibleQueryConstraint =
   | QueryFieldFilterConstraint
   | QueryCompositeFilterConstraint
   | QueryLimitConstraint
@@ -271,7 +271,7 @@ type PossibleQueryConstraint =
   | QueryStartAtConstraint
   | QueryEndAtConstraint
 
-type BuilderReturnType = OrObservable<PossibleQueryConstraint>[]
+export type BuilderReturnType = OrObservable<PossibleQueryConstraint>[]
 
 export type BuilderFilters<CollectionName extends keyof AllModels> = {
   where: TypedWhere<AllModels[CollectionName]>
@@ -307,12 +307,21 @@ const buildQueryObs = <CollectionName extends keyof AllModels>(
     : ([] as Observable<PossibleQueryConstraint>[])
 
   return combineLatest(orEmpty).pipe(
-    map((resolvedQueryContstraints: any) => {
+    map((resolvedQueryContstraints: any[]) => {
+      const includesArchived = resolvedQueryContstraints.some(
+        (_) => _.type === "where" && _.field === "archived"
+      )
+
+      if (!includesArchived) {
+        resolvedQueryContstraints.push(where("archived", "==", false))
+      }
+
       const [whereQueryConstraints, otherQueryConstraints] = partition(
         resolvedQueryContstraints.filter(Boolean),
         (_) => _.type === "where" || _.type === "and" || _.type === "or"
       )
       const wrappedInAnd = and(...whereQueryConstraints)
+
       if (whereQueryConstraints.length) {
         return query(ref, wrappedInAnd, ...otherQueryConstraints)
       } else {

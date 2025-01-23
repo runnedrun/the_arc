@@ -25,8 +25,20 @@ export const generateElderCouncilResponse = async ({
     {
       role: "user",
       content: `
-Recent history of this environment: ${getMessageStrings(tileMessages, gameArgs).join("\n")}
-Your previous decrees: ${getMessageStrings(gameArgs.elderCouncilDecrees, gameArgs).join("\n")}
+Recent history of this environment: ${getMessageStrings(
+        tileMessages,
+        gameArgs,
+        {
+          emptyMessage: "No history",
+        }
+      )}
+Your previous decrees: ${getMessageStrings(
+        gameArgs.elderCouncilDecrees,
+        gameArgs,
+        {
+          emptyMessage: "No decrees",
+        }
+      )}
 
 Based on these actions and your previous decrees, respond with an action you take (max ${MAX_MESSAGE_LENGTH} characters) or "NO ACTION".`,
     },

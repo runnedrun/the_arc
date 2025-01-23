@@ -13,6 +13,7 @@ import { GameProcessingArgs } from "./getGameData"
 import { uploadImageToStorage } from "./uploadImageToCloudStorage"
 import { sampleTileDescriptions } from "../../mocks/sampleTileDescriptions"
 import path from "path"
+import { generateWithGetImage } from "../../helpers/generateWithGetImage"
 
 const TileDescriptions = z.object({
   tiles: z.array(
@@ -104,12 +105,8 @@ Requirements for each field:
 
 const updateTileExplorationStatus = async (args: GameProcessingArgs) => {
   const [players, tiles] = await Promise.all([
-    queryDocs("players", (ref) =>
-      ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
-    ),
-    queryDocs("mapTiles", (ref) =>
-      ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
-    ),
+    queryDocs("players", (ref) => ref.where("gameId", "==", args.game.uid)),
+    queryDocs("mapTiles", (ref) => ref.where("gameId", "==", args.game.uid)),
   ])
 
   await Promise.all(
@@ -139,10 +136,11 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
 
   // Generate initial descriptions if no tiles exist
   const existingTiles = await queryDocs("mapTiles", (ref) =>
-    ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
+    ref.where("gameId", "==", args.game.uid)
   )
 
   if (existingTiles.length === 0) {
+    console.log("generating initial tile descriptions")
     const tileDescriptions = await getTileDescriptions(args.game)
     // Create initial tiles
     await Promise.all(
@@ -183,7 +181,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
 
   // Update images for explored tiles
   const allTiles = await queryDocs("mapTiles", (ref) =>
-    ref.where("gameId", "==", args.game.uid).where("archived", "==", false)
+    ref.where("gameId", "==", args.game.uid)
   )
 
   await Promise.all(
@@ -208,7 +206,13 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
       const wasExploredThisRound =
         tile.exploredInRoundId === args?.currentRound?.uid
 
-      if (messagesSinceLastPrompt.length === 0 && !wasExploredThisRound) {
+      const wasExploredThisRoundAndNotGenerated =
+        wasExploredThisRound && !tile.lastImageGeneratedAt
+
+      if (
+        messagesSinceLastPrompt.length === 0 &&
+        !wasExploredThisRoundAndNotGenerated
+      ) {
         return
       }
 
@@ -247,15 +251,7 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
       console.log("map dall-e prompt", dallePrompt)
 
       // Generate image with DALL-E 3
-      const imageResponse = await openAiClient.images.generate({
-        model: "dall-e-2",
-        prompt: dallePrompt,
-        size: "1024x1024",
-        quality: "standard",
-        n: 1,
-      })
-
-      const imageUrl = imageResponse.data[0].url
+      const imageUrl = await generateWithGetImage(dallePrompt)
 
       const storedImageUrl = await uploadImageToStorage(
         imageUrl,

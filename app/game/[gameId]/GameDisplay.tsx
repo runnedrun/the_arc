@@ -35,6 +35,16 @@ export function GameDisplay() {
     )
   }
 
+  if (game && !game.createdAt) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-4">
+          <div>This Game does not exist</div>
+        </div>
+      </div>
+    )
+  }
+
   if (playersHaveLoaded && userHasLoaded && !currentPlayer) {
     return (
       <div className="flex h-screen w-full items-center justify-center">

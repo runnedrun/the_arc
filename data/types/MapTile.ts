@@ -13,6 +13,7 @@ export type MapTile = Model<{
   exploredInRoundId: string
   exploredInRoundIndex: number
   lastImageGeneratedAt: Timestamp | null
+
   previousDallePrompt: string | null
   imageUrl: string | null // Replacing svg field
   title: string | null

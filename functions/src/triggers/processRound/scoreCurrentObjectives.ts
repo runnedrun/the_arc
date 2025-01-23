@@ -21,14 +21,12 @@ export const scoreCurrentObjectives = async (args: GameProcessingArgs) => {
   const publicObjectives = await queryDocs("messages", (ref) => {
     return ref
       .where("gameId", "==", args.game.uid)
-      .where("archived", "==", false)
       .where("type", "==", "publicObjective")
   })
 
   const privateObjectives = await queryDocs("messages", (ref) => {
     return ref
       .where("gameId", "==", args.game.uid)
-      .where("archived", "==", false)
       .where("type", "==", "secretObjective")
   })
 
@@ -55,18 +53,17 @@ export const scoreCurrentObjectives = async (args: GameProcessingArgs) => {
   const tileHistory = await queryDocs("messages", (ref) => {
     return ref
       .where("gameId", "==", args.game.uid)
-      .where("archived", "==", false)
       .where("type", "==", "tileHistory")
   })
 
-  const tileHistoryStrings = getMessageStrings(tileHistory, args)
+  const tileHistoryStrings = getMessageStrings(tileHistory, args, {
+    emptyMessage: "No history",
+  })
 
   const gameWorldDescription = getEnvironmentContextString(args.game)
 
   const players = await queryDocs("players", (ref) => {
-    return ref
-      .where("gameId", "==", args.game.uid)
-      .where("archived", "==", false)
+    return ref.where("gameId", "==", args.game.uid)
   })
 
   const playerInfo = players.map((player, index) => ({
@@ -95,7 +92,7 @@ ${playerInfo
   .join("\n")}
 
 Tile History:
-${tileHistoryStrings.join("\n")}
+${tileHistoryStrings}
 
 Game World Context:
 ${gameWorldDescription}

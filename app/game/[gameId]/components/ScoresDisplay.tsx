@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { fbDelete } from "@/data/writerFe"
+import { fbDelete, fbSet } from "@/data/writerFe"
 
 const ScoredObjectivesDisplay = ({ messageIds }: { messageIds: string[] }) => {
   const messages =
@@ -83,7 +83,7 @@ export const ScoresDisplay = () => {
   const [playerToDelete, setPlayerToDelete] = useState<string | null>(null)
 
   const handleDeletePlayer = (playerId: string) => {
-    fbDelete("players", playerId)
+    fbSet("players", playerId, { archived: true })
     setPlayerToDelete(null)
   }
 

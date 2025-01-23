@@ -16,6 +16,7 @@ import {
 import { chunk } from "lodash-es"
 import { init } from "./initFb"
 import { getUuid } from "@/helpers/getUuid"
+import { merge } from "rxjs"
 
 export const genExtraData = () => {
   return {
@@ -61,14 +62,7 @@ export const fbUpdate = async <CollectionName extends keyof AllModels>(
   docId: string,
   data: Partial<AllModels[CollectionName]>
 ) => {
-  const firestore = getFirestore()
-
-  await updateDoc(doc(firestore, collectionName, docId), {
-    updatedAt: Timestamp.now(),
-    ...data,
-  })
-
-  return doc(firestore, collectionName, docId)
+  return fbSet(collectionName, docId, data)
 }
 
 export const fbCreate = async <Key extends keyof CollectionModels>(

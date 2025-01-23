@@ -36,6 +36,7 @@ export const setupTestGameValley = async ({ userId }: { userId: string }) => {
     playerPersonality:
       "I am a farmer who wants to create a world where everyone loves water and swimming.",
   })
+
   await triggerProcessOnWrite(
     fbUpdate("games", game.uid, {
       startTime: Timestamp.now(),

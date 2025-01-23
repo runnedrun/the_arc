@@ -2,12 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { queryObs } from "@/data/readerFe"
 import { useObs } from "@/data/useObs"
-import { fbCreate, fbUpdate, fbDelete } from "@/data/writerFe"
-import { useToast } from "@/hooks/use-toast"
-import { useContext } from "react"
-import { UserContext } from "@/data/context/UserContext"
-import { docObs } from "@/data/readerFe"
-import { Trash2 } from "lucide-react"
+import { fbCreate, fbUpdate } from "@/data/writerFe"
 
 interface JoinAsExistingPlayerDisplayProps {
   gameId: string
@@ -20,10 +15,7 @@ export function JoinAsExistingPlayerDisplay({
 }: JoinAsExistingPlayerDisplayProps) {
   const availablePlayers =
     useObs(
-      queryObs("players", ({ where }) => [
-        where("gameId", "==", gameId),
-        where("archived", "==", false),
-      ]),
+      queryObs("players", ({ where }) => [where("gameId", "==", gameId)]),
       [gameId]
     ) || []
 

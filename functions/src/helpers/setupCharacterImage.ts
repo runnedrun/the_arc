@@ -2,6 +2,7 @@ import path from "path"
 import { uploadImageToStorage } from "../triggers/processGame/uploadImageToCloudStorage"
 import { getOpenAIClient } from "./getOpenAIClient"
 import { fbUpdate } from "./writer"
+import { generateWithGetImage } from "./generateWithGetImage"
 
 export type CharacterImageArgs = {
   gameId: string
@@ -42,15 +43,10 @@ export const setupCharacterImage = async ({
   const optimizedPrompt = promptResponse.choices[0]?.message?.content
 
   // Then use the optimized prompt with DALL-E
-  const response = await openAiClient.images.generate({
-    model: "dall-e-3",
-    prompt: optimizedPrompt,
-    n: 1,
-    quality: "standard",
-    size: "1024x1024",
+  const imageUrl = await generateWithGetImage(optimizedPrompt, {
+    steps: 20,
   })
 
-  const imageUrl = response.data[0]?.url
   const filePath = path.join(collectionName, uid, "image.jpg")
   const fbUrl = await uploadImageToStorage(imageUrl, gameId, filePath)
   return fbUrl

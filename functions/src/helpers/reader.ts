@@ -82,14 +82,19 @@ export type BeQueryBuilder<CollectionName extends keyof CollectionModels> = (
 
 export const queryDocs = async <CollectionName extends keyof CollectionModels>(
   collectionName: CollectionName,
-  buildQuery: BeQueryBuilder<CollectionName>
+  buildQuery: BeQueryBuilder<CollectionName>,
+  opts: { includeArchived: boolean } = { includeArchived: false }
 ): Promise<CollectionModels[CollectionName][]> => {
   const firestore = getFirestore()
   const ref = firestore.collection(collectionName)
 
-  const query = buildQuery(
+  let query = buildQuery(
     ref as CollectionReferenceWithTypedWhere<CollectionModels[CollectionName]>
   )
+
+  if (!opts.includeArchived) {
+    query = query.where("archived", "==", false)
+  }
 
   const snap = await query.get()
 

@@ -102,8 +102,10 @@ export const getNpcForGame = async (
       "messages",
       getDefaultMessage({
         senderId: npcId,
-        roundId: args.currentRound.uid,
-        roundIndex: args.currentRound.index,
+        roundId: isNil(args.currentRound?.uid) ? null : args.currentRound?.uid,
+        roundIndex: isNil(args.currentRound?.index)
+          ? null
+          : args.currentRound?.index,
         tileLocation: location,
         content: `${npc.name} entered tile`,
         gameId: args.game.uid,

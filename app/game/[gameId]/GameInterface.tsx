@@ -33,30 +33,25 @@ export default function GameInterface() {
 
   return (
     <div className="flex h-full w-full flex-col gap-4">
-      {!currentPlayer?.hasStartedGame && (
-        <div className="flex flex-grow items-center justify-center">
-          <div className="text-center text-lg">
-            You are observing, you will start next round.
-          </div>
-        </div>
-      )}
       {isDesktop ? (
         <div className="flex min-h-0 grow items-start justify-center">
-          <div className="flex w-1/4 flex-col gap-3">
+          <div className="flex w-1/4 shrink-0 flex-col gap-3">
             <PlayerInfoDisplay />
             <ScoresDisplay />
           </div>
 
-          <div className="flex flex-grow items-center">
-            <GameGrid
-              onTileSelect={setOrToggleTile}
-              selectedTile={selectedTile}
-              onTileClosed={closeTile}
-            />
+          <div className="flex grow justify-center px-4">
+            <div className="flex flex-col gap-3">
+              <ObjectivesButton />
+              <GameGrid
+                onTileSelect={setOrToggleTile}
+                selectedTile={selectedTile}
+                onTileClosed={closeTile}
+              />
+            </div>
           </div>
 
-          <div className="ml-4 flex h-[700px] w-1/4 flex-col gap-2">
-            <ObjectivesButton />
+          <div className="ml-4 flex h-[700px] w-1/4 shrink-0 flex-col gap-2">
             <ElderCouncilDisplay />
           </div>
         </div>

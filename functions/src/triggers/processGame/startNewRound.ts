@@ -2,13 +2,29 @@ import { getDefaultRoundData, Round } from "@/data/types/Round"
 import { fbCreate, fbSet } from "../../helpers/writer"
 import { GameProcessingArgs } from "./getGameData"
 import { isNil } from "lodash-es"
+import { Player } from "@/data/types/Player"
 
-export const startNewRound = async ({
-  game,
-  currentRound,
-  players,
-}: GameProcessingArgs) => {
-  const currentRoundIndex = isNil(currentRound?.index) ? -1 : currentRound.index
+export const updateCharacterCountForPlayerForRound = async (
+  args: GameProcessingArgs,
+  player: Player
+) => {
+  const currentRoundIndex = isNil(args.currentRound?.index)
+    ? -1
+    : args.currentRound.index
+
+  const charactersInCurrentRound =
+    args.game.startingCharacterCount - currentRoundIndex * 10
+
+  await fbSet("players", player.uid, {
+    letters: charactersInCurrentRound,
+  })
+}
+
+export const startNewRound = async (args: GameProcessingArgs) => {
+  const { game, players } = args
+  const currentRoundIndex = isNil(args.currentRound?.index)
+    ? -1
+    : args.currentRound.index
   const newRoundIndex = currentRoundIndex + 1
   const charactersInCurrentRound =
     game.startingCharacterCount - newRoundIndex * 10
@@ -22,9 +38,7 @@ export const startNewRound = async ({
 
   await Promise.all(
     players.map((player) => {
-      return fbSet("players", player.uid, {
-        letters: charactersInCurrentRound,
-      })
+      return updateCharacterCountForPlayerForRound(args, player)
     })
   )
 

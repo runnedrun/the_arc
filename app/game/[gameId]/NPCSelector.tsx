@@ -66,7 +66,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
   }, [npcsWithPendingMessages, selectedNPC, setSelectedNPC])
 
   return (
-    <div className="flex max-h-[600px] flex-col gap-4 overflow-hidden">
+    <div className="flex min-h-0 grow flex-col gap-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

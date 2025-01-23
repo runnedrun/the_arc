@@ -35,7 +35,6 @@ export function useMessageComposition({
       queryObs("messages", ({ where, orderBy, or }) => {
         const conditions = [
           where("gameId", "==", game?.uid),
-          where("archived", "==", false),
         ] as OrObservable<PossibleQueryConstraint>[]
 
         conditions.push(where("type", "in", typesToShow))

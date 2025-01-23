@@ -15,7 +15,9 @@ const generateHistoricalEntry = async ({
   messages: Message[]
   gameArgs: GameProcessingArgs
 }) => {
-  const messageStrings = getMessageStrings(messages, gameArgs)
+  const messageStrings = getMessageStrings(messages, gameArgs, {
+    emptyMessage: "No history",
+  })
   const gptMessages: ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -31,7 +33,7 @@ Your role is to:
     {
       role: "user",
       content: `
-Tile's previous history up until now: ${messageStrings.join("\n")}
+Tile's previous history up until now: ${messageStrings}
 
 Write a 1-2 sentence historical entry for this year's events:`,
     },

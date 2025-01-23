@@ -17,6 +17,8 @@ import { useContext, useEffect, useState } from "react"
 import { firstValueFrom } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 import { JoinAsExistingPlayerDisplay } from "./JoinAsExistingPlayerDisplay"
+import axios from "axios"
+import { SetupPlayerArgs } from "@/app/api/setup_player/route"
 
 export async function joinGame({
   gameId,
@@ -31,7 +33,7 @@ export async function joinGame({
   existingPlayer?: any | null
   playerPersonality?: string
 }) {
-  console.log("existingPlayer", existingPlayer, gameId, userId)
+  console.log("joinging game")
   // Get current players to determine the new player's index
   const existingPlayers = await firstValueFrom(
     queryObs("players", ({ where }) => [where("gameId", "==", gameId)])
@@ -71,6 +73,8 @@ export async function joinGame({
   const colorIndex = existingPlayers.length % playerColors.length
   const playerColor = playerColors[colorIndex]
 
+  console.log("eoistint", existingPlayer.uid)
+
   const uuid = existingPlayer?.uid || uuidv4()
   const baseData = existingPlayer ? omit(existingPlayer, "uid") : genExtraData()
 
@@ -79,7 +83,6 @@ export async function joinGame({
     gameId,
     userId,
     name: playerName || "New Player",
-    letters: 500,
     color: playerColor,
     currentTileLocation: mapPosition,
     playerPersonality,
@@ -88,6 +91,12 @@ export async function joinGame({
     secretObjectivesScored: [],
     publicObjectivesScored: [],
   })
+
+  console.log("setup player post", uuid)
+  await axios.post("/api/setup_player", {
+    gameId,
+    playerId: uuid,
+  } as SetupPlayerArgs)
 
   return uuid
 }
@@ -152,53 +161,25 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
   const handleJoinGame = async () => {
     setIsJoining(true)
 
-    try {
-      await joinGame({
-        gameId,
-        userId,
-        playerName,
-        existingPlayer,
-        playerPersonality,
-      })
+    await joinGame({
+      gameId,
+      userId,
+      playerName,
+      existingPlayer,
+      playerPersonality,
+    })
 
-      toast({
-        title: "Welcome to the game!",
-        description: "You've successfully joined the game.",
-      })
+    router.push(`/game/${gameId}`)
 
-      router.push(`/game/${gameId}`)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to join game. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsJoining(false)
-    }
+    setIsJoining(false)
   }
 
-  const handleUpdateName = async () => {
-    try {
-      setIsJoining(true)
-      await fbUpdate("players", existingPlayer.uid, {
-        name: playerName,
-        playerPersonality,
-      })
-      toast({
-        title: "Name Updated",
-        description: "Your player name has been updated.",
-      })
-      router.push(`/game/${gameId}`)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update name. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsJoining(false)
-    }
+  const handleUpdatePlayer = async () => {
+    await fbUpdate("players", existingPlayer.uid, {
+      name: playerName,
+      playerPersonality,
+    })
+    router.push(`/game/${gameId}`)
   }
 
   const gameHasStarted = game?.startTime != null
@@ -217,7 +198,7 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
               onChange={(e) => setPlayerName(e.target.value)}
               placeholder="Enter your name"
               className="mt-1"
-              disabled={gameHasStarted}
+              disabled={gameHasStarted && existingPlayer?.hasStartedGame}
             />
           </div>
           <div>
@@ -227,19 +208,19 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
               onChange={(e) => setPlayerPersonality(e.target.value)}
               placeholder="Describe your character's personality..."
               className="mt-1"
-              disabled={gameHasStarted}
+              disabled={gameHasStarted && existingPlayer?.hasStartedGame}
             />
           </div>
           <Button
-            onClick={isAlreadyPlayer ? handleUpdateName : handleJoinGame}
+            onClick={
+              isAlreadyPlayer && existingPlayer.hasStartedGame
+                ? handleUpdatePlayer
+                : handleJoinGame
+            }
             disabled={isJoining}
             className="w-full"
           >
-            {isJoining
-              ? "Saving..."
-              : isAlreadyPlayer
-                ? "Update Profile"
-                : "Join Game"}
+            {isJoining ? "Joining game..." : "Join Game"}
           </Button>
           <div className="flex w-full justify-center">
             <Button

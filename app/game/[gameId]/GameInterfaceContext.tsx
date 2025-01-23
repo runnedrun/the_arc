@@ -7,12 +7,13 @@ import { Player } from "@/data/types/Player"
 import { Round } from "@/data/types/Round"
 import { useObs } from "@/data/useObs"
 import { limit } from "firebase/firestore"
-import { isNil } from "lodash-es"
+import { isNil, sortBy } from "lodash-es"
 import { createContext, useContext } from "react"
 
 interface GameInterfaceContext {
   game: Game
   players: Player[]
+  allPlayersIncludingArchived: Player[]
   currentUserId: string
   currentRound: Round
   mapTiles: MapTile[]
@@ -31,31 +32,28 @@ export const ProvideGameInterfaceContext = ({
 }: React.PropsWithChildren<{ gameId: string }>) => {
   const game = useObs(docObs("games", gameId), [gameId])
 
-  const players = useObs(
-    queryObs("players", ({ where }) => [
+  const playersIncludingArchived = useObs(
+    queryObs("players", ({ where, or }) => [
       where("gameId", "==", gameId),
-      where("archived", "==", false),
+      or(where("archived", "==", true), where("archived", "==", false)),
     ]),
     [gameId]
   )
 
+  const players = playersIncludingArchived?.filter((p) => !p.archived)
+
   const playersArray = players || []
+  const playersIncludingArchivedArray = playersIncludingArchived || []
   const playersHaveLoaded = !isNil(players)
 
   const npcs =
     useObs(
-      queryObs("npcs", ({ where }) => [
-        where("gameId", "==", gameId),
-        where("archived", "==", false),
-      ]),
+      queryObs("npcs", ({ where }) => [where("gameId", "==", gameId)]),
       [gameId]
     ) || []
 
   const mapTiles = useObs(
-    queryObs("mapTiles", ({ where }) => [
-      where("gameId", "==", gameId),
-      where("archived", "==", false),
-    ]),
+    queryObs("mapTiles", ({ where }) => [where("gameId", "==", gameId)]),
     [gameId]
   )
 
@@ -63,7 +61,6 @@ export const ProvideGameInterfaceContext = ({
     useObs(
       queryObs("rounds", ({ where, orderBy }) => [
         where("gameId", "==", game?.uid || "__never__"),
-        where("archived", "==", false),
         orderBy("index", "desc"),
         limit(1),
       ]),
@@ -89,7 +86,8 @@ export const ProvideGameInterfaceContext = ({
         currentUserId,
         game,
         mapTiles,
-        players: playersArray,
+        players: sortBy(playersArray, (_) => _.createdAt),
+        allPlayersIncludingArchived: playersIncludingArchivedArray,
         playersHaveLoaded,
         currentRound,
         npcs,

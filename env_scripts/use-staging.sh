@@ -5,7 +5,7 @@ cp ./private_configs/staging-config.env .env.production
 # cp ./private_configs/staging-functions-env.env ./.env
 export GOOGLE_APPLICATION_CREDENTIALS="$SRC_DIR/private_configs/staging-google-app-credentials.json"
 export GCLOUD_PROJECT="thearc-10416"
-export PROJECT_NAME="xqchinese-325dd"
+export PROJECT_NAME="thearc-10416"
 unset NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST
 unset FIREBASE_AUTH_EMULATOR_HOST
 unset NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST

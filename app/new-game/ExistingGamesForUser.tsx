@@ -11,10 +11,7 @@ export const ExistingGamesForUser: React.FC<{}> = () => {
   const userId = user.user?.uid
   const allPlayersForPlayer =
     useObs(
-      queryObs("players", ({ where }) => [
-        where("archived", "==", false),
-        where("userId", "==", userId),
-      ]),
+      queryObs("players", ({ where }) => [where("userId", "==", userId)]),
       [userId]
     ) || []
 

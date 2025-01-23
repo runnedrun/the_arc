@@ -1,23 +1,22 @@
-import { GameProcessingArgs, getGameData } from "../processGame/getGameData"
-import { ProcessJobFn } from "../triggerProcessJob"
-import { generateMessagesForAllNPCs } from "./generateMessagesForAllNPCs"
-import { generateElderCouncilTileActions } from "./generateElderCouncilTileActions"
-import { addToTileHistory } from "./addToTileHistory"
-import { generateElderCouncilMessages } from "./generateElderCouncilMessages"
-import { queryDocs, readDoc } from "../../helpers/reader"
-import { startNewRound } from "../processGame/startNewRound"
-import { fbSet } from "../../helpers/writer"
-import { Timestamp } from "firebase-admin/firestore"
 import { safeSetTestMode } from "@/helpers/getUuid"
-import { updateGameTiles } from "../processGame/updateGameTiles"
-import { spawnNewNpc } from "./spawnNewNpc"
-import { determinePlayerMovement } from "./determinePlayerMovement"
+import { Timestamp } from "firebase-admin/firestore"
+import { queryDocs, readDoc } from "../../helpers/reader"
+import { fbSet } from "../../helpers/writer"
 import { createObjectives } from "../processGame/createObjectives"
+import { GameProcessingArgs, getGameData } from "../processGame/getGameData"
+import { startNewRound } from "../processGame/startNewRound"
+import { updateGameTiles } from "../processGame/updateGameTiles"
+import { ProcessJobFn } from "../triggerProcessJob"
+import { addToTileHistory } from "./addToTileHistory"
+import { determinePlayerMovement } from "./determinePlayerMovement"
+import { generateElderCouncilMessages } from "./generateElderCouncilMessages"
+import { generateElderCouncilTileActions } from "./generateElderCouncilTileActions"
+import { generateMessagesForAllNPCs } from "./generateMessagesForAllNPCs"
 import { scoreCurrentObjectives } from "./scoreCurrentObjectives"
-import { setupNewPlayers } from "../processGame/setupNewPlayers"
+import { spawnNewNpc } from "./spawnNewNpc"
 
 const updateObjectives = async (args: GameProcessingArgs) => {
-  if (args.currentRound.index % 4 === 0) {
+  if (args.currentRound.index && args.currentRound.index % 4 === 0) {
     console.log("Scoring current objectives")
     await scoreCurrentObjectives(args)
     console.log("Creating new objectives")
@@ -69,15 +68,12 @@ const runRoundProcessing = async (args: GameProcessingArgs) => {
     updateObjectives(args),
     updateGameTiles(args),
     spawnNpcs(args),
-    setupNewPlayers(args),
   ])
   await args.refresh()
 
   console.log("Querying messages for this round")
   const messagesForThisRound = await queryDocs("messages", (ref) => {
-    return ref
-      .where("archived", "==", false)
-      .where("roundId", "==", args.currentRound.uid)
+    return ref.where("roundId", "==", args.currentRound.uid)
   })
 
   console.log("Setting processed at for messages")

@@ -26,7 +26,6 @@ export const ProvideTokenCountContext = ({
       queryObs("messages", ({ where }) => [
         where("roundId", "==", round?.uid || null),
         where("senderId", "==", currentPlayer?.uid || "__never__"),
-        where("archived", "==", false),
       ]),
       [round?.uid]
     ) || []

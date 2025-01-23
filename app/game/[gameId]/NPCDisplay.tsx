@@ -25,8 +25,8 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
   })
 
   return (
-    <div className="flex min-h-0 flex-col gap-4">
-      <div className="flex flex-col items-center gap-4 rounded-lg bg-gray-100 p-4">
+    <div className="flex min-h-0 grow flex-col gap-4">
+      <div className="flex grow flex-col items-center gap-4 rounded-lg bg-gray-100 p-4">
         {npc.imageUrl && (
           <Image
             src={npc.imageUrl}

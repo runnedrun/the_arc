@@ -10,7 +10,6 @@ export const useObjectives = () => {
     useObs(
       queryObs("messages", ({ where }) => [
         where("gameId", "==", game?.uid || "__never__"),
-        where("archived", "==", false),
         where("receiverId", "==", currentPlayer?.uid || "__never__"),
         where("type", "==", "secretObjective"),
       ]),
@@ -21,7 +20,6 @@ export const useObjectives = () => {
     useObs(
       queryObs("messages", ({ where }) => [
         where("gameId", "==", game?.uid || "__never__"),
-        where("archived", "==", false),
         where("type", "==", "publicObjective"),
       ]),
       [game?.uid, currentPlayer?.uid]

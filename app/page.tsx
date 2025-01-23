@@ -1,101 +1,80 @@
-import Image from "next/image";
+import Image from "next/image"
+import logo from "@/assets/the_arc_no_background.png"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-white p-8 text-slate-800">
+      <div className="max-w-4xl text-center">
+        {/* Logo */}
+        <div className="mb-8">
+          <Image
+            src={logo}
+            alt="The Arc Logo"
+            width={200}
+            height={200}
+            className="mx-auto"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <p className="mb-8 text-xl text-slate-600">
+          Shape the future across 40 years as you guide your community through
+          an AI-driven narrative experience
+        </p>
+
+        <div className="mb-12 grid grid-cols-1 gap-8 text-left md:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm">
+            <h2 className="mb-3 text-2xl font-bold text-indigo-600">
+              Your Legacy Awaits
+            </h2>
+            <p className="text-slate-700">
+              Become one of four leaders with a secret vision for your region.
+              Will you create a haven for mythical creatures or establish a
+              culinary paradise?
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm">
+            <h2 className="mb-3 text-2xl font-bold text-indigo-600">
+              Dynamic AI World
+            </h2>
+            <p className="text-slate-700">
+              Every tile tells a story written by AI historians. Influence these
+              narratives through strategic actions and alliances with NPCs.
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm">
+            <h2 className="mb-3 text-2xl font-bold text-indigo-600">
+              Time is Power
+            </h2>
+            <p className="text-slate-700">
+              As your character ages, shift from direct action to subtle
+              influence. Guide NPCs and leverage the Elder Council to realize
+              your vision.
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm">
+            <h2 className="mb-3 text-2xl font-bold text-indigo-600">
+              Strategic Depth
+            </h2>
+            <p className="text-slate-700">
+              Master the art of influence using letters as your resource. Every
+              message shapes the future, but choose wisely - your legacy depends
+              on it.
+            </p>
+          </div>
+        </div>
+
+        <Button
+          className="rounded-full bg-indigo-600 px-8 py-3 text-lg font-bold text-white transition-colors hover:bg-indigo-700"
+          asChild
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+          <Link href="/new-game">Begin Your Journey</Link>
+        </Button>
+      </div>
+    </main>
+  )
 }

@@ -19,7 +19,6 @@ export const getMessagesForTiles = async ({
       updatedRef = updatedRef.where("gameId", "==", gameId)
     }
     return updatedRef
-      .where("archived", "==", false)
       .where("type", "in", ["tileAction", "tileHistory"])
       .orderBy("createdAt", "desc")
       .orderBy("tileLocation")

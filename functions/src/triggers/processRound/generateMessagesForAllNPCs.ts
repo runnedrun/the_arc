@@ -30,20 +30,22 @@ const generateNPCMessage = async ({
     ref
       .where("tileLocation.x", "==", currentTile.position.x)
       .where("tileLocation.y", "==", currentTile.position.y)
-      .where("archived", "==", false)
       .orderBy("createdAt", "desc")
       .limit(MAX_HISTORY_MESSAGES)
   )
   const allMessagesToDisplay = [...npcMessages, ...currentTileMessages]
 
-  const tileHistory = getMessageStrings(allMessagesToDisplay, gameArgs, npc.uid)
+  const tileHistory = getMessageStrings(allMessagesToDisplay, gameArgs, {
+    currentPlayerId: npc.uid,
+    emptyMessage: "No history",
+  })
 
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
       content: `You are ${npc.name}, living in this world: ${getEnvironmentContextString(game)}. 
 
-Generate a realistic action (max ${MAX_MESSAGE_LENGTH} characters) that you would take on your current tile, based on your previous interactions and the tile's history. The action should be written in third person and must be possible within the established environment. 
+Generate a realistic action (max ${MAX_MESSAGE_LENGTH} characters) that you would take on your current tile, for this year, based on your previous interactions and the tile's history. The action should be written in third person and must be possible within the established environment and 1 year. 
 
 Your action could also include moving to a different tile, but you must describe the direction you want to move in: north, south, east, west and the reason for why you're moving— but unless you've been there before, you don't know what's in that direction.`,
     },
@@ -55,7 +57,7 @@ Your action could also include moving to a different tile, but you must describe
     {
       role: "system",
       content: `
-History of this tile and your interactions: ${tileHistory.join("\n")}
+History of this tile and your interactions: ${tileHistory}
 Elder Council decrees: ${elderCouncilDecrees.map((m) => m.content).join("\n")}
 Generate a single action that you would take, written first person, max ${MAX_MESSAGE_LENGTH} characters.`,
     },

@@ -23,7 +23,6 @@ export const NPCsForTileDisplay = ({
           "==",
           isNil(selectedPosition?.y) ? SKIP : selectedPosition.y
         ),
-        where("archived", "==", false),
       ]),
       [selectedPosition?.x, selectedPosition?.y]
     ) || []

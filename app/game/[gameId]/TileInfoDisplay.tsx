@@ -13,6 +13,7 @@ import {
   TileInfoDisplayProvider,
   useTileInfoDisplay,
 } from "./TileInfoDisplayContext"
+import { cn } from "@/lib/utils"
 
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
@@ -67,7 +68,7 @@ const TileInfoDisplayContent = ({
 
           <TabsContent
             value="info"
-            className="flex min-h-0 grow flex-col gap-3"
+            className="data-[state=active]:flex data-[state=active]:min-h-0 data-[state=active]:grow data-[state=active]:flex-col data-[state=active]:gap-3"
           >
             <div className="flex w-full justify-center">
               <Image
@@ -80,7 +81,10 @@ const TileInfoDisplayContent = ({
             <TileHistoryDisplay tile={selectedTile}></TileHistoryDisplay>
           </TabsContent>
 
-          <TabsContent value="npcs">
+          <TabsContent
+            value="npcs"
+            className="min-h-0 grow flex-col data-[state=active]:flex"
+          >
             <NPCsForTileDisplay selectedPosition={selectedTile.position} />
           </TabsContent>
         </Tabs>

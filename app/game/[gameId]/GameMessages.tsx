@@ -25,7 +25,8 @@ function MessageDisplay({
   message: Message
   allowClicking?: boolean
 }) {
-  const { currentPlayer, npcs, players } = useContext(GameInterfaceContext)
+  const { currentPlayer, npcs, allPlayersIncludingArchived } =
+    useContext(GameInterfaceContext)
 
   const { setSelectedTab, setSelectedNPC, openTile } = useTileInfoDisplay()
 
@@ -49,7 +50,7 @@ function MessageDisplay({
   const serializedMessage = getSerializedMessage(
     message,
     {
-      players,
+      allPlayersIncludingArchived,
       npcs,
     },
     { currentPlayerId: currentPlayer?.uid }
@@ -88,19 +89,9 @@ export function GameMessages({
 }: GameMessagesProps) {
   const { charactersRemaining, charactersAvailable, charactersUsedThisRound } =
     useContext(TokenCountContext)
-  const { playerHasEndedRound, currentPlayer } =
-    useContext(GameInterfaceContext)
-
-  const playerHasStarted = currentPlayer.hasStartedGame
+  const { playerHasEndedRound } = useContext(GameInterfaceContext)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    // allow the mesage to render before scroling
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, 100)
-  }, [messages?.[0]?.uid])
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -109,25 +100,36 @@ export function GameMessages({
     }
   }
 
+  const messagesWithContent = messages.filter((message) => message.content)
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      console.log("scrolling to end")
+      messagesEndRef.current.scrollIntoView()
+    }
+  }, [messagesEndRef.current, messages.length, messagesWithContent.length])
+
+  const reversedMessages = [...messages].reverse()
+
   return (
-    <div className="flex min-h-0 grow flex-col gap-2">
-      <div className="flex grow flex-col-reverse overflow-y-auto">
-        {messages.length ? (
+    <div className="flex min-h-0 grow flex-col justify-end gap-2">
+      <div className="flex flex-col overflow-y-auto">
+        {reversedMessages.length ? (
           <>
-            <div ref={messagesEndRef} />
-            {messages.map((message) => (
+            {reversedMessages.map((message) => (
               <MessageDisplay
                 key={message.uid}
                 message={message}
                 allowClicking={allowClicking}
               />
             ))}
+            <div ref={messagesEndRef} key="placeholder" />
           </>
         ) : (
           <div>No messages yet</div>
         )}
       </div>
-      {sendMessage && playerHasStarted && (
+      {sendMessage && (
         <div className="flex-shrink-0 space-y-1">
           <Textarea
             disabled={playerHasEndedRound}

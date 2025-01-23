@@ -4,6 +4,7 @@ import { idIsNpc, NPC } from "@/data/types/NPC"
 import { isConversationalMessage } from "./isConversationalMessage"
 import { sortBy } from "lodash-es"
 import { Player } from "@/data/types/Player"
+import { isServerside } from "@/helpers/isServerside"
 
 export interface SerializedMessage {
   senderId?: string
@@ -17,13 +18,44 @@ export interface SerializedMessage {
 }
 
 interface MinimalGameArgs {
-  players: Player[]
+  allPlayersIncludingArchived: Player[]
   npcs: NPC[]
 }
 
-interface GetSerializedMessagesOpts {
+export interface GetSerializedMessagesOpts {
   currentPlayerId?: string
-  usePlayerIndexes?: boolean
+  emptyMessage?: string
+}
+
+export const getCharacterName = (args: MinimalGameArgs, uid: string) => {
+  const playersSorted = sortBy(
+    args.allPlayersIncludingArchived,
+    (_) => _.createdAt
+  )
+  const npcsSorted = sortBy(args.npcs, (_) => _.createdAt)
+
+  const playerIndex = playersSorted.findIndex((p) => p.uid === uid)
+  const npcIndex = npcsSorted.findIndex((n) => n.uid === uid)
+
+  let playerIndexString = ""
+
+  if (isServerside()) {
+    if (playerIndex !== -1) {
+      playerIndexString = `Player ${playerIndex + 1}`
+    } else if (npcIndex !== -1) {
+      playerIndexString = `NPC ${npcIndex + 1}`
+    }
+  }
+
+  let playerNameString = ""
+
+  const player = playersSorted.find((p) => p.uid === uid)
+  const npc = npcsSorted.find((n) => n.uid === uid)
+  playerNameString = player?.name || npc?.name || "Unknown"
+
+  return playerIndexString
+    ? `${playerIndexString} (${playerNameString})`
+    : playerNameString
 }
 
 const getMessageConfig = (
@@ -31,26 +63,6 @@ const getMessageConfig = (
   gameArgs: MinimalGameArgs,
   opts: GetSerializedMessagesOpts = {}
 ): SerializedMessage => {
-  const playersSorted = sortBy(gameArgs.players, "uid")
-  const npcsSorted = sortBy(gameArgs.npcs, "uid")
-  const getCharacterName = (uid: string) => {
-    if (opts.usePlayerIndexes) {
-      const playerIndex = playersSorted.findIndex((p) => p.uid === uid)
-      const npcIndex = npcsSorted.findIndex((n) => n.uid === uid)
-      if (playerIndex !== -1) {
-        return `Player ${playerIndex + 1}`
-      } else if (npcIndex !== -1) {
-        return `NPC ${npcIndex + 1}`
-      } else {
-        return "Unknown"
-      }
-    } else {
-      const player = gameArgs.players.find((p) => p.uid === uid)
-      const npc = gameArgs.npcs.find((n) => n.uid === uid)
-      return player?.name || npc?.name || "Unknown"
-    }
-  }
-
   const isCurrentUser = message.senderId === opts.currentPlayerId
 
   // Base configurations for different message types
@@ -80,7 +92,10 @@ const getMessageConfig = (
     },
     secretObjective: {
       icon: "🤫",
-      senderName: `Secret Objective for ${getCharacterName(message.receiverId)}`,
+      senderName: `Secret Objective for ${getCharacterName(
+        gameArgs,
+        message.receiverId
+      )}`,
       bgColor: "bg-indigo-100",
     },
     publicObjective: {
@@ -121,7 +136,8 @@ const getMessageConfig = (
 
   return {
     senderId: message.senderId,
-    senderName: config.senderName || getCharacterName(message.senderId),
+    senderName:
+      config.senderName || getCharacterName(gameArgs, message.senderId),
     content: message.content || "",
     icon: config.icon || "💬",
     originalMessage: message,

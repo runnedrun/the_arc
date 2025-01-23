@@ -24,12 +24,14 @@ const getPrompt = (args: GameProcessingArgs) => {
     `
   )
 
-  const latestDecrees = getMessageStrings(args.elderCouncilDecrees, args)
+  const latestDecrees = getMessageStrings(args.elderCouncilDecrees, args, {
+    emptyMessage: "No decrees",
+  })
 
   return `As the Elder Council, decide where to place a new NPC in our realm.
 
 Your latest decrees:
-${latestDecrees.join("\n")}
+${latestDecrees}
 
 Current NPC Locations:
 ${npcLocations.join("\n")}
