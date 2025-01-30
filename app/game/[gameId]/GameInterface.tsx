@@ -8,6 +8,7 @@ import { ScoresDisplay } from "./components/ScoresDisplay"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMediaQuery } from "react-responsive"
 import { GameInterfaceContext } from "./GameInterfaceContext"
+import { EndRoundButton } from "./EndRoundButton"
 
 export type TileWithIndex = MapTile & { index: number }
 
@@ -41,7 +42,7 @@ export default function GameInterface() {
           </div>
 
           <div className="flex grow justify-center px-4">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-10">
               <ObjectivesButton />
               <GameGrid
                 onTileSelect={setOrToggleTile}
@@ -50,7 +51,6 @@ export default function GameInterface() {
               />
             </div>
           </div>
-
           <div className="ml-4 flex h-[700px] w-1/4 shrink-0 flex-col gap-2">
             <ElderCouncilDisplay />
           </div>
@@ -62,7 +62,7 @@ export default function GameInterface() {
         >
           <TabsList className="w-full">
             <TabsTrigger value="info" className="flex-1">
-              Info
+              Scores
             </TabsTrigger>
             <TabsTrigger value="map" className="flex-1">
               Map
@@ -74,24 +74,27 @@ export default function GameInterface() {
 
           <TabsContent value="info" className="mt-4 flex min-h-0 grow flex-col">
             <div className="flex min-h-0 grow flex-col gap-3">
-              <PlayerInfoDisplay />
               <ScoresDisplay />
             </div>
           </TabsContent>
 
-          <TabsContent value="map" className="min-h-0 grow flex-col">
-            <div className="flex min-h-0 grow justify-center p-4">
+          <TabsContent
+            value="map"
+            className="flex min-h-0 shrink-0 grow flex-col items-center gap-6 overflow-y-auto"
+          >
+            <ObjectivesButton />
+            <div className="flex min-h-0 shrink-0 grow justify-center p-4">
               <GameGrid
                 onTileSelect={setOrToggleTile}
                 selectedTile={selectedTile}
                 onTileClosed={closeTile}
               />
             </div>
+            <PlayerInfoDisplay />
           </TabsContent>
 
           <TabsContent value="council" className="flex min-h-0 grow flex-col">
             <div className="flex min-h-0 grow flex-col gap-2">
-              <ObjectivesButton />
               <ElderCouncilDisplay />
             </div>
           </TabsContent>

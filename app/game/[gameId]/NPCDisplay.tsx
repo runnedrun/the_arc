@@ -31,7 +31,7 @@ export function NPCDisplay({ npc }: { npc: NPC }) {
           <Image
             src={npc.imageUrl}
             alt={npc.name}
-            className="h-32 w-32 rounded-full object-cover"
+            className="hidden h-32 w-32 rounded-full object-cover md:block"
             width={400}
             height={400}
           />

@@ -20,7 +20,7 @@ export const PlayerInfoModal = ({
 }: PlayerInfoModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{player?.name}'s Information</DialogTitle>
         </DialogHeader>

@@ -74,6 +74,7 @@ const TileInfoDisplayContent = ({
               <Image
                 src={selectedTile.imageUrl}
                 alt="Tile Image"
+                className="h-28 w-28 md:h-48 md:w-48"
                 width={200}
                 height={200}
               />

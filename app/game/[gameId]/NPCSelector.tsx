@@ -22,7 +22,7 @@ import { combineLatest } from "rxjs"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { NPCDisplay } from "./NPCDisplay"
 import { useTileInfoDisplay } from "./TileInfoDisplayContext"
-
+import Image from "next/image"
 type NPCsWithPendingMessageBool = NPC & {
   hasPendingMessages: boolean
 }
@@ -75,7 +75,18 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
             aria-expanded={open}
             className="justify-between"
           >
-            {selectedNPC?.name || "Select NPC..."}
+            <div className="flex items-center gap-2">
+              {selectedNPC?.imageUrl && (
+                <Image
+                  src={selectedNPC.imageUrl}
+                  alt={`${selectedNPC.name}'s avatar`}
+                  className="h-6 w-6 rounded-full object-cover"
+                  width={24}
+                  height={24}
+                />
+              )}
+              {selectedNPC?.name || "Select NPC..."}
+            </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -94,8 +105,14 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
                       setOpen(false)
                     }}
                   >
-                    {npc.hasPendingMessages && (
-                      <Check className={cn("mr-2 h-4 w-4")} />
+                    {npc.imageUrl && (
+                      <Image
+                        src={npc.imageUrl}
+                        alt={`${npc.name}'s avatar`}
+                        className="mr-2 h-6 w-6 rounded-full object-cover"
+                        width={24}
+                        height={24}
+                      />
                     )}
                     {npc.name}
                   </CommandItem>

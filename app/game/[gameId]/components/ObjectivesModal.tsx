@@ -29,7 +29,7 @@ export function ObjectivesModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Current Objectives</DialogTitle>
         </DialogHeader>
