@@ -24,7 +24,6 @@ export const triggerProcessJob = onDocumentWritten(
   {
     document: "processingJob/{docId}",
     maxInstances: 80,
-    minInstances: 1,
     memory: "4GiB",
     timeoutSeconds: timeoutSeconds,
     cpu: 2,
