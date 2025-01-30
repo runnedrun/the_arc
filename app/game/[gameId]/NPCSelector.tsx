@@ -10,60 +10,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { queryObs } from "@/data/readerFe"
 import { NPC } from "@/data/types/NPC"
-import { useObs } from "@/data/useObs"
 import { CommandItem } from "cmdk"
-import { limit } from "firebase/firestore"
 import { ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
-import { useContext, useEffect, useState } from "react"
-import { combineLatest } from "rxjs"
-import { GameInterfaceContext } from "./GameInterfaceContext"
+import { useEffect, useState } from "react"
 import { NPCDisplay } from "./NPCDisplay"
 import { useTileInfoDisplay } from "./TileInfoDisplayContext"
-type NPCsWithPendingMessageBool = NPC & {
-  hasPendingMessages: boolean
-}
-
-export const useNPCsHaveMessagesForThisRound = (npcs: NPC[]) => {
-  const { currentRound, currentPlayer, game } = useContext(GameInterfaceContext)
-  const obs = npcs.map((npc) => {
-    return queryObs("messages", ({ where }) => {
-      return [
-        where("gameId", "==", game?.uid || "__never__"),
-        where("roundId", "==", currentRound?.uid || "__never__"),
-        where("senderId", "==", currentPlayer?.uid || "__never__"),
-        where("receiverId", "==", npc.uid),
-        limit(1),
-      ]
-    })
-  })
-
-  const combinedObs = combineLatest(obs)
-  const messagesForNpcs =
-    useObs(combinedObs, [currentRound?.uid, currentPlayer?.uid]) || []
-
-  return npcs.map((npc, i) => {
-    const messages = messagesForNpcs[i] || []
-    const messagesWithContent = messages.filter((_) => !!_.content)
-    return {
-      ...npc,
-      hasPendingMessages: !!messagesWithContent?.length,
-    } as NPCsWithPendingMessageBool
-  })
-}
 
 export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
   const [open, setOpen] = useState(false)
   const { selectedNPC, setSelectedNPC } = useTileInfoDisplay()
-  const npcsWithPendingMessages = useNPCsHaveMessagesForThisRound(npcOptions)
 
   useEffect(() => {
-    if (npcsWithPendingMessages?.length && !selectedNPC) {
-      setSelectedNPC(npcsWithPendingMessages[0])
+    if (npcOptions?.length && !selectedNPC) {
+      setSelectedNPC(npcOptions[0])
     }
-  }, [npcsWithPendingMessages, selectedNPC, setSelectedNPC])
+  }, [npcOptions, selectedNPC, setSelectedNPC])
 
   return (
     <div className="flex min-h-0 grow flex-col gap-4">
@@ -95,7 +58,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
             <CommandInput placeholder="Search NPCs..." />
             <CommandEmpty>No NPCs available.</CommandEmpty>
             <CommandGroup>
-              {npcsWithPendingMessages?.map((npc) => {
+              {npcOptions?.map((npc) => {
                 return (
                   <CommandItem
                     className="flex items-center gap-1"

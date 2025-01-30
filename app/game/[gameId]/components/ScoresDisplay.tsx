@@ -1,18 +1,3 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useContext, useState } from "react"
-import { GameInterfaceContext } from "../GameInterfaceContext"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { docObs } from "@/data/readerFe"
-import { useObs } from "@/data/useObs"
-import { combineLatest } from "rxjs"
-import { GameMessages } from "../GameMessages"
-import { Trash2 } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +8,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { fbDelete, fbSet } from "@/data/writerFe"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { docObs } from "@/data/readerFe"
+import { useObs } from "@/data/useObs"
+import { fbSet } from "@/data/writerFe"
+import { Trash2 } from "lucide-react"
+import { useContext, useState } from "react"
+import { combineLatest } from "rxjs"
+import { GameInterfaceContext } from "../GameInterfaceContext"
+import { GameMessages } from "../GameMessages"
 
 const ScoredObjectivesDisplay = ({ messageIds }: { messageIds: string[] }) => {
   const messages =
