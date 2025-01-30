@@ -13,7 +13,7 @@ import { docObs, queryObs } from "@/data/readerFe"
 import { MapPosition } from "@/data/types/MapTile"
 import { useObs } from "@/data/useObs"
 import { fbSet, fbUpdate, genExtraData } from "@/data/writerFe"
-import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
+import { triggerEventProcessingOnWrite } from "@/helpers/triggerEventProcessing"
 import { isUndefined, omit } from "lodash-es"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
@@ -109,7 +109,7 @@ export async function joinGame({
   const uuid = existingPlayer?.uid || uuidv4()
   const baseData = existingPlayer ? omit(existingPlayer, "uid") : genExtraData()
 
-  await triggerProcessOnWrite(
+  await triggerEventProcessingOnWrite(
     fbSet("players", uuid, {
       ...baseData,
       gameId,

@@ -23,9 +23,9 @@ const generateHistoricalEntry = async ({
       content: `You are an AI Historian documenting the events in ${getEnvironmentContextString(gameArgs.game)}. 
 
 Your role is to:
-- Create a 1-2 sentence historical entry based ONLY on the actions that occurred
+- Determine the results of ONLY the actions that are listed above. Do not make up new actions.
 - When actions are in conflict, give more weight to Elder Council actions (assuming there are any) over player/NPC actions
-- Ensure actions respect physical laws and the environment's rules
+- Ensure the results respect physical laws and the environment's rules
 - If actions are unrealistic or impossible given the environment, document the attempt and failure
 - Write in past tense, third person, maintaining a historical tone
 - Respond with ONLY the entry, no prefix, colon, -, etc.`,
@@ -35,7 +35,7 @@ Your role is to:
       content: `
 Tile's previous history up until now: ${messageStrings}
 
-Write a 1-2 sentence historical entry for this year's events:`,
+Write a 1-2 sentence historical entry chronicling the results of the above actions:`,
     },
   ]
 

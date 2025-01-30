@@ -103,7 +103,7 @@ Requirements for each field:
 - DALL-E prompt: A prompt for DALL-E 3 to generate an image of the environment in a hand drawn animation style, showing ONLY the environment, filling the whole frame without text or borders (1 sentence)`
 }
 
-const updateTileExplorationStatus = async (args: GameProcessingArgs) => {
+export const updateTileExplorationStatus = async (args: GameProcessingArgs) => {
   const [players, tiles] = await Promise.all([
     queryDocs("players", (ref) => ref.where("gameId", "==", args.game.uid)),
     queryDocs("mapTiles", (ref) => ref.where("gameId", "==", args.game.uid)),

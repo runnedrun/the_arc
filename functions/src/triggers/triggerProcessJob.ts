@@ -4,20 +4,13 @@ import { onDocumentWritten } from "firebase-functions/v2/firestore"
 import { fbSet } from "../helpers/writer"
 import { toTimestamp } from "../helpers/toTimestamp"
 import { JobTypes, ProcessingJob } from "@/data/types/ProcessJob"
-import { gameProcessingTriggered } from "./processGame/gameProcessingTriggered"
-import { roundProcessingTriggered } from "./processRound/roundProcessingTriggered"
-import { playerProcessingTriggered } from "./processPlayer/playerProcessingTriggered"
 
 export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
   docId: string
   trigger: number
   oneOffJobData: OneOffJobDataType
 }) => Promise<boolean>
-const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {
-  games: gameProcessingTriggered,
-  rounds: roundProcessingTriggered,
-  players: playerProcessingTriggered,
-}
+const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {}
 
 const timeoutSeconds = 540
 export const triggerProcessJob = onDocumentWritten(
