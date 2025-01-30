@@ -45,8 +45,6 @@ function MessageDisplay({
     )
   }
 
-  message.type === "tileAction" && console.log("messageddd", message)
-
   const serializedMessage = getSerializedMessage(
     message,
     {
@@ -104,7 +102,6 @@ export function GameMessages({
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      console.log("scrolling to end")
       messagesEndRef.current.scrollIntoView()
     }
   }, [messagesEndRef.current, messages.length, messagesWithContent.length])

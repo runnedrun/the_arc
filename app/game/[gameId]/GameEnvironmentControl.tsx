@@ -12,17 +12,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { defaultGameEnvironments } from "./defaultGameEnvironments"
+import { Game } from "@/data/types/Game"
 
-export function GameEnvironmentControl() {
-  const { game, currentUserId } = useContext(GameInterfaceContext)
+export function GameEnvironmentControl({
+  game,
+  currentUserId,
+}: {
+  game: Game
+  currentUserId: string
+}) {
   const [localDescription, setLocalDescription] = useState(
     game?.environmentDescription || ""
   )
 
-  // Only show for game creator
-  if (!game || game.createdBy !== currentUserId) {
-    return null
-  }
+  const isCreator = game.createdBy === currentUserId
 
   const handleEnvironmentSelect = async (value: string) => {
     const selectedEnv =
@@ -46,38 +49,39 @@ export function GameEnvironmentControl() {
   }
 
   return (
-    <Card className="w-96 p-4">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="envName">Environment Name</Label>
-          <Select
-            value={game.environmentName || ""}
-            onValueChange={handleEnvironmentSelect}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select an environment" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(defaultGameEnvironments).map((env) => (
-                <SelectItem key={env.name} value={env.name}>
-                  {env.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="envDescription">Environment Description</Label>
-          <Textarea
-            id="envDescription"
-            value={localDescription}
-            onChange={handleDescriptionChange}
-            placeholder="Describe your game environment"
-            className="h-24"
-          />
-        </div>
+    <div className="space-y-4 pb-4">
+      <div className="text-sm text-slate-500">Choose your world:</div>
+      <div className="text-slate-500">Arcon:</div>
+      <div className="space-y-2">
+        <Select
+          value={game.environmentName || ""}
+          onValueChange={handleEnvironmentSelect}
+          disabled={!!game.startTime || !isCreator}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select an environment" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(defaultGameEnvironments).map((env) => (
+              <SelectItem key={env.name} value={env.name}>
+                {env.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-    </Card>
+
+      <div className="space-y-2">
+        <Label htmlFor="envDescription">Environment Description</Label>
+        <Textarea
+          disabled={!!game.startTime || !isCreator}
+          id="envDescription"
+          value={localDescription}
+          onChange={handleDescriptionChange}
+          placeholder="Describe your game environment"
+          className="h-24"
+        />
+      </div>
+    </div>
   )
 }

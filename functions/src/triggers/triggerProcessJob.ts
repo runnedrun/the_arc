@@ -6,6 +6,7 @@ import { toTimestamp } from "../helpers/toTimestamp"
 import { JobTypes, ProcessingJob } from "@/data/types/ProcessJob"
 import { gameProcessingTriggered } from "./processGame/gameProcessingTriggered"
 import { roundProcessingTriggered } from "./processRound/roundProcessingTriggered"
+import { playerProcessingTriggered } from "./processPlayer/playerProcessingTriggered"
 
 export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
   docId: string
@@ -15,6 +16,7 @@ export type ProcessJobFn<OneOffJobDataType extends unknown = object> = (args: {
 const jobTypeMap: Partial<Record<JobTypes, ProcessJobFn>> = {
   games: gameProcessingTriggered,
   rounds: roundProcessingTriggered,
+  players: playerProcessingTriggered,
 }
 
 const timeoutSeconds = 540

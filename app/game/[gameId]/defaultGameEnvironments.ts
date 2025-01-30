@@ -9,8 +9,8 @@ export const defaultGameEnvironments = {
     description:
       "A mystical forest kingdom spanning 50km x 50km. Magic is commonplace - users can cast spells, create potions, and interact with magical creatures. Ancient ruins and hidden portals dot the landscape.",
   },
-  "Deep Space Station Omega": {
-    name: "Deep Space Station Omega",
+  "The Deep Space Station": {
+    name: "The Deep Space Station",
     description:
       "A massive space station (2km diameter) orbiting a distant star. Advanced technology includes teleporters, energy weapons, and artificial gravity. The station connects to various spacecraft docking bays.",
   },
@@ -19,7 +19,7 @@ export const defaultGameEnvironments = {
     description:
       "A post-apocalyptic desert region covering 30km x 30km. Radiation affects certain areas, mutated creatures roam freely, and scattered settlements trade salvaged technology. Survival is paramount.",
   },
-  "The Ancient Kingdoms": {
+  "The Ancient Kingdom": {
     name: "The Ancient Kingdoms",
     description:
       "A medieval realm spanning 100km x 100km with towering castles, dense forests, and mountain ranges. Dragons exist, though rare. Political intrigue and sword combat are common.",
@@ -55,3 +55,7 @@ export const defaultGameEnvironments = {
       "A microscopic world spanning just 1mm x 1mm in real terms, but perceived as 20km x 20km to shrunken participants. Participants are miniaturized, dealing with the physics and creatures of the microscopic scale.",
   },
 } as const
+
+export const defaultGameEnvironmentsList = Object.values(
+  defaultGameEnvironments
+)

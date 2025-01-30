@@ -5,6 +5,6 @@ const openAiApiKey = defineString("OPENAI_API_KEY")
 
 export const getOpenAIClient = () => {
   return new OpenAI({
-    apiKey: openAiApiKey.value(),
+    apiKey: openAiApiKey.value() || process.env.OPENAI_API_KEY,
   })
 }

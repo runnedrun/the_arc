@@ -36,11 +36,10 @@ Requirements:
 - The personality should allow them to have interesting interactions with other characters and meaningfully influence the world's development`
 }
 
-export const getNpcForGame = async (
-  args: GameProcessingArgs,
-  location: MapPosition,
-  forceActive = false
-) => {
+export const generatePersonalityAndImage = async (args: {
+  gameProcessingArgs: GameProcessingArgs
+  npcId: string
+}) => {
   const openAiClient = getOpenAIClient()
 
   const completion = await openAiClient.beta.chat.completions.parse({
@@ -53,7 +52,7 @@ export const getNpcForGame = async (
       },
       {
         role: "user",
-        content: getPrompt(args),
+        content: getPrompt(args.gameProcessingArgs),
       },
     ],
     response_format: zodResponseFormat(NPCSchema, "npc"),
@@ -61,58 +60,95 @@ export const getNpcForGame = async (
   })
 
   const npcData = completion.choices[0].message.parsed
-  const npcId = getNpcId()
 
   const image = await setupCharacterImage({
     name: npcData.name,
     personality: npcData.personality,
-    environmentDescription: args.game.environmentDescription,
+    environmentDescription: args.gameProcessingArgs.game.environmentDescription,
     collectionName: "npcs",
-    uid: npcId,
-    gameId: args.game.uid,
+    uid: args.npcId,
+    gameId: args.gameProcessingArgs.game.uid,
   })
 
-  const npcTileIsExplored = args.mapTiles.some(
+  return {
+    ...npcData,
+    imageUrl: image,
+  }
+}
+
+export const setupNPCOnMap = async (args: {
+  gameProcessingArgs: GameProcessingArgs
+  location: MapPosition
+  npcId: string
+  name: string
+  personality: string
+  imageUrl: string
+  forceActive?: boolean
+}) => {
+  const npcTileIsExplored = args.gameProcessingArgs.mapTiles.some(
     (tile) =>
-      tile.position.x === location.x &&
-      tile.position.y === location.y &&
+      tile.position.x === args.location.x &&
+      tile.position.y === args.location.y &&
       tile.explored
   )
 
   const npc: NPC = {
-    gameId: args.game.uid,
-    name: npcData.name,
-    personality: npcData.personality,
+    gameId: args.gameProcessingArgs.game.uid,
+    name: args.name,
+    personality: args.personality,
     letters: 200,
-    currentTileLocation: location,
-    createdRoundIndex: isNil(args.currentRound?.index)
+    currentTileLocation: args.location,
+    createdRoundIndex: isNil(args.gameProcessingArgs.currentRound?.index)
       ? null
-      : args.currentRound?.index,
-    createdRoundId: isNil(args.currentRound?.uid)
+      : args.gameProcessingArgs.currentRound?.index,
+    createdRoundId: isNil(args.gameProcessingArgs.currentRound?.uid)
       ? null
-      : args.currentRound?.uid,
-    imageUrl: image,
-    active: forceActive || npcTileIsExplored,
+      : args.gameProcessingArgs.currentRound?.uid,
+    imageUrl: args.imageUrl,
+    active: args.forceActive || npcTileIsExplored,
   }
 
-  console.log("creating npc")
   await Promise.all([
-    fbCreate("npcs", npc, { id: npcId }),
+    fbCreate("npcs", npc, { id: args.npcId }),
     fbCreate(
       "messages",
       getDefaultMessage({
-        senderId: npcId,
-        roundId: isNil(args.currentRound?.uid) ? null : args.currentRound?.uid,
-        roundIndex: isNil(args.currentRound?.index)
+        senderId: args.npcId,
+        roundId: isNil(args.gameProcessingArgs.currentRound?.uid)
           ? null
-          : args.currentRound?.index,
-        tileLocation: location,
+          : args.gameProcessingArgs.currentRound?.uid,
+        roundIndex: isNil(args.gameProcessingArgs.currentRound?.index)
+          ? null
+          : args.gameProcessingArgs.currentRound?.index,
+        tileLocation: args.location,
         content: `${npc.name} entered tile`,
-        gameId: args.game.uid,
+        gameId: args.gameProcessingArgs.game.uid,
         type: "tileMovement",
       })
     ),
   ])
 
   return npc
+}
+
+export const getNpcForGame = async (
+  args: GameProcessingArgs,
+  location: MapPosition,
+  forceActive = false
+) => {
+  const npcId = getNpcId()
+  const { name, personality, imageUrl } = await generatePersonalityAndImage({
+    gameProcessingArgs: args,
+    npcId,
+  })
+
+  return setupNPCOnMap({
+    gameProcessingArgs: args,
+    location,
+    npcId,
+    name,
+    personality,
+    imageUrl,
+    forceActive,
+  })
 }

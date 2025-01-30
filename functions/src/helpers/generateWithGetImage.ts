@@ -28,7 +28,6 @@ export const generateWithGetImage = async (
   opts: GenerateWithGetImageOpts = {}
 ) => {
   opts = { ...defaultOpts, ...opts }
-  console.log("opts", opts)
   const response = await axios({
     method: "post",
     url: "https://api.getimg.ai/v1/stable-diffusion/text-to-image",
@@ -44,7 +43,6 @@ export const generateWithGetImage = async (
   })
 
   const url = response.data.url as string
-  console.log("url from getimg", url, response.data)
   return url
 }
 

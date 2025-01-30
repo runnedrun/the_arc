@@ -44,8 +44,6 @@ Based on these actions and your previous decrees, respond with an action you tak
     },
   ]
 
-  console.log("elder council action messages", messages)
-
   const completion = await openai.chat.completions.create({
     model: "gpt-4o",
     messages,

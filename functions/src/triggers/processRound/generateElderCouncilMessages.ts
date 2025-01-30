@@ -62,8 +62,6 @@ Provide a single sentence recap focusing on notable events and their relationshi
     },
   ]
 
-  console.log(recapMessages)
-
   const recapCompletion = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: recapMessages,
@@ -127,8 +125,6 @@ Return a JSON object with any new decrees needed to address these events. Format
     temperature: 0.7,
     response_format: { type: "json_object" },
   })
-
-  console.log(decreeCompletion.choices[0].message.content)
 
   const parsedDecrees = DecreesSchema.parse(
     JSON.parse(

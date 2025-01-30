@@ -30,7 +30,7 @@ export const setupCharacterImage = async ({
       {
         role: "system",
         content:
-          "You are an expert dall-e prompt creator. Given the following description of a character generate a very brief (12 words or less) prompt for generating a high quality image of the following character, in a handrawn disney style. Specify that there must be no text.",
+          "You are an expert prompt creator for an image generation model. Given the following description of a character generate a detailed but terse prompt for generating a high quality image of the following character, in a handrawn animation style. Specify that there must be no text. Specify ONLY physical attributes.",
       },
       {
         role: "system",

@@ -30,4 +30,5 @@ export type Game = Model<{
   name: string
   startingCharacterCount: number
   isTestGame?: boolean
+  sampleGame?: boolean
 }>

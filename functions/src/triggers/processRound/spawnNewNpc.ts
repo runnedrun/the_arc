@@ -2,10 +2,15 @@ import { GameProcessingArgs } from "../processGame/getGameData"
 import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { z } from "zod"
 import { zodResponseFormat } from "openai/helpers/zod"
-import { getNpcForGame } from "../processGame/getNpcForGame"
+import {
+  generatePersonalityAndImage,
+  getNpcForGame,
+  setupNPCOnMap,
+} from "../processGame/getNpcForGame"
 import { sample } from "lodash-es"
 import { MapPosition } from "@/data/types/MapTile"
 import { getMessageStrings } from "./getMessageStrings"
+import { getNpcId } from "@/data/types/NPC"
 
 const LocationSchema = z.object({
   chosenTileTitle: z.string(),
@@ -51,7 +56,7 @@ Having additional npcs on a tile is generally a boon, so you can use it to rewar
 Return a JSON object with the title of the chosen tile and your reasoning.`
 }
 
-export const spawnNewNpc = async (args: GameProcessingArgs) => {
+const getTileLocation = async (args: GameProcessingArgs) => {
   const openAiClient = getOpenAIClient()
 
   // Get location recommendation from Elder Council (GPT-4)
@@ -91,9 +96,28 @@ export const spawnNewNpc = async (args: GameProcessingArgs) => {
     x: chosenTile.position.x,
     y: chosenTile.position.y,
   }
+  return location
+}
 
+export const spawnNewNpc = async (args: GameProcessingArgs) => {
   // Create the new NPC at the chosen location
-  const newNpc = await getNpcForGame(args, location)
+  const npcId = getNpcId()
+  const [location, { name, personality, imageUrl }] = await Promise.all([
+    getTileLocation(args),
+    generatePersonalityAndImage({
+      gameProcessingArgs: args,
+      npcId,
+    }),
+  ])
+
+  const newNpc = await setupNPCOnMap({
+    gameProcessingArgs: args,
+    location,
+    npcId,
+    name,
+    personality,
+    imageUrl,
+  })
 
   return newNpc
 }

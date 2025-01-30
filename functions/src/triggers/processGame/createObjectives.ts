@@ -109,8 +109,6 @@ ${requirements}
     },
   ]
 
-  console.log("objective messages", messages)
-
   if (forPlayer) {
     const completion = await openAiClient.beta.chat.completions.parse({
       model: "gpt-4o",
@@ -121,8 +119,6 @@ ${requirements}
       ),
       temperature: 0.9,
     })
-
-    console.log("completion", completion)
 
     // Handle single player objective
     await fbCreate(
@@ -143,11 +139,6 @@ ${requirements}
       response_format: zodResponseFormat(SecretVisionsSchema, "playerVisions"),
       temperature: 0.9,
     })
-
-    console.log(
-      "completion",
-      completion.choices[0].message.parsed.playerObjectives
-    )
 
     // Handle multiple player objectives
     await Promise.all(

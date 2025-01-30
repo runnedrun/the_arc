@@ -100,7 +100,7 @@ ${gameArgs.game.environmentDescription}
 Requirements for each field:
 - Title: A brief, evocative name for this location (10 words or less)
 - Description: A dry, factual description of the current state of this environment (30 words or less)
-- DALL-E prompt: A prompt for DALL-E 3 to generate an image of the environment in a disney, hand drawn animation style, showing ONLY the environment, filling the whole frame without text or borders (1 sentence)`
+- DALL-E prompt: A prompt for DALL-E 3 to generate an image of the environment in a hand drawn animation style, showing ONLY the environment, filling the whole frame without text or borders (1 sentence)`
 }
 
 const updateTileExplorationStatus = async (args: GameProcessingArgs) => {
@@ -215,14 +215,6 @@ export const updateGameTiles = async (args: GameProcessingArgs) => {
       ) {
         return
       }
-
-      console.log(
-        "updated image tile with coords",
-        tile.position.x,
-        tile.position.y,
-        messagesSinceLastPrompt.length,
-        messagesSinceLastPrompt.map((m) => m.content)
-      )
 
       const prompt = getTileMetadataPrompt(messagesSinceLastPrompt, tile, args)
 

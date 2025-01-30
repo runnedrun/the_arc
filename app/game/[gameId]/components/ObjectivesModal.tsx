@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from "react"
 import { useObjectives } from "../useObjectives"
-import { last } from "lodash-es"
+import { isNil, last } from "lodash-es"
+import { objectiveScoringFrequency } from "@/functions/src/triggers/processRound/objectiveScoringFrequency"
 
 export function ObjectivesModal({
   isOpen,
@@ -19,8 +20,6 @@ export function ObjectivesModal({
   isOpen: boolean
   onClose: () => void
 }) {
-  const { currentRound, currentPlayer, game } = useContext(GameInterfaceContext)
-
   const { secretObjectives, publicObjectives } = useObjectives()
 
   const secretObjective = last(secretObjectives)
@@ -57,6 +56,11 @@ export function ObjectivesModal({
 
 export function ObjectivesButton() {
   const [isOpen, setIsOpen] = useState(false)
+  const { currentRound } = useContext(GameInterfaceContext)
+  const nextObjectiveScoringRound = isNil(currentRound?.index)
+    ? null
+    : objectiveScoringFrequency -
+      (currentRound.index % objectiveScoringFrequency)
 
   return (
     <>
@@ -64,7 +68,9 @@ export function ObjectivesButton() {
         onClick={() => setIsOpen(true)}
         className="text-blue-600 hover:underline"
       >
-        View Objectives
+        View Objectives{" "}
+        {!isNil(nextObjectiveScoringRound) &&
+          `(scored in ${nextObjectiveScoringRound} rounds)`}
       </button>
       <ObjectivesModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>

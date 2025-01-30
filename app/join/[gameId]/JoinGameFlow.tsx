@@ -10,15 +10,50 @@ import { docObs, queryObs } from "@/data/readerFe"
 import { MapPosition } from "@/data/types/MapTile"
 import { useObs } from "@/data/useObs"
 import { fbSet, fbUpdate, genExtraData } from "@/data/writerFe"
-import { useToast } from "@/hooks/use-toast"
-import { isUndefined, omit, uniqueId } from "lodash-es"
-import { useRouter } from "next/navigation"
+import axios from "axios"
+import { isUndefined, omit } from "lodash-es"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { firstValueFrom } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 import { JoinAsExistingPlayerDisplay } from "./JoinAsExistingPlayerDisplay"
-import axios from "axios"
-import { SetupPlayerArgs } from "@/app/api/setup_player/route"
+import { Delay } from "@/components/Delay"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
+import { GameEnvironmentControl } from "@/app/game/[gameId]/GameEnvironmentControl"
+
+export const TutorialDisplay = () => {
+  return (
+    <div className="text flex flex-col gap-4">
+      <div>
+        Welcome to The Arc, a game where you bend the arc of history— one letter
+        at a time.
+      </div>
+
+      <div>
+        You are about to enter Arcon, a world on the cusp of great change. The
+        Arcon Council has chosen you, a promising young leader, for missions of
+        great importance.
+      </div>
+
+      <div>
+        The missions will be shaped by the personality you describe below.
+        You'll have 5 rounds (years) to achieve each one.
+      </div>
+
+      <div>
+        To achieve your mission you will spend your most precious resource—
+        letters. You will start with 300 letters each round, with which you can
+        act directly, chat with NPCs, or influence the council.
+      </div>
+
+      <div>
+        Spend them wisely and you may find yourself at the center of this new
+        world, waste them and you'll fade into obscurity
+      </div>
+    </div>
+  )
+}
 
 export async function joinGame({
   gameId,
@@ -33,7 +68,6 @@ export async function joinGame({
   existingPlayer?: any | null
   playerPersonality?: string
 }) {
-  console.log("joinging game")
   // Get current players to determine the new player's index
   const existingPlayers = await firstValueFrom(
     queryObs("players", ({ where }) => [where("gameId", "==", gameId)])
@@ -73,40 +107,37 @@ export async function joinGame({
   const colorIndex = existingPlayers.length % playerColors.length
   const playerColor = playerColors[colorIndex]
 
-  console.log("eoistint", existingPlayer.uid)
-
   const uuid = existingPlayer?.uid || uuidv4()
   const baseData = existingPlayer ? omit(existingPlayer, "uid") : genExtraData()
 
-  await fbSet("players", uuid, {
-    ...baseData,
-    gameId,
-    userId,
-    name: playerName || "New Player",
-    color: playerColor,
-    currentTileLocation: mapPosition,
-    playerPersonality,
-    secretObjectivePoints: 0,
-    publicObjectivePoints: 0,
-    secretObjectivesScored: [],
-    publicObjectivesScored: [],
-  })
-
-  console.log("setup player post", uuid)
-  await axios.post("/api/setup_player", {
-    gameId,
-    playerId: uuid,
-  } as SetupPlayerArgs)
+  await triggerProcessOnWrite(
+    fbSet("players", uuid, {
+      ...baseData,
+      gameId,
+      userId,
+      name: playerName || "New Player",
+      color: playerColor,
+      currentTileLocation: mapPosition,
+      playerPersonality,
+      secretObjectivePoints: 0,
+      publicObjectivePoints: 0,
+      secretObjectivesScored: [],
+      publicObjectivesScored: [],
+    })
+  )
 
   return uuid
 }
 
+export const showTutorialParamName = "showTutorial"
+
 export function JoinGameFlow({ gameId }: { gameId: string }) {
+  const searchParams = useSearchParams()
+  const showTutorial = searchParams.get(showTutorialParamName)
   const { uid: userId } = useContext(UserContext)?.user || {}
   const [playerName, setPlayerName] = useState("")
   const [playerPersonality, setPlayerPersonality] = useState("")
   const [isJoining, setIsJoining] = useState(false)
-  const { toast } = useToast()
   const router = useRouter()
 
   // Get game data
@@ -126,13 +157,9 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
       [gameId, userId]
     ) || []
 
-  console.log("existing players for this user", existingPlayersForThisUser)
-
   const existingPlayer = existingPlayersForThisUser[0] || null
 
   const isAlreadyPlayer = !!existingPlayer
-
-  console.log("existingPlayer", existingPlayer)
 
   useEffect(() => {
     if (isAlreadyPlayer) {
@@ -142,6 +169,16 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
   }, [isAlreadyPlayer, existingPlayer])
 
   if (!game) {
+    return (
+      <Delay waitTime={500}>
+        <div className="flex h-screen flex-col items-center justify-center gap-6">
+          <LoadingSpinner />
+        </div>
+      </Delay>
+    )
+  }
+
+  if (game && !game.createdAt) {
     return (
       <Card>
         <CardHeader>
@@ -184,10 +221,16 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
 
   const gameHasStarted = game?.startTime != null
 
+  const isCreator = game.createdBy === userId
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Join Game: {game.name}</CardTitle>
+        {showTutorial ? (
+          <TutorialDisplay />
+        ) : (
+          <CardTitle>Join Game: {game.name}</CardTitle>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -211,13 +254,21 @@ export function JoinGameFlow({ gameId }: { gameId: string }) {
               disabled={gameHasStarted && existingPlayer?.hasStartedGame}
             />
           </div>
+          {isCreator && (
+            <GameEnvironmentControl game={game} currentUserId={userId} />
+          )}
           <Button
             onClick={
               isAlreadyPlayer && existingPlayer.hasStartedGame
                 ? handleUpdatePlayer
                 : handleJoinGame
             }
-            disabled={isJoining}
+            disabled={
+              isJoining ||
+              !game.environmentName ||
+              !playerPersonality ||
+              !playerName
+            }
             className="w-full"
           >
             {isJoining ? "Joining game..." : "Join Game"}

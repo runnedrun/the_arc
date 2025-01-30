@@ -14,9 +14,13 @@ import { generateElderCouncilTileActions } from "./generateElderCouncilTileActio
 import { generateMessagesForAllNPCs } from "./generateMessagesForAllNPCs"
 import { scoreCurrentObjectives } from "./scoreCurrentObjectives"
 import { spawnNewNpc } from "./spawnNewNpc"
+import { objectiveScoringFrequency } from "./objectiveScoringFrequency"
 
 const updateObjectives = async (args: GameProcessingArgs) => {
-  if (args.currentRound.index && args.currentRound.index % 4 === 0) {
+  if (
+    args.currentRound.index &&
+    args.currentRound.index % objectiveScoringFrequency === 0
+  ) {
     console.log("Scoring current objectives")
     await scoreCurrentObjectives(args)
     console.log("Creating new objectives")

@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore"
 import { ModelBase } from "../baseTypes/Model"
 import { MapPosition } from "./MapTile"
 
@@ -15,4 +16,6 @@ export interface Player extends ModelBase {
   publicObjectivePoints?: number
   publicObjectivesScored: string[] // message ids
   hasStartedGame?: boolean
+  setupStartedAt?: Timestamp
+  setupCompletedAt?: Timestamp
 }
