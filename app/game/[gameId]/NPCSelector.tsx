@@ -27,10 +27,11 @@ type NPCsWithPendingMessageBool = NPC & {
 }
 
 export const useNPCsHaveMessagesForThisRound = (npcs: NPC[]) => {
-  const { currentRound, currentPlayer } = useContext(GameInterfaceContext)
+  const { currentRound, currentPlayer, game } = useContext(GameInterfaceContext)
   const obs = npcs.map((npc) => {
     return queryObs("messages", ({ where }) => {
       return [
+        where("gameId", "==", game?.uid || "__never__"),
         where("roundId", "==", currentRound?.uid || "__never__"),
         where("senderId", "==", currentPlayer?.uid || "__never__"),
         where("receiverId", "==", npc.uid),
