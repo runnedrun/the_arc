@@ -6,7 +6,7 @@ import { Player } from "./types/Player"
 import { ProcessingJob } from "./types/ProcessJob"
 import { Round } from "./types/Round"
 import { User } from "./types/User"
-import { MapTile } from "./types/ValleyTile"
+import { MapTile } from "./types/MapTile"
 
 export const CollectionNames: (keyof AllModels)[] = [
   "processingJob",
