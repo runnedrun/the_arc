@@ -102,7 +102,7 @@ ${game.environmentDescription}
 ${previousObjectivesString}
 
 #All players and their personalities:
-${players.map((p, i) => `${getCharacterName(args, p.uid)}: ${p.playerPersonality}`).join("\n")}
+${players.map((p) => `${getCharacterName(args, p.uid)}: ${p.playerPersonality}`).join("\n")}
 
 ${requirements}
 `,

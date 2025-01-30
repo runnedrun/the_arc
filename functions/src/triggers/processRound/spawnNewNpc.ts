@@ -4,7 +4,6 @@ import { z } from "zod"
 import { zodResponseFormat } from "openai/helpers/zod"
 import {
   generatePersonalityAndImage,
-  getNpcForGame,
   setupNPCOnMap,
 } from "../processGame/getNpcForGame"
 import { sample } from "lodash-es"

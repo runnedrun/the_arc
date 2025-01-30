@@ -1,19 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MapTile } from "@/data/types/MapTile"
-import { TileWithIndex } from "./GameInterface"
-import { GameMessages } from "./GameMessages"
-import { useMessageComposition } from "./hooks/useMessageComposition"
-import { GameInterfaceContext } from "./GameInterfaceContext"
-import { useContext } from "react"
 import { isEqual } from "lodash-es"
 import Image from "next/image"
+import { useContext } from "react"
+import { TileWithIndex } from "./GameInterface"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { GameMessages } from "./GameMessages"
+import { useMessageComposition } from "./hooks/useMessageComposition"
 import { NPCsForTileDisplay } from "./PlayerNPCsDisplay"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   TileInfoDisplayProvider,
   useTileInfoDisplay,
 } from "./TileInfoDisplayContext"
-import { cn } from "@/lib/utils"
 
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)

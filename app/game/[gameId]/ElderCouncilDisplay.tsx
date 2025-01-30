@@ -7,7 +7,7 @@ import { sortBy } from "lodash-es"
 import { useObjectives } from "./useObjectives"
 
 export const ElderCouncilDisplay = () => {
-  const { currentPlayer, game } = useContext(GameInterfaceContext)
+  const { currentPlayer } = useContext(GameInterfaceContext)
   const {
     messages: previousMessages,
     composingMessage,

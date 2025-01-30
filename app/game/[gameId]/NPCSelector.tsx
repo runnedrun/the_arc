@@ -13,16 +13,15 @@ import {
 import { queryObs } from "@/data/readerFe"
 import { NPC } from "@/data/types/NPC"
 import { useObs } from "@/data/useObs"
-import { cn } from "@/lib/utils"
 import { CommandItem } from "cmdk"
 import { limit } from "firebase/firestore"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { ChevronsUpDown } from "lucide-react"
+import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { combineLatest } from "rxjs"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { NPCDisplay } from "./NPCDisplay"
 import { useTileInfoDisplay } from "./TileInfoDisplayContext"
-import Image from "next/image"
 type NPCsWithPendingMessageBool = NPC & {
   hasPendingMessages: boolean
 }

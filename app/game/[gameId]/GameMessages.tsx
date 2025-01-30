@@ -1,13 +1,12 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { Message } from "@/data/types/Message"
+import { isEqual } from "lodash-es"
 import { useContext, useEffect, useRef } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
-import { TokenCountContext } from "./TokenCountContext"
-import { SerializedMessageDisplay } from "./SerializedMessageDisplay"
 import { getSerializedMessage } from "./getSerializedMessages"
+import { SerializedMessageDisplay } from "./SerializedMessageDisplay"
 import { useTileInfoDisplay } from "./TileInfoDisplayContext"
-import { isEqual } from "lodash-es"
+import { TokenCountContext } from "./TokenCountContext"
 
 interface GameMessagesProps {
   messages: Message[]

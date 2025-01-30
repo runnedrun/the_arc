@@ -2,15 +2,15 @@
 
 import logo from "@/assets/the_arc_no_background.png"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { UserContext } from "@/data/context/UserContext"
 import { queryObs } from "@/data/readerFe"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect } from "react"
 import { firstValueFrom } from "rxjs"
-import { createNewGameWithCreatorPlayer } from "../new-game/NewGamePage"
-import { UserContext, UserProvider } from "@/data/context/UserContext"
-import { showTutorialParamName } from "../join/[gameId]/JoinGameFlow"
 import { defaultGameEnvironmentsList } from "../game/[gameId]/defaultGameEnvironments"
+import { showTutorialParamName } from "../join/[gameId]/JoinGameFlow"
+import { createNewGameWithCreatorPlayer } from "../new-game/NewGamePage"
 
 const setupSampleGame = async (userId: string) => {
   const existingSampleGame = await firstValueFrom(

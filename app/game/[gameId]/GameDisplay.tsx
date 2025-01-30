@@ -1,22 +1,21 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { Skeleton } from "@/components/ui/skeleton"
-import { fbUpdate } from "@/data/writerFe"
-import { Timestamp } from "firebase/firestore"
-import { useContext } from "react"
-import GameInterface from "./GameInterface"
-import { GameInterfaceContext } from "./GameInterfaceContext"
-import { ProvideTokenCountContext } from "./TokenCountContext"
-import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
-import { GameEnvironmentControl } from "@/app/game/[gameId]/GameEnvironmentControl"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { fbUpdate } from "@/data/writerFe"
+import { triggerProcessOnWrite } from "@/helpers/triggerProcessJobOnWrite"
+import { Timestamp } from "firebase/firestore"
 import Link from "next/link"
+import { useContext } from "react"
+import GameInterface from "./GameInterface"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { ProvideTokenCountContext } from "./TokenCountContext"
 
 export function GameDisplay() {
   const {

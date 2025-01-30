@@ -1,7 +1,6 @@
-import { defineString } from "firebase-functions/params"
 import axios from "axios"
+import { defineString } from "firebase-functions/params"
 const apiKey = defineString("GET_IMG_API_KEY")
-import dotenv from "dotenv"
 
 const getApiKey = () => {
   return apiKey.value() || process.env.GET_IMG_API_KEY

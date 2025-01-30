@@ -1,21 +1,18 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MapTile } from "@/data/types/MapTile"
-import { useContext, useState } from "react"
+import { useState } from "react"
+import { useMediaQuery } from "react-responsive"
 import { GameGrid } from "./components/GameGrid"
 import { ObjectivesButton } from "./components/ObjectivesModal"
+import { ScoresDisplay } from "./components/ScoresDisplay"
 import { ElderCouncilDisplay } from "./ElderCouncilDisplay"
 import { PlayerInfoDisplay } from "./PlayerInfoDisplay"
-import { ScoresDisplay } from "./components/ScoresDisplay"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useMediaQuery } from "react-responsive"
-import { GameInterfaceContext } from "./GameInterfaceContext"
-import { EndRoundButton } from "./EndRoundButton"
 
 export type TileWithIndex = MapTile & { index: number }
 
 export default function GameInterface() {
   const [selectedTile, setSelectedTile] = useState<TileWithIndex>(null)
   const isDesktop = useMediaQuery({ minWidth: 768 })
-  const { currentPlayer } = useContext(GameInterfaceContext)
 
   const setOrToggleTile = (newTile: TileWithIndex) => {
     setSelectedTile((currentTile) => {

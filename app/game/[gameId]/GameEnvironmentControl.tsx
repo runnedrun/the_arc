@@ -1,8 +1,3 @@
-import { GameInterfaceContext } from "@/app/game/[gameId]/GameInterfaceContext"
-import { fbUpdate } from "@/data/writerFe"
-import { useContext, useEffect, useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -11,8 +6,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { defaultGameEnvironments } from "./defaultGameEnvironments"
+import { Textarea } from "@/components/ui/textarea"
 import { Game } from "@/data/types/Game"
+import { fbUpdate } from "@/data/writerFe"
+import { useState } from "react"
+import { defaultGameEnvironments } from "./defaultGameEnvironments"
 
 export function GameEnvironmentControl({
   game,

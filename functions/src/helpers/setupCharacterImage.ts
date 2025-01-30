@@ -1,8 +1,7 @@
 import path from "path"
 import { uploadImageToStorage } from "../triggers/processGame/uploadImageToCloudStorage"
-import { getOpenAIClient } from "./getOpenAIClient"
-import { fbUpdate } from "./writer"
 import { generateWithGetImage } from "./generateWithGetImage"
+import { getOpenAIClient } from "./getOpenAIClient"
 
 export type CharacterImageArgs = {
   gameId: string
@@ -15,7 +14,6 @@ export type CharacterImageArgs = {
 
 export const setupCharacterImage = async ({
   gameId,
-  name,
   personality,
   environmentDescription,
   collectionName,

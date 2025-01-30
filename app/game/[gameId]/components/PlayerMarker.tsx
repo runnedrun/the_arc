@@ -40,7 +40,6 @@ export const PlayerMarker = ({
 
 export const NPCsMarker = ({
   npcs,
-  playerForNPC,
   className,
 }: {
   npcs: NPC[]

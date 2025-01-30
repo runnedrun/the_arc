@@ -1,17 +1,14 @@
-import { GameInterfaceContext } from "../GameInterfaceContext"
-import { useContext } from "react"
-import { useObs } from "@/data/useObs"
-import { queryObs } from "@/data/readerFe"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useState } from "react"
-import { useObjectives } from "../useObjectives"
-import { isNil, last } from "lodash-es"
 import { objectiveScoringFrequency } from "@/functions/src/triggers/processRound/objectiveScoringFrequency"
+import { isNil, last } from "lodash-es"
+import { useContext, useState } from "react"
+import { GameInterfaceContext } from "../GameInterfaceContext"
+import { useObjectives } from "../useObjectives"
 
 export function ObjectivesModal({
   isOpen,

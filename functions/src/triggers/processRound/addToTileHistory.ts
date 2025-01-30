@@ -1,12 +1,11 @@
-import { getOpenAIClient } from "../../helpers/getOpenAIClient"
+import { getDefaultMessage, Message } from "@/data/types/Message"
 import { ChatCompletionMessageParam } from "openai/resources"
+import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
+import { getOpenAIClient } from "../../helpers/getOpenAIClient"
 import { fbCreate } from "../../helpers/writer"
 import { GameProcessingArgs } from "../processGame/getGameData"
 import { getMessagesForTiles } from "./getMessagesForTiles"
-import { getDefaultMessage, Message } from "@/data/types/Message"
 import { getMessageStrings } from "./getMessageStrings"
-import { sortBy } from "lodash-es"
-import { getEnvironmentContextString } from "../../helpers/getEnvironmentContextString"
 
 const generateHistoricalEntry = async ({
   messages,
@@ -54,7 +53,7 @@ Write a 1-2 sentence historical entry for this year's events:`,
 }
 
 export const addToTileHistory = async (args: GameProcessingArgs) => {
-  const { currentRound, mapTiles, game, players } = args
+  const { currentRound, mapTiles, game } = args
 
   const messagesGroupedByTile = await getMessagesForTiles({
     roundId: null,
