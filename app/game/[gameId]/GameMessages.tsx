@@ -128,6 +128,9 @@ export function GameMessages({
       </div>
       {sendMessage && (
         <div className="flex-shrink-0 space-y-1">
+          <div className="text-sm text-slate-500">
+            Available characters: {charactersRemaining}/{charactersAvailable}
+          </div>
           <Textarea
             disabled={playerHasEndedRound}
             value={composingMessage?.content || ""}
