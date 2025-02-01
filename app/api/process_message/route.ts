@@ -15,7 +15,7 @@ export type ProcessMessageArgs = {
   messageId: string
 }
 
-export async function POST(req: NextRequest) {
+const runProcessMessage = async (req: NextRequest) => {
   const openai = getOpenAIClient()
 
   getBeAppNext()
@@ -183,4 +183,17 @@ Your mesage to the player:`
   })
 
   return NextResponse.json({ success: true })
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    await runProcessMessage(req)
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error(error.stack)
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    )
+  }
 }

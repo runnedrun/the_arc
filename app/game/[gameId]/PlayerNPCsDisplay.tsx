@@ -1,11 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { queryObs, SKIP } from "@/data/readerFe"
 import { MapPosition } from "@/data/types/MapTile"
 import { useObs } from "@/data/useObs"
 import { isNil } from "lodash-es"
-import { NPCSelector } from "./NPCSelector"
-import { GameInterfaceContext } from "./GameInterfaceContext"
 import { useContext } from "react"
+import { GameInterfaceContext } from "./GameInterfaceContext"
+import { NPCSelector } from "./NPCSelector"
 
 export const NPCsForTileDisplay = ({
   selectedPosition,

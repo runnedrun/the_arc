@@ -36,7 +36,9 @@ export const EndRoundButton = () => {
       return {
         // disabled: true,
         onClick: handleEndRound,
-        children: "Updating stories...",
+        children: round?.processingState
+          ? `${round.processingState}...`
+          : "Updating game...",
       }
     }
     if (hasPlayerEndedRound) {

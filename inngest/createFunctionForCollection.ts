@@ -1,10 +1,10 @@
 import { CollectionModels } from "@/data/CollectionModels"
 import { getBeAppNext } from "@/functions/src/helpers/initAppNextBackend"
 import { readDoc } from "@/functions/src/helpers/reader"
-import { inngest } from "./client"
-import { EventPayload } from "inngest/types"
-import { createStepTools } from "inngest/components/InngestStepTools"
 import { InngestFunction } from "inngest"
+import { createStepTools } from "inngest/components/InngestStepTools"
+import { EventPayload } from "inngest/types"
+import { inngest } from "./client"
 import { getEventNameForCollection } from "./getEventNameForCollection"
 
 export const createFunctionForCollection = <
@@ -22,13 +22,25 @@ export const createFunctionForCollection = <
 ) => {
   return inngest.createFunction(
     // config
-    { id: getEventNameForCollection(collectionName), ...config },
+    {
+      id: getEventNameForCollection(collectionName),
+      retries: 0,
+      onFailure: ({ error }) => {
+        console.error(error.stack)
+      },
+      ...config,
+    },
     // trigger (event or cron)
     { event: getEventNameForCollection(collectionName) },
-    async ({ event, step }) => {
-      getBeAppNext()
-      const doc = await readDoc(collectionName, event.data.id)
-      await handler(doc, { event, step })
+    async ({ event, step, logger }) => {
+      try {
+        getBeAppNext()
+        const doc = await readDoc(collectionName, event.data.id)
+        await handler(doc, { event, step })
+      } catch (error) {
+        logger.error(error.stack)
+        throw error
+      }
       return
     }
   )

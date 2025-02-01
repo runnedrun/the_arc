@@ -10,7 +10,7 @@ import { limit } from "firebase/firestore"
 import { isNil, sortBy } from "lodash-es"
 import { createContext, useContext } from "react"
 
-interface GameInterfaceContext {
+interface GameInterfaceContextType {
   game: Game
   players: Player[]
   allPlayersIncludingArchived: Player[]
@@ -24,7 +24,9 @@ interface GameInterfaceContext {
   userHasLoaded: boolean
 }
 
-export const GameInterfaceContext = createContext(null as GameInterfaceContext)
+export const GameInterfaceContext = createContext(
+  null as GameInterfaceContextType
+)
 
 export const ProvideGameInterfaceContext = ({
   children,
