@@ -12,6 +12,8 @@ import { GameInterfaceContext } from "../GameInterfaceContext"
 import { MapPosition } from "@/data/types/MapTile"
 import { Timestamp } from "firebase/firestore"
 import { ProcessMessageArgs } from "@/app/api/process_message/route"
+import { Player } from "@/data/types/Player"
+import { isConversationalMessage } from "../isConversationalMessage"
 
 interface MessageCompositionOptions {
   typesToShow: Message["type"][]
@@ -19,6 +21,8 @@ interface MessageCompositionOptions {
   receiverId?: string
   tileLocation?: MapPosition
   senderId?: string
+  viewingPlayerId?: string
+  isPublic?: boolean
 }
 
 export function useMessageComposition({
@@ -27,6 +31,8 @@ export function useMessageComposition({
   receiverId,
   tileLocation,
   senderId,
+  viewingPlayerId,
+  isPublic = false,
 }: MessageCompositionOptions) {
   const { game, currentRound } = useContext(GameInterfaceContext)
 
@@ -40,6 +46,7 @@ export function useMessageComposition({
         conditions.push(where("type", "in", typesToShow))
 
         if (receiverId) {
+          console.log("receiverId", receiverId)
           conditions.push(
             or(
               where("receiverId", "==", receiverId),
@@ -66,9 +73,32 @@ export function useMessageComposition({
       ]
     ) || []
 
-  const composingMessage = allMessages?.find((message) => message.draft)
+  const visibleMessages = allMessages.filter((message) => {
+    if (
+      (isConversationalMessage(message) || message.type === "tileAction") &&
+      viewingPlayerId
+    ) {
+      console.log(
+        "message",
+        viewingPlayerId,
+        message.receiverId,
+        message.senderId,
+        message.receiverId === viewingPlayerId ||
+          message.senderId === viewingPlayerId
+      )
+      return (
+        message.receiverId === viewingPlayerId ||
+        message.senderId === viewingPlayerId
+      )
+    }
 
-  const messages = allMessages?.filter((msg) => !msg.draft)
+    return true
+  })
+
+  const composingMessage = visibleMessages?.find((message) => message.draft)
+  const messagesToShow = isPublic ? allMessages : visibleMessages
+
+  const messages = messagesToShow?.filter((msg) => !msg.draft)
 
   const setComposingMessage = useCallback(
     (messageContent: string) => {

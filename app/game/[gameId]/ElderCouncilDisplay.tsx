@@ -18,6 +18,8 @@ export const ElderCouncilDisplay = () => {
     senderId: currentPlayer?.uid,
     receiverId: "elderCouncil",
     typeToSend: "elderCouncil",
+    viewingPlayerId: currentPlayer?.uid,
+    isPublic: true,
   })
 
   const { allObjectives } = useObjectives()

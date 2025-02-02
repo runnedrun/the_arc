@@ -17,11 +17,7 @@ interface GameGridProps {
   onTileClosed: (tile: TileWithIndex) => void
 }
 
-export function GameGrid({
-  onTileSelect,
-  selectedTile,
-  onTileClosed,
-}: GameGridProps) {
+export function GameGrid({ onTileSelect, selectedTile }: GameGridProps) {
   const { mapTiles, players, npcs } = useContext(GameInterfaceContext)
   const mapTilesSorted = sortBy(mapTiles, (tile) => {
     return `${tile.position.y},${tile.position.x}`
@@ -150,7 +146,7 @@ export function GameGrid({
         <DialogTitle className="sr-only">Tile Info</DialogTitle>
         <DialogContent
           aria-describedby="Tile Info"
-          className="flex h-[90vh] flex-col"
+          className="flex h-[90vh] w-[600px] flex-col md:!max-w-[600px]"
         >
           {selectedTile && (
             <TileInfoDisplay selectedTile={selectedTile}></TileInfoDisplay>

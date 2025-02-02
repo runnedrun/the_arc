@@ -132,7 +132,7 @@ export function GameMessages({
           </div>
           <Textarea
             disabled={playerHasEndedRound}
-            value={composingMessage?.content || ""}
+            defaultValue={composingMessage?.content || ""}
             onChange={(e) => {
               const oldMessageLength = composingMessage?.content?.length || 0
               const newMessageLength = e.target.value.length

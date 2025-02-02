@@ -18,12 +18,19 @@ import { useEffect, useState } from "react"
 import { NPCDisplay } from "./NPCDisplay"
 import { useTileInfoDisplay } from "./TileInfoDisplayContext"
 
-export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
+export function NPCSelector({
+  npcOptions,
+  onSelectNpc,
+}: {
+  npcOptions: NPC[]
+  onSelectNpc: (npc: NPC) => void
+}) {
   const [open, setOpen] = useState(false)
   const { selectedNPC, setSelectedNPC } = useTileInfoDisplay()
 
   useEffect(() => {
     if (npcOptions?.length && !selectedNPC) {
+      onSelectNpc(npcOptions[0])
       setSelectedNPC(npcOptions[0])
     }
   }, [npcOptions, selectedNPC, setSelectedNPC])
@@ -66,6 +73,7 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
                     onSelect={() => {
                       setSelectedNPC(npc)
                       setOpen(false)
+                      onSelectNpc(npc)
                     }}
                   >
                     {npc.imageUrl && (
@@ -85,8 +93,6 @@ export function NPCSelector({ npcOptions }: { npcOptions: NPC[] }) {
           </Command>
         </PopoverContent>
       </Popover>
-
-      {selectedNPC && <NPCDisplay npc={selectedNPC} />}
     </div>
   )
 }

@@ -2,8 +2,7 @@ import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MapTile } from "@/data/types/MapTile"
 import { isEqual } from "lodash-es"
-import Image from "next/image"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { TileWithIndex } from "./GameInterface"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { GameMessages } from "./GameMessages"
@@ -13,6 +12,9 @@ import {
   TileInfoDisplayProvider,
   useTileInfoDisplay,
 } from "./TileInfoDisplayContext"
+import { ImageWithModal } from "../components/ImageWithModal"
+import { NPCDisplay } from "./NPCDisplay"
+import { NPC } from "@/data/types/NPC"
 
 export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
   const { currentPlayer } = useContext(GameInterfaceContext)
@@ -22,6 +24,7 @@ export const TileHistoryDisplay = ({ tile }: { tile: MapTile }) => {
       tileLocation: tile.position,
       senderId: currentPlayer?.uid,
       typeToSend: "tileAction",
+      viewingPlayerId: currentPlayer?.uid,
     })
 
   const currentPlayerIsOnThisTile = isEqual(
@@ -46,14 +49,45 @@ const TileInfoDisplayContent = ({
   selectedTile: TileWithIndex
 }) => {
   const { selectedTab, setSelectedTab } = useTileInfoDisplay()
+  const [selectedNPC, setSelectedNPC] = useState<NPC | null>(null)
+
+  const imageToShow =
+    selectedTab === "info" ? selectedTile.imageUrl : selectedNPC?.imageUrl
+
+  const title = selectedTab === "info" ? selectedTile.title : selectedNPC?.name
 
   return (
     <div className="flex min-h-0 grow flex-col">
       <CardHeader>
-        <CardTitle className="flex flex-col items-center gap-3">
-          <div className="text-2xl">{selectedTile.title}</div>
+        <CardTitle className="flex flex-col gap-4">
+          <div className="font-light">
+            {selectedTab === "npcs" ? (
+              <div className="text-sm">{selectedTile.title}</div>
+            ) : null}
+          </div>
+          {title && (
+            <ImageWithModal
+              key={selectedTab}
+              src={imageToShow}
+              alt={title}
+              title={title}
+              description={
+                selectedTab === "info"
+                  ? selectedTile.description
+                  : selectedNPC.personality
+              }
+              imageClassName="h-16 w-16 rounded-md hover:opacity-80"
+            />
+          )}
+          {selectedTab === "npcs" && (
+            <NPCsForTileDisplay
+              selectedPosition={selectedTile.position}
+              onSelectNpc={setSelectedNPC}
+            />
+          )}
         </CardTitle>
       </CardHeader>
+
       <CardContent className="flex min-h-0 grow flex-col">
         <Tabs
           value={selectedTab}
@@ -69,15 +103,6 @@ const TileInfoDisplayContent = ({
             value="info"
             className="data-[state=active]:flex data-[state=active]:min-h-0 data-[state=active]:grow data-[state=active]:flex-col data-[state=active]:gap-3"
           >
-            <div className="flex w-full justify-center">
-              <Image
-                src={selectedTile.imageUrl}
-                alt="Tile Image"
-                className="h-28 w-28 md:h-48 md:w-48"
-                width={200}
-                height={200}
-              />
-            </div>
             <TileHistoryDisplay tile={selectedTile}></TileHistoryDisplay>
           </TabsContent>
 
@@ -85,7 +110,7 @@ const TileInfoDisplayContent = ({
             value="npcs"
             className="min-h-0 grow flex-col data-[state=active]:flex"
           >
-            <NPCsForTileDisplay selectedPosition={selectedTile.position} />
+            {selectedNPC && <NPCDisplay npc={selectedNPC} />}
           </TabsContent>
         </Tabs>
       </CardContent>

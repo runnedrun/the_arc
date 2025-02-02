@@ -5,11 +5,14 @@ import { isNil } from "lodash-es"
 import { useContext } from "react"
 import { GameInterfaceContext } from "./GameInterfaceContext"
 import { NPCSelector } from "./NPCSelector"
+import { NPC } from "@/data/types/NPC"
 
 export const NPCsForTileDisplay = ({
   selectedPosition,
+  onSelectNpc,
 }: {
   selectedPosition: MapPosition
+  onSelectNpc: (npc: NPC) => void
 }) => {
   const { game } = useContext(GameInterfaceContext)
   const npcs =
@@ -30,5 +33,5 @@ export const NPCsForTileDisplay = ({
       [selectedPosition?.x, selectedPosition?.y]
     ) || []
 
-  return <NPCSelector npcOptions={npcs}></NPCSelector>
+  return <NPCSelector npcOptions={npcs} onSelectNpc={onSelectNpc}></NPCSelector>
 }
